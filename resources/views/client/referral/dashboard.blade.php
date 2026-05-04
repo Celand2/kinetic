@@ -5,7 +5,6 @@
 @section('content')
 <h1 style="margin-bottom: 2rem; color: #c9a227;">Referral Dashboard</h1>
 
-<!-- Stats -->
 <div class="grid">
     <div class="stat-box">
         <div class="stat-label">Total Referrals</div>
@@ -21,24 +20,17 @@
     </div>
 </div>
 
-<!-- Referral Link -->
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">Your Referral Link</div>
-    
-    <div style="display: flex; gap: 1rem;">
-        <input type="text" id="referral-link" value="{{ route('register', ['ref' => $user->referral_code]) }}" readonly style="flex: 1;">
+    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+        <input type="text" id="referral-link" value="{{ route('register', ['ref' => $user->referral_code]) }}" readonly style="flex: 1; min-width: 240px;">
         <button class="btn" onclick="copyReferralLink()">Copy Link</button>
     </div>
-
-    <div style="margin-top: 1rem;">
-        <small style="color: #b0bfd9;">Share this link to earn commissions on deposits and investments from your referrals.</small>
-    </div>
+    <div style="margin-top: 1rem; color: #b0bfd9;">Share this link to earn commissions on deposits and investments from your referrals.</div>
 </div>
 
-<!-- Referrals Table -->
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">Your Referrals</div>
-
     @if($referrals->count() > 0)
         <table>
             <thead>
@@ -61,20 +53,14 @@
             </tbody>
         </table>
 
-        <div style="margin-top: 2rem;">
-            {{ $referrals->links() }}
-        </div>
+        <div style="margin-top: 2rem;">{{ $referrals->links() }}</div>
     @else
-        <p style="color: #b0bfd9; text-align: center; padding: 3rem;">
-            No referrals yet. <a href="#" onclick="copyReferralLink()" style="color: #c9a227;">Share your link</a> to start earning!
-        </p>
+        <p style="color: #b0bfd9; text-align: center; padding: 3rem;">No referrals yet. <a href="#" onclick="copyReferralLink()" style="color: #c9a227;">Share your link</a> to start earning!</p>
     @endif
 </div>
 
-<!-- Commissions Table -->
 <div class="card">
     <div class="card-header">Commission History</div>
-
     @if($commissions->count() > 0)
         <table>
             <thead>
@@ -91,21 +77,15 @@
                     <tr>
                         <td>{{ $commission->created_at->format('M d, Y') }}</td>
                         <td>{{ $commission->referred->full_name }}</td>
-                        <td>{{ ucfirst($commission->transaction_type) }} (Level {{ $commission->commission_level }})</td>
+                        <td>{{ ucfirst(str_replace('_', ' ', $commission->transaction_type ?? 'commission')) }}</td>
                         <td>${{ number_format($commission->commission_amount, 2) }}</td>
-                        <td>
-                            <span style="color: {{ $commission->status === 'completed' ? '#81c784' : '#fbc02d' }};">
-                                {{ ucfirst($commission->status) }}
-                            </span>
-                        </td>
+                        <td><span style="color: {{ $commission->status === 'completed' ? '#81c784' : '#fbc02d' }};">{{ ucfirst($commission->status) }}</span></td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
 
-        <div style="margin-top: 2rem;">
-            {{ $commissions->links() }}
-        </div>
+        <div style="margin-top: 2rem;">{{ $commissions->links() }}</div>
     @else
         <p style="color: #b0bfd9; text-align: center; padding: 3rem;">No commissions yet.</p>
     @endif

@@ -22,14 +22,14 @@ class ReferralController extends Controller
             ->paginate(15);
 
         $totalCommissions = $user->referralCommissionsAsReferrer()
-            ->where('status', 'approved')
+            ->where('status', 'completed')
             ->sum('commission_amount');
 
         $pendingCommissions = $user->referralCommissionsAsReferrer()
             ->where('status', 'pending')
             ->sum('commission_amount');
 
-        return view('referral.dashboard', compact(
+        return view('client.referral.dashboard', compact(
             'user',
             'referrals',
             'totalReferrals',

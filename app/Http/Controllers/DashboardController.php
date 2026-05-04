@@ -12,11 +12,19 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
+
+        if (in_array($user->role, ['super_admin', 'admin'])) {
+            return redirect()->route('admin.dashboard');
+        }
         
         $activeInvestments = Investment::where('user_id', $user->id)
             ->where('status', 'active')
             ->with(['tradingCycle', 'tranche'])
             ->get();
+
+        $dailyGains = $activeInvestments->sum(function ($investment) {
+            return ($investment->amount * $investment->daily_profit_rate) / 100;
+        });
 
         $completedInvestments = Investment::where('user_id', $user->id)
             ->where('status', 'completed')
@@ -36,13 +44,14 @@ class DashboardController extends Controller
 
         $referralCount = $user->referrals()->count();
         $referralEarnings = $user->referralCommissionsAsReferrer()
-            ->where('status', 'approved')
+            ->where('status', 'completed')
             ->sum('commission_amount');
 
-        return view('dashboard.index', compact(
+        return view('client.dashboard.index', compact(
             'user',
             'activeInvestments',
             'completedInvestments',
+            'dailyGains',
             'totalInvested',
             'totalEarned',
             'recentTransactions',

@@ -1,308 +1,264 @@
+{{--
+    ╔══════════════════════════════════════════════════════════════════╗
+    ║  LAYOUT PRINCIPAL — KINETIC TRADING SYSTEM                      ║
+    ║  Fichier : resources/views/layouts/app.blade.php                ║
+    ║                                                                  ║
+    ║  Design : Deep Ocean Tech — inspiré de la palette KTS           ║
+    ║  Palette :                                                       ║
+    ║    #032950 — Deep Ocean Blue (fond principal)                   ║
+    ║    #1CE7ED — Electric Cyan (accent primaire, glow, actif)       ║
+    ║    #1F9AA5 — Tech Teal (textes secondaires, borders)            ║
+    ║    #1DA7DB — Digital Aqua (hover states, gradients)             ║
+    ║    #1A71E0 — Royal Neon Blue (boutons, CTA)                     ║
+    ║    #EAFBFF — Ice White (textes clairs)                          ║
+    ║                                                                  ║
+    ║  Utilisation :                                                   ║
+    ║    @extends('layouts.app')                                      ║
+    ║    @section('page-title', 'MON TITRE')                         ║
+    ║    @section('page-subtitle', 'sous-titre')                      ║
+    ║    @section('content') ... @endsection                          ║
+    ╚══════════════════════════════════════════════════════════════════╝
+--}}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'KINETIC - Luxury Investment Platform')</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #859de0 0%, #4f6099 100%);
-            color: #1b0808;
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Navbar */
-        nav {
-            background: rgba(20, 26, 46, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(201, 162, 39, 0.1);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        nav a {
-            color: #ffffff;
-            text-decoration: none;
-            margin: 0 1.5rem;
-            transition: color 0.3s ease;
-        }
-
-        nav a:hover {
-            color: #c9a227;
-        }
-
-        nav .brand {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #c9a227;
-            margin-right: 2rem;
-        }
-
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-        }
-
-        /* Main Content */
-        main {
-            min-height: calc(100vh - 60px);
-            padding: 2rem 0;
-        }
-
-        /* Cards */
-        .card {
-            background: rgba(20, 26, 46, 0.5);
-            border: 1px solid rgba(201, 162, 39, 0.1);
-            border-radius: 15px;
-            padding: 2rem;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-
-        .card:hover {
-            border-color: rgba(201, 162, 39, 0.3);
-            box-shadow: 0 8px 32px rgba(201, 162, 39, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .card-header {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #c9a227;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(201, 162, 39, 0.2);
-            padding-bottom: 1rem;
-        }
-
-        /* Buttons */
-        .btn {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background: linear-gradient(135deg, #c9a227 0%, #d4b750 100%);
-            color: #0b0f1a;
-            text-decoration: none;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            box-shadow: 0 8px 20px rgba(201, 162, 39, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: rgba(201, 162, 39, 0.2);
-            color: #c9a227;
-            border: 1px solid #c9a227;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(201, 162, 39, 0.3);
-        }
-
-        /* Forms */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #c9a227;
-            font-weight: 600;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 0.75rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(201, 162, 39, 0.2);
-            border-radius: 8px;
-            color: #ffffff;
-            font-size: 1rem;
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: #c9a227;
-            box-shadow: 0 0 15px rgba(201, 162, 39, 0.2);
-        }
-
-        /* Alert Messages */
-        .alert {
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-        }
-
-        .alert-success {
-            background: rgba(76, 175, 80, 0.1);
-            border-left: 3px solid #4caf50;
-            color: #81c784;
-        }
-
-        .alert-error {
-            background: rgba(244, 67, 54, 0.1);
-            border-left: 3px solid #f44336;
-            color: #ef5350;
-        }
-
-        /* Grid */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        /* Tables */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-
-        th {
-            background: rgba(201, 162, 39, 0.1);
-            padding: 1rem;
-            text-align: left;
-            color: #c9a227;
-            font-weight: 600;
-            border-bottom: 1px solid rgba(201, 162, 39, 0.2);
-        }
-
-        td {
-            padding: 1rem;
-            border-bottom: 1px solid rgba(201, 162, 39, 0.1);
-        }
-
-        tr:hover {
-            background: rgba(201, 162, 39, 0.05);
-        }
-
-        /* Stats */
-        .stat-box {
-            background: rgba(201, 162, 39, 0.1);
-            border: 1px solid rgba(201, 162, 39, 0.2);
-            border-radius: 8px;
-            padding: 1.5rem;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #c9a227;
-            margin: 0.5rem 0;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: #b0bfd9;
-        }
-
-        /* Footer */
-        footer {
-            background: rgba(20, 26, 46, 0.8);
-            border-top: 1px solid rgba(201, 162, 39, 0.1);
-            padding: 2rem 0;
-            text-align: center;
-            color: #b0bfd9;
-            margin-top: 3rem;
-        }
-
-        @media (max-width: 768px) {
-            .nav-links {
-                flex-direction: column;
-            }
-
-            nav a {
-                margin: 0.5rem 0;
-            }
-
-            .grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-    @yield('styles')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+ 
+    <title>@yield('title', 'KTS') — Kinetic Trading System</title>
+ 
+    {{-- ── TYPOGRAPHIE ──────────────────────────────────────────────────── --}}
+    {{-- Orbitron  : display font futuriste — titres, logos, chiffres clés --}}
+    {{-- Rajdhani  : corps de texte — lisible, techy, moderne              --}}
+    {{-- Space Mono: données, codes, références — monospace technique      --}}
+    @VITE(['resources/css/app.css','resources/css/style.css' ,'resources/js/app.js'])
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+ 
+    
+ 
+    {{-- Styles supplémentaires injectés par les pages enfants --}}
+    @stack('styles')
 </head>
+ 
 <body>
-    {{-- <nav>
-        <div class="container">
-            <div class="nav-container">
-                <div class="brand">KINETIC</div>
-                <div class="nav-links">
-                    @auth
-                        <a href="{{ route('dashboard') }}">Dashboard</a>
-                        <a href="{{ route('investments.index') }}">Investments</a>
-                        <a href="{{ route('transactions.index') }}">Transactions</a>
-                        <a href="{{ route('referral.dashboard') }}">Referrals</a>
-                        <a href="{{ route('messages.inbox') }}">Messages</a>
-                        @if(auth()->user()->role === 'super_admin')
-                            <a href="{{ route('admin.users.index') }}">Admin</a>
-                        @endif
-                        <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                            @csrf
-                            <button type="submit" style="background: none; border: none; color: #ffffff; cursor: pointer; margin: 0 1.5rem;">Logout</button>
-                        </form>
-                    @else
-                        <a href="{{ route('login') }}">Login</a>
-                        <a href="{{ route('register') }}">Register</a>
-                    @endauth
-                </div>
+ 
+{{-- ════════════════════════════════════════════════════════════════════
+     SIDEBAR
+     ════════════════════════════════════════════════════════════════════ --}}
+<aside class="kts-sidebar">
+ 
+    {{-- Logo --}}
+    {{-- <div class="sidebar-logo">
+        <div class="logo-emblem">K</div>
+        <div class="logo-text-wrap">
+            <span class="logo-brand">KINETIC</span>
+            <span class="logo-tagline">Trading System</span>
+        </div>
+    </div>
+ 
+    {{-- Utilisateur connecté --}}
+    {{-- <div class="sidebar-user">
+        <div class="user-avatar">{{ auth()->user()->initials }}</div>
+        <div class="user-info">
+            <div class="user-name">{{ auth()->user()->full_name }}</div>
+            <div class="user-badge">
+                <span class="user-badge-dot"></span>
+                <span class="user-badge-text">Actif</span>
             </div>
         </div>
-    </nav> --}}
+    </div>
+ 
+    {{-- Solde rapide --}}
+    {{-- <div class="sidebar-balance">
+        <div class="balance-label">Solde Principal</div>
+        <div class="balance-amount">
+            <span>$</span>{{ number_format(auth()->user()->balance, 2) }}
+        </div>
+        <div class="balance-ref">
+            <div class="balance-ref-item">
+                🌐 Parr. :&nbsp;<span class="balance-ref-val">${{ number_format(auth()->user()->referral_balance, 2) }}</span>
+            </div>
+        </div>
+    </div> --}} 
 
-    <main>
-        <div class="container">
-            @if($message = session('success'))
-                <div class="alert alert-success">{{ $message }}</div>
-            @endif
-
-            @if($errors->any())
-                <div class="alert alert-error">
+    {{-- Navigation principale --}}
+    <nav class="nav-wrap">
+ 
+        <div class="nav-group">
+            <div class="nav-group-label">Principal</div>
+ 
+            <a href="{{ route('dashboard') }}"
+               {{-- class="nav-link {{ request()->routeIs('user.dashboard') ? 'active' : '' }}"> --}}
+                <span class="nav-icon">📊</span>
+                <span class="nav-label-text">Dashboard</span>
+            </a>
+ 
+            <a href="{{ route('investments.index') }}"
+               class="nav-link {{ request()->routeIs('investments.*') ? 'active' : '' }}">
+                <span class="nav-icon">⚡</span>
+                <span class="nav-label-text">Mes Contrats</span>
+            </a>
+        </div>
+ 
+        <div class="nav-group">
+            <div class="nav-group-label">Finance</div>
+ 
+            {{-- <a href="{{ route('financial.deposit') }}"
+               {{-- class="nav-link {{ request()->routeIs('financial.deposit*') ? 'active' : '' }}"> --}}
+                {{-- <span class="nav-icon">💳</span>
+                <span class="nav-label-text">Dépôt</span>
+            </a> --}} --}}
+ 
+            {{-- <a href="{{ route('financial.withdrawal') }}"
+               class="nav-link {{ request()->routeIs('financial.withdrawal*') ? 'active' : '' }}">
+                <span class="nav-icon">💸</span>
+                <span class="nav-label-text">Retrait</span>
+            </a>
+  {{-- --}}
+            {{-- <a href="{{ route('financial.transactions') }}"
+               class="nav-link {{ request()->routeIs('financial.transactions') ? 'active' : '' }}">
+                <span class="nav-icon">📋</span>
+                <span class="nav-label-text">Transactions</span>
+            </a> --}}
+        </div>
+  --}}
+        <div class="nav-group">
+            <div class="nav-group-label">Réseau</div>
+ 
+            {{-- <a href="{{ route('user.referral.index') }}"
+               class="nav-link {{ request()->routeIs('user.referral.*') ? 'active' : '' }}">
+                <span class="nav-icon">🌐</span>
+                <span class="nav-label-text">Parrainage</span>
+            </a> --}}
+        </div>
+ 
+        <div class="nav-group">
+            <div class="nav-group-label">Support</div>
+ 
+            {{-- <a href="{{ route('messages.index') }}"
+               class="nav-link {{ request()->routeIs('messages.*') ? 'active' : '' }}">
+                <span class="nav-icon">💬</span>
+                <span class="nav-label-text">Messages</span>
+ 
+                @php
+                    $unread = auth()->user()->conversations()
+                        ->where('unread_user_count', '>', 0)->count();
+                @endphp
+                @if($unread > 0)
+                    <span class="nav-badge">{{ $unread }}</span>
+                @endif
+            </a> --}}
+        </div>
+ 
+    </nav>
+ 
+    {{-- Déconnexion --}}
+    <div class="sidebar-footer">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="btn-logout">
+                <span>🚪</span>
+                <span>Déconnexion</span>
+            </button>
+        </form>
+    </div>
+ 
+</aside>
+ 
+{{-- ════════════════════════════════════════════════════════════════════
+     CONTENU PRINCIPAL
+     ════════════════════════════════════════════════════════════════════ --}}
+<div class="kts-main">
+ 
+    {{-- Topbar --}}
+    <header class="kts-topbar">
+        <div class="topbar-left">
+            <div class="page-title">@yield('page-title', 'DASHBOARD')</div>
+            <div class="page-subtitle">@yield('page-subtitle', '// Vue d\'ensemble')</div>
+        </div>
+ 
+        <div class="topbar-right">
+            {{-- Horloge temps réel --}}
+            <div class="topbar-clock" id="kts-clock">00:00:00</div>
+ 
+            {{-- Notifications --}}
+            {{-- <a href="{{ route('user.messages.index') }}" class="topbar-icon-btn" title="Messages">
+                💬
+                @if(isset($unread) && $unread > 0)
+                    <span class="notif-pip"></span>
+                @endif
+            </a> --}}
+        </div>
+    </header>
+ 
+    {{-- Zone de contenu --}}
+    <main class="kts-content">
+ 
+        {{-- ── Alertes flash session ─────────────────────────────────────── --}}
+        @if(session('success'))
+            <div class="kts-alert success">
+                <span class="kts-alert-icon">✅</span>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+ 
+        @if(session('error'))
+            <div class="kts-alert error">
+                <span class="kts-alert-icon">❌</span>
+                <span>{{ session('error') }}</span>
+            </div>
+        @endif
+ 
+        @if(session('info'))
+            <div class="kts-alert info">
+                <span class="kts-alert-icon">ℹ️</span>
+                <span>{{ session('info') }}</span>
+            </div>
+        @endif
+ 
+        {{-- ── Erreurs de validation Laravel ───────────────────────────────── --}}
+        @if($errors->any())
+            <div class="kts-alert error">
+                <span class="kts-alert-icon">⚠️</span>
+                <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px;">
                     @foreach($errors->all() as $error)
-                        <div>{{ $error }}</div>
+                        <li>{{ $error }}</li>
                     @endforeach
-                </div>
-            @endif
-
-            @yield('content')
-        </div>
+                </ul>
+            </div>
+        @endif
+ 
+        {{-- ── Contenu de la page enfant ────────────────────────────────────── --}}
+        @yield('content')
+ 
     </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 KINETIC - Luxury Investment Platform. All rights reserved.</p>
-        </div>
-    </footer>
+</div>
+ 
+{{-- ════════════════════════════════════════════════════════════════════
+     SCRIPTS
+     ════════════════════════════════════════════════════════════════════ --}}
+<script>
+    /* ── Horloge temps réel ─────────────────────────────────────────── */
+    (function() {
+        const el = document.getElementById('kts-clock');
+        if (!el) return;
+        function tick() {
+            const now = new Date();
+            const h   = String(now.getHours()).padStart(2, '0');
+            const m   = String(now.getMinutes()).padStart(2, '0');
+            const s   = String(now.getSeconds()).padStart(2, '0');
+            el.textContent = `${h}:${m}:${s}`;
+        }
+        tick();
+        setInterval(tick, 1000);
+    })();
+</script>
+ 
+{{-- Scripts injectés par les pages enfants --}}
+@stack('scripts')
+ 
 </body>
-</html>
+<html>

@@ -26,7 +26,7 @@
                         <td>{{ ucfirst($transaction->type) }}</td>
                         <td>${{ number_format($transaction->amount, 2) }}</td>
                         <td>
-                            <span style="color: {{ $transaction->status === 'approved' ? '#81c784' : '#fbc02d' }};">
+                            <span style="color: {{ $transaction->status === 'completed' ? '#81c784' : '#fbc02d' }};">
                                 {{ ucfirst($transaction->status) }}
                             </span>
                         </td>

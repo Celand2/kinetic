@@ -31,6 +31,11 @@
         Active Investments
         <a href="{{ route('investments.create') }}" class="btn" style="float: right; margin-top: -0.5rem;">+ New Investment</a>
     </div>
+    
+    <div class="card-header">
+        admin
+        <a href="{{ route('admin.finance.transactions') }}" class="btn" style="float: right; margin-top: -0.5rem;">admin</a>
+    </div>
 
     @if($activeInvestments->count() > 0)
         <table>
@@ -91,7 +96,7 @@
                         <td>{{ ucfirst($transaction->type) }}</td>
                         <td>${{ number_format($transaction->amount, 2) }}</td>
                         <td>
-                            <span style="color: {{ $transaction->status === 'approved' ? '#81c784' : '#fbc02d' }};">
+                            <span style="color: {{ $transaction->status === 'completed' ? '#81c784' : '#fbc02d' }};">
                                 {{ ucfirst($transaction->status) }}
                             </span>
                         </td>

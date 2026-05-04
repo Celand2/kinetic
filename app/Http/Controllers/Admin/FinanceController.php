@@ -21,7 +21,7 @@ class FinanceController extends Controller
     public function approveTransaction(Transaction $transaction)
     {
         if ($transaction->type === 'deposit' && $transaction->status === 'pending') {
-            $transaction->update(['status' => 'approved', 'processed_at' => now()]);
+            $transaction->update(['status' => 'completed', 'processed_at' => now()]);
             
             $user = $transaction->user;
             $user->increment('balance', $transaction->amount);
@@ -68,7 +68,7 @@ class FinanceController extends Controller
             'user_id' => $user->id,
             'type' => 'adjustment',
             'amount' => $validated['amount'],
-            'status' => 'approved',
+            'status' => 'completed',
             'admin_notes' => $validated['reason'],
             'processed_at' => now(),
         ]);

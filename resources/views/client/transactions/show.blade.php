@@ -28,9 +28,7 @@
 
         <div>
             <div style="color: #b0bfd9; font-size: 0.9rem;">Status</div>
-            <div style="font-size: 1.1rem; color: {{ $transaction->status === 'completed' ? '#81c784' : '#fbc02d' }};">
-                {{ ucfirst($transaction->status) }}
-            </div>
+            <div style="font-size: 1.1rem; color: {{ $transaction->status === 'completed' ? '#81c784' : '#fbc02d' }};">{{ ucfirst($transaction->status) }}</div>
         </div>
 
         <div>
@@ -45,9 +43,23 @@
             </div>
         @endif
 
+        @if($transaction->fee_amount && $transaction->fee_amount > 0)
+            <div>
+                <div style="color: #b0bfd9; font-size: 0.9rem;">Fees</div>
+                <div>${{ number_format($transaction->fee_amount, 2) }}</div>
+            </div>
+        @endif
+
+        @if($transaction->metadata)
+            <div>
+                <div style="color: #b0bfd9; font-size: 0.9rem;">Details</div>
+                <pre style="background: rgba(201, 162, 39, 0.05); padding: 1rem; border-radius: 8px;">{{ json_encode($transaction->metadata, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES) }}</pre>
+            </div>
+        @endif
+
         @if($transaction->admin_notes)
             <div>
-                <div style="color: #b0bfd9; font-size: 0.9rem;">Notes</div>
+                <div style="color: #b0bfd9; font-size: 0.9rem;">Admin Notes</div>
                 <div style="background: rgba(201, 162, 39, 0.05); padding: 1rem; border-radius: 8px;">{{ $transaction->admin_notes }}</div>
             </div>
         @endif

@@ -528,11 +528,32 @@
     .features-grid { grid-template-columns:1fr 1fr; }
     .referral-visual { grid-template-columns:1fr; }
     .nav-links { display:none; }
+    .cycles-grid { gap:16px; }
+    .cycle-card { padding:24px 20px; }
+    .hero-actions { flex-direction:column; align-items:flex-start; }
   }
   @media (max-width:600px) {
     .features-grid { grid-template-columns:1fr; }
     .hero-stat-row { flex-wrap:wrap; gap:24px; }
     .cta-box { padding:40px 24px; }
+    .deposit-cards { flex-direction:column; align-items:center; }
+    .cta-actions { flex-direction:column; align-items:center; }
+    .footer { flex-direction:column; text-align:center; gap:16px; }
+    .ticker-item { font-size:10px; }
+  }
+  @media (max-width:480px) {
+    .hero { padding:100px 5% 60px; }
+    .hero h1 { font-size:clamp(28px,6vw,48px); }
+    .hero-desc { font-size:16px; margin-bottom:32px; }
+    .cycles-grid { grid-template-columns:1fr; gap:12px; }
+    .cycle-card { padding:20px 16px; }
+    .cycle-rate { font-size:32px; }
+    .features-grid { gap:16px; }
+    .feature-card { padding:24px; }
+    .referral-visual { gap:40px; }
+    .ref-level { padding:16px 20px; }
+    .cta-box { padding:32px 20px; }
+    .cta-box h2 { font-size:28px; }
   }
 </style>
 </head>
@@ -552,15 +573,17 @@
     </div>
   </div>
   <div class="nav-links">
-    <a href="#">Accueil</a>
-    <a href="#">Cycles</a>
-    <a href="#">Tranches</a>
-    <a href="#">Parrainage</a>
-    <a href="#">Support</a>
+    <a href="#home">Accueil</a>
+    <a href="#cycles-section">Cycles</a>
+    <a href="#referral-section">Parrainage</a>
+    <a href="#features-section">Fonctionnalités</a>
+    <a href="#cta-section">Support</a>
   </div>
   <div class="nav-cta">
-    <a href="/login" class="btn-glass">Connexion</a>
-    <a href="/register" class="btn-primary">Commencer</a>
+    @guest
+    <a href="{{ route('login') }}" class="btn-glass">Connexion</a>
+    <a href="{{ route('register') }}" class="btn-primary">Commencer</a>
+    @endguest
   </div>
 </nav>
  
@@ -586,7 +609,7 @@
 </div>
  
 <!-- HERO -->
-<section class="hero">
+<section class="hero" id="home">
   <div class="hero-content">
     <div class="hero-badge">⚡ Plateforme Elite — Cycle Quotidien Actif</div>
     <h1>
@@ -599,8 +622,12 @@
       pour bâtir votre liberté financière.
     </p>
     <div class="hero-actions">
-      <a href="/register" class="btn-primary btn-xl">Ouvrir un Compte</a>
-      <a href="/cycles" class="btn-glass btn-xl">Voir les Cycles</a>
+      @auth
+        <a href="{{ route('dashboard') }}" class="btn-primary btn-xl">Accéder au Dashboard</a>
+      @else
+        <a href="{{ route('register') }}" class="btn-primary btn-xl">Ouvrir un Compte</a>
+      @endauth
+      <a href="#cycles-section" class="btn-glass btn-xl">Voir les Cycles</a>
     </div>
     <div class="hero-stat-row">
       <div class="hero-stat">
@@ -649,7 +676,7 @@
 </section>
  
 <!-- TRADING CYCLES -->
-<section class="cycles-section">
+<section class="cycles-section" id="cycles-section">
   <div class="section-header">
     <div class="section-eyebrow">// Cycles de Trading</div>
     <h2 class="section-title">Choisissez votre <span>stratégie de rendement</span></h2>
@@ -665,7 +692,11 @@
         <span class="key">Retour total</span>
         <span class="val">105%</span>
       </div>
-      <a href="/invest/flash" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
+      @auth
+        <a href="{{ route('dashboard') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
+      @else
+        <a href="{{ route('register') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
+      @endauth
     </div>
  
     <div class="cycle-card boost">
@@ -677,7 +708,11 @@
         <span class="key">Retour total</span>
         <span class="val">120%</span>
       </div>
-      <a href="/invest/boost" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
+      @auth
+        <a href="{{ route('dashboard') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
+      @else
+        <a href="{{ route('register') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
+      @endauth
     </div>
  
     <div class="cycle-card pro">
@@ -689,7 +724,11 @@
         <span class="key">Retour total</span>
         <span class="val">180%</span>
       </div>
-      <a href="/invest/pro" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
+      @auth
+        <a href="{{ route('dashboard') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
+      @else
+        <a href="{{ route('register') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
+      @endauth
     </div>
  
     <div class="cycle-card infinity">
@@ -701,13 +740,17 @@
         <span class="key">Retour total</span>
         <span class="val">300%</span>
       </div>
-      <a href="/invest/infinity" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
+      @auth
+        <a href="{{ route('dashboard') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
+      @else
+        <a href="{{ route('register') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
+      @endauth
     </div>
   </div>
 </section>
  
 <!-- REFERRAL -->
-<section class="referral-section">
+<section class="referral-section" id="referral-section">
   <div class="referral-visual">
     <div class="referral-tree">
       <div class="section-eyebrow" style="margin-bottom:8px;">// Système de Parrainage</div>
@@ -744,13 +787,13 @@
         automatiques sur chaque dépôt et achat de tranche réalisé par votre équipe.
         Votre solde de parrainage est retirable à tout moment.
       </p>
-      <a href="/register" class="btn-primary btn-xl">Obtenir mon lien de parrainage</a>
+      <a href="{{ route('register') }}" class="btn-primary btn-xl">Obtenir mon lien de parrainage</a>
     </div>
   </div>
 </section>
  
 <!-- FEATURES -->
-<section class="features-section">
+<section class="features-section" id="features-section">
   <div class="section-header">
     <div class="section-eyebrow">// Fonctionnalités Clés</div>
     <h2 class="section-title">Une plateforme <span>conçue pour l'élite</span></h2>
@@ -810,13 +853,15 @@
 </section>
  
 <!-- CTA -->
-<section class="cta-section">
+<section class="cta-section" id="cta-section">
   <div class="cta-box">
     <h2>Rejoignez KTS dès aujourd'hui</h2>
     <p>Créez votre compte en moins de 2 minutes et commencez à générer des profits dès demain avec le système de trading le plus puissant du marché.</p>
     <div class="cta-actions">
-      <a href="/register" class="btn-primary btn-xl">Créer mon compte</a>
-      <a href="/login" class="btn-glass btn-xl">Se connecter</a>
+      @guest
+      <a href="{{route('register')}}" class="btn-primary btn-xl">Créer mon compte</a>
+      <a href="{{route('login')}}" class="btn-glass btn-xl">Se connecter</a>
+      @endguest
     </div>
   </div>
 </section>

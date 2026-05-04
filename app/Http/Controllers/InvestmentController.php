@@ -20,7 +20,7 @@ class InvestmentController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('investments.index', compact('investments'));
+        return view('client.investments.index', compact('investments'));
     }
 
     public function create()
@@ -32,7 +32,7 @@ class InvestmentController extends Controller
             ->orderBy('display_order')
             ->get();
 
-        return view('investments.create', compact('cycles'));
+        return view('client.investments.create', compact('cycles'));
     }
 
     public function store(Request $request)
@@ -82,7 +82,7 @@ class InvestmentController extends Controller
             'investment_id' => $investment->id,
             'type' => 'investment',
             'amount' => $validated['amount'],
-            'status' => 'approved',
+            'status' => 'completed',
             'reference' => $investment->reference,
             'processed_at' => now(),
         ]);
@@ -100,6 +100,6 @@ class InvestmentController extends Controller
         
         $investment->load(['tradingCycle', 'tranche', 'transactions']);
 
-        return view('investments.show', compact('investment'));
+        return view('client.investments.show', compact('investment'));
     }
 }

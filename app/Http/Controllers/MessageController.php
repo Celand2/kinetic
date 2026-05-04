@@ -16,7 +16,7 @@ class MessageController extends Controller
             ->latest()
             ->paginate(20);
 
-        return view('messages.inbox', compact('messages'));
+        return view('client.messages.inbox', compact('messages'));
     }
 
     public function sent()
@@ -27,7 +27,7 @@ class MessageController extends Controller
             ->latest()
             ->paginate(20);
 
-        return view('messages.sent', compact('messages'));
+        return view('client.messages.sent', compact('messages'));
     }
 
     public function show(Message $message)
@@ -38,12 +38,12 @@ class MessageController extends Controller
             $message->update(['is_read' => true, 'read_at' => now()]);
         }
 
-        return view('messages.show', compact('message'));
+        return view('client.messages.show', compact('message'));
     }
 
     public function create()
     {
-        return view('messages.create');
+        return view('client.messages.create');
     }
 
     public function store(Request $request)

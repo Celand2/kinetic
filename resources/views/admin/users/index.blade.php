@@ -3,7 +3,18 @@
 @section('title', 'User Management - KINETIC Admin')
 
 @section('content')
-<h1 style="margin-bottom: 2rem; color: #c9a227;">User Management</h1>
+<h1 style="margin-bottom: 1rem; color: #c9a227;">User Management</h1>
+
+<form method="GET" action="{{ route('admin.users.index') }}" style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap;">
+    <input
+        type="search"
+        name="search"
+        value="{{ request('search') }}"
+        placeholder="Search users by name, email, phone, or referral code"
+        style="flex: 1; min-width: 220px;"
+    >
+    <button type="submit" class="btn">Search</button>
+</form>
 
 <div class="card">
     @if($users->count() > 0)

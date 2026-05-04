@@ -57,7 +57,18 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->route('dashboard')->with('success', 'Logged in successfully!');
+
+            if (Auth::user()->status !== 'active') {
+                Auth::logout();
+                return back()->withErrors(['email' => 'Compte bloqué ou gelé.'])->onlyInput('email');
+            }
+
+            $redirectRoute = in_array(Auth::user()->role, ['super_admin', 'admin'])
+                ? 'admin.dashboard'
+                : 'dashboard';
+
+            return redirect()->intended(route($redirectRoute))
+                ->with('success', 'Logged in successfully!');
         }
 
         return back()->withErrors(['email' => 'Invalid credentials'])->onlyInput('email');
