@@ -33,7 +33,7 @@
                         <td>
                             @if($transaction->status === 'pending')
                                 <form method="POST" action="{{ route('admin.finance.approve', $transaction) }}" style="display: inline;">
-                                    @csrf
+                                     @csrf 
                                     <button type="submit" class="btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Approve</button>
                                 </form>
                             @endif

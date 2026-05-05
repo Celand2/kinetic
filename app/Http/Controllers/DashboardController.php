@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ExchangeRate;
 use App\Models\Investment;
 use App\Models\Transaction;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -13,19 +13,29 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
+        // Redirection des admins vers leur dashboard dédié
         if (in_array($user->role, ['super_admin', 'admin'])) {
             return redirect()->route('admin.dashboard');
         }
         
+        // Investissements actifs
         $activeInvestments = Investment::where('user_id', $user->id)
             ->where('status', 'active')
             ->with(['tradingCycle', 'tranche'])
             ->get();
 
+        // Investissements en attente
+        $pendingInvestments = Investment::where('user_id', $user->id)
+            ->where('status', 'pending')
+            ->with(['tradingCycle', 'tranche'])
+            ->get();
+
+        // Calcul des gains quotidiens
         $dailyGains = $activeInvestments->sum(function ($investment) {
             return ($investment->amount * $investment->daily_profit_rate) / 100;
         });
 
+        // Statistiques
         $completedInvestments = Investment::where('user_id', $user->id)
             ->where('status', 'completed')
             ->count();
@@ -37,26 +47,33 @@ class DashboardController extends Controller
         $totalEarned = Investment::where('user_id', $user->id)
             ->sum('total_profit_credited');
 
+        // Transactions récentes
         $recentTransactions = Transaction::where('user_id', $user->id)
             ->latest()
             ->take(5)
             ->get();
 
+        // Données de parrainage
         $referralCount = $user->referrals()->count();
         $referralEarnings = $user->referralCommissionsAsReferrer()
             ->where('status', 'completed')
             ->sum('commission_amount');
 
+        // Taux de change
+        $exchangeRate = ExchangeRate::latest('updated_at')->first();
+
         return view('client.dashboard.index', compact(
             'user',
             'activeInvestments',
+            'pendingInvestments',
             'completedInvestments',
             'dailyGains',
             'totalInvested',
             'totalEarned',
             'recentTransactions',
             'referralCount',
-            'referralEarnings'
+            'referralEarnings',
+            'exchangeRate'
         ));
     }
 }

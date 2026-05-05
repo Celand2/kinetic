@@ -27,17 +27,8 @@
                 @error('payment_method')<span style="color: #ef5350;">{{ $message }}</span>@enderror
             </div>
 
-            <div class="form-group">
-                <label for="screenshot">Upload Receipt / Proof (required)</label>
-                <input type="file" id="screenshot" name="screenshot" accept="image/*" required>
-                <small class="form-hint">Please upload a clear screenshot of your withdrawal receipt</small>
-                @error('screenshot')<span style="color: #ef5350;">{{ $message }}</span>@enderror
-            </div>
-
-            <div class="form-group">
-                <label for="description">Notes</label>
-                <textarea id="description" name="description" rows="4">{{ old('description') }}</textarea>
-            </div>
+            
+            
 
             <button type="submit" class="btn" style="width: 100%;">Submit Withdrawal Request</button>
         </form>

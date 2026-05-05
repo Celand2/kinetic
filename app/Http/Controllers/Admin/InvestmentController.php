@@ -74,12 +74,12 @@ class InvestmentController extends Controller
     public function tranches(TradingCycle $cycle)
     {
         $tranches = $cycle->tranches()->paginate(10);
-        return view('admin.investments.tranches', compact('cycle', 'tranches'));
+        return view('admin.investments.tranches.index', compact('cycle', 'tranches'));
     }
 
     public function createTranche(TradingCycle $cycle)
     {
-        return view('admin.investments.tranche-create', compact('cycle'));
+        return view('admin.investments.tranches.create', compact('cycle'));
     }
 
     public function storeTranche(Request $request, TradingCycle $cycle)
@@ -93,6 +93,9 @@ class InvestmentController extends Controller
             'display_order' => 'nullable|integer',
         ]);
 
+        $validated['display_order'] = $validated['display_order'] ?? 0;
+        $validated['is_active']     = $validated['is_active']     ?? true;
+
         $cycle->tranches()->create($validated);
 
         return redirect()->route('admin.tranches', $cycle)
@@ -101,7 +104,7 @@ class InvestmentController extends Controller
 
     public function editTranche(Tranche $tranche)
     {
-        return view('admin.investments.tranche-edit', compact('tranche'));
+        return view('admin.investments.tranches.edit', compact('tranche'));
     }
 
     public function updateTranche(Request $request, Tranche $tranche)
@@ -115,6 +118,9 @@ class InvestmentController extends Controller
             'is_active' => 'boolean',
             'display_order' => 'nullable|integer',
         ]);
+
+        $validated['display_order'] = $validated['display_order'] ?? 0;
+        $validated['is_active']     = isset($validated['is_active']) ? (bool) $validated['is_active'] : false;
 
         $tranche->update($validated);
 

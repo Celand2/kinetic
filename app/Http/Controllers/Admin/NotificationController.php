@@ -27,18 +27,19 @@ class NotificationController extends Controller
     public function send(Request $request)
     {
         $validated = $request->validate([
-            'type' => 'required|string',
-            'title' => 'required|string|max:255',
-            'message' => 'required|string',
+            'type'     => 'required|in:profit_credited,deposit_approved,deposit_rejected,withdrawal_approved,withdrawal_rejected,referral_bonus,investment_active,investment_complete,message_received,account_frozen,broadcast,system',
+            'title'    => 'required|string|max:255',
+            'body'     => 'required|string',
             'user_ids' => 'required|array|min:1',
         ]);
 
         foreach ($validated['user_ids'] as $userId) {
             Notification::create([
-                'user_id' => $userId,
-                'type' => $validated['type'],
-                'title' => $validated['title'],
-                'message' => $validated['message'],
+                'user_id'    => $userId,
+                'type'       => $validated['type'],
+                'title'      => $validated['title'],
+                'body'       => $validated['body'],
+                'created_by' => auth()->id(),
             ]);
         }
 

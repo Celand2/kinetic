@@ -1,0 +1,23 @@
+@extends('layouts.app')
+
+@section('title', 'Edit Exchange Rate')
+
+@section('content')
+<h1>Edit Exchange Rate</h1>
+
+<form action="{{ route('admin.exchange-rates.update', $exchangeRate) }}" method="POST">
+    @csrf
+    @method('PUT')
+    <div class="form-group">
+        <label for="currency">Currency</label>
+        <input id="currency" name="currency" value="{{ old('currency', $exchangeRate->currency) }}" required>
+        @error('currency')<span class="error">{{ $message }}</span>@enderror
+    </div>
+    <div class="form-group">
+        <label for="rate_to_usd">Rate to USD</label>
+        <input id="rate_to_usd" name="rate_to_usd" type="number" step="0.000001" value="{{ old('rate_to_usd', $exchangeRate->rate_to_usd) }}" required>
+        @error('rate_to_usd')<span class="error">{{ $message }}</span>@enderror
+    </div>
+    <button type="submit" class="btn">Update</button>
+</form>
+@endsection

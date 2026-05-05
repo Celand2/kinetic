@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PaymentMethod;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class TransactionController extends Controller
 {
@@ -21,7 +23,8 @@ class TransactionController extends Controller
 
     public function createDeposit()
     {
-        return view('client.transactions.deposit');
+        $paymentMethods = PaymentMethod::where('is_active', true)->get();
+        return view('client.transactions.deposit', compact('paymentMethods'));
     }
 
     public function storeDeposit(Request $request)
@@ -29,8 +32,11 @@ class TransactionController extends Controller
         $user = Auth::user();
         $validated = $request->validate([
             'amount' => 'required|numeric|min:1',
-            'payment_method' => 'required|in:lumicash,bancobu_enoti',
-            'screenshot' => 'nullable|image|max:4096',
+            'payment_method' => [
+                'required',
+                Rule::exists('payment_methods', 'name')->where('is_active', true),
+            ],
+            'screenshot' => 'required|image|max:4096',
             'description' => 'nullable|string|max:500',
         ]);
 

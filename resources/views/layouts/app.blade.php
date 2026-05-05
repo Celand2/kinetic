@@ -1,24 +1,4 @@
-{{--
-    ╔══════════════════════════════════════════════════════════════════╗
-    ║  LAYOUT PRINCIPAL — KINETIC TRADING SYSTEM                      ║
-    ║  Fichier : resources/views/layouts/app.blade.php                ║
-    ║                                                                  ║
-    ║  Design : Deep Ocean Tech — inspiré de la palette KTS           ║
-    ║  Palette :                                                       ║
-    ║    #032950 — Deep Ocean Blue (fond principal)                   ║
-    ║    #1CE7ED — Electric Cyan (accent primaire, glow, actif)       ║
-    ║    #1F9AA5 — Tech Teal (textes secondaires, borders)            ║
-    ║    #1DA7DB — Digital Aqua (hover states, gradients)             ║
-    ║    #1A71E0 — Royal Neon Blue (boutons, CTA)                     ║
-    ║    #EAFBFF — Ice White (textes clairs)                          ║
-    ║                                                                  ║
-    ║  Utilisation :                                                   ║
-    ║    @extends('layouts.app')                                      ║
-    ║    @section('page-title', 'MON TITRE')                         ║
-    ║    @section('page-subtitle', 'sous-titre')                      ║
-    ║    @section('content') ... @endsection                          ║
-    ╚══════════════════════════════════════════════════════════════════╝
---}}
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -29,10 +9,8 @@
     <title>@yield('title', 'KTS') — Kinetic Trading System</title>
  
     {{-- ── TYPOGRAPHIE ──────────────────────────────────────────────────── --}}
-    {{-- Orbitron  : display font futuriste — titres, logos, chiffres clés --}}
-    {{-- Rajdhani  : corps de texte — lisible, techy, moderne              --}}
-    {{-- Space Mono: données, codes, références — monospace technique      --}}
-    @VITE(['resources/css/app.css','resources/css/style.css' ,'resources/js/app.js'])
+
+     @VITE(['resources/css/app.css','resources/css/style.css' ,'resources/js/app.js'])
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -48,7 +26,7 @@
 {{-- ════════════════════════════════════════════════════════════════════
      SIDEBAR
      ════════════════════════════════════════════════════════════════════ --}}
-<aside class="kts-sidebar">
+{{-- <aside class="kts-sidebar"> --}}
  
     {{-- Logo --}}
     {{-- <div class="sidebar-logo">
@@ -87,30 +65,30 @@
     {{-- Navigation principale --}}
     <nav class="nav-wrap">
  
-        <div class="nav-group">
-            <div class="nav-group-label">Principal</div>
+        {{-- iv class="nav-group">
+            <div class="nav-group-label">Principal</div><d --}}
  
-            <a href="{{ route('dashboard') }}"
+            {{-- <a href="{{ route('dashboard') }}" --}}
                {{-- class="nav-link {{ request()->routeIs('user.dashboard') ? 'active' : '' }}"> --}}
-                <span class="nav-icon">📊</span>
+                {{-- <span class="nav-icon">📊</span>
                 <span class="nav-label-text">Dashboard</span>
-            </a>
+            </a> --}}
  
-            <a href="{{ route('investments.index') }}"
+            {{-- <a href="{{ route('investments.index') }}"
                class="nav-link {{ request()->routeIs('investments.*') ? 'active' : '' }}">
                 <span class="nav-icon">⚡</span>
                 <span class="nav-label-text">Mes Contrats</span>
             </a>
-        </div>
+        </div> --}}
  
-        <div class="nav-group">
+        {{-- <div class="nav-group">
             <div class="nav-group-label">Finance</div>
  
-            {{-- <a href="{{ route('financial.deposit') }}"
-               {{-- class="nav-link {{ request()->routeIs('financial.deposit*') ? 'active' : '' }}"> --}}
-                {{-- <span class="nav-icon">💳</span>
+             <a href="{{ route('financial.deposit') }}"
+                class="nav-link {{ request()->routeIs('admin.finance.deposit*') ? 'active' : '' }}"> --}}
+                 {{-- <span class="nav-icon">💳</span>
                 <span class="nav-label-text">Dépôt</span>
-            </a> --}} --}}
+            </a> - --}} --}}
  
             {{-- <a href="{{ route('financial.withdrawal') }}"
                class="nav-link {{ request()->routeIs('financial.withdrawal*') ? 'active' : '' }}">
@@ -123,10 +101,10 @@
                 <span class="nav-icon">📋</span>
                 <span class="nav-label-text">Transactions</span>
             </a> --}}
-        </div>
-  --}}
-        <div class="nav-group">
-            <div class="nav-group-label">Réseau</div>
+        {{-- </div> --}}
+  --
+        {{-- <div class="nav-group">
+            <div class="nav-group-label">Réseau</div> --}}
  
             {{-- <a href="{{ route('user.referral.index') }}"
                class="nav-link {{ request()->routeIs('user.referral.*') ? 'active' : '' }}">
@@ -135,8 +113,8 @@
             </a> --}}
         </div>
  
-        <div class="nav-group">
-            <div class="nav-group-label">Support</div>
+        {{-- <div class="nav-group">
+            <div class="nav-group-label">Support</div> --}}
  
             {{-- <a href="{{ route('messages.index') }}"
                class="nav-link {{ request()->routeIs('messages.*') ? 'active' : '' }}">
@@ -150,13 +128,13 @@
                 @if($unread > 0)
                     <span class="nav-badge">{{ $unread }}</span>
                 @endif
-            </a> --}}
-        </div>
+            {{-- </a> --}}
+        {{-- </div>
  
-    </nav>
+    </nav> --}} --}}
  
     {{-- Déconnexion --}}
-    <div class="sidebar-footer">
+    {{-- <div class="sidebar-footer">
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit" class="btn-logout">
@@ -164,7 +142,7 @@
                 <span>Déconnexion</span>
             </button>
         </form>
-    </div>
+    </div> --}}
  
 </aside>
  

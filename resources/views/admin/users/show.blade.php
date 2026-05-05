@@ -8,6 +8,8 @@
 </div>
 
 <div class="grid" style="grid-template-columns: 1fr 1fr;">
+    
+    
     <!-- User Info -->
     <div class="card">
         <div class="card-header">User Information</div>

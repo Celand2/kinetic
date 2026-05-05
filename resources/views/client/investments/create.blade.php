@@ -1,94 +1,163 @@
 @extends('layouts.app')
 
-@section('title', 'Create Investment - KINETIC')
+@section('title', 'Investir - KINETIC')
+@section('page-title', 'INVESTIR')
+@section('page-subtitle', '// Choisissez votre cycle de trading')
+
+@push('styles')
+<style>
+    .cycles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    .cycle-card {
+        background: linear-gradient(135deg, #0d1f35 0%, #0a1628 100%);
+        border: 1px solid #1e3a5f;
+        border-radius: 16px;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+        transition: transform .2s, border-color .2s, box-shadow .2s;
+        text-decoration: none;
+        display: block;
+        color: inherit;
+    }
+    .cycle-card:hover {
+        transform: translateY(-4px);
+        border-color: #c9a227;
+        box-shadow: 0 8px 32px rgba(201,162,39,.25);
+    }
+    .cycle-card::before {
+        content: '';
+        position: absolute;
+        top: 0; right: 0;
+        width: 80px; height: 80px;
+        background: radial-gradient(circle, rgba(201,162,39,.15) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+    .cycle-badge {
+        font-size: .72rem;
+        font-family: 'Space Mono', monospace;
+        color: #c9a227;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        margin-bottom: .75rem;
+    }
+    .cycle-name {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: .4rem;
+    }
+    .cycle-duration {
+        font-size: .85rem;
+        color: #b0bfd9;
+        margin-bottom: 1.5rem;
+    }
+    .cycle-rate-big {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: #c9a227;
+        line-height: 1;
+    }
+    .cycle-rate-label {
+        font-size: .78rem;
+        color: #7a9cc6;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-top: .3rem;
+        margin-bottom: 1.5rem;
+    }
+    .cycle-return-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255,255,255,.04);
+        border-radius: 8px;
+        padding: .6rem 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .cycle-return-row .key { font-size: .8rem; color: #7a9cc6; }
+    .cycle-return-row .val { font-family: 'Orbitron', sans-serif; font-size: .95rem; color: #81c784; font-weight: 700; }
+    .cycle-tranches-count {
+        font-size: .8rem;
+        color: #b0bfd9;
+        margin-bottom: 1.25rem;
+    }
+    .cycle-cta {
+        display: block;
+        width: 100%;
+        text-align: center;
+        background: linear-gradient(135deg, #c9a227, #a07d1a);
+        color: #0a1628;
+        font-family: 'Orbitron', sans-serif;
+        font-size: .85rem;
+        font-weight: 700;
+        padding: .75rem;
+        border-radius: 8px;
+        letter-spacing: .05em;
+        text-decoration: none;
+        transition: opacity .2s;
+    }
+    .cycle-cta:hover { opacity: .9; }
+    .cycle-inactive {
+        opacity: .45;
+        pointer-events: none;
+    }
+    .section-eyebrow {
+        font-family: 'Space Mono', monospace;
+        font-size: .75rem;
+        color: #c9a227;
+        letter-spacing: .15em;
+        margin-bottom: .5rem;
+    }
+    .section-title {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1.4rem;
+        color: #fff;
+        margin-bottom: 0;
+    }
+    .section-title span { color: #c9a227; }
+</style>
+@endpush
 
 @section('content')
-<div style="max-width: 800px; margin: 0 auto;">
-    <h1 style="margin-bottom: 1rem; color: #c9a227;">Create New Investment</h1>
-    <a href="{{ route('investments.index') }}" class="back-link">← Retour aux investissements</a>
+<div class="section-eyebrow">// Cycles de Trading</div>
+<h2 class="section-title">Choisissez votre <span>stratégie de rendement</span></h2>
 
-    <div class="card">
-        <form method="POST" action="{{ route('investments.store') }}">
-            @csrf
-
-            <div class="form-group">
-                <label for="cycle">Select Investment Cycle</label>
-                <select class="form-control" id="cycle" name="cycle_id" required onchange="updateTranches()">
-                    <option value="">-- Choose a Cycle --</option>
-                    @foreach($cycles as $cycle)
-                        <option value="{{ $cycle->id }}">
-                            {{ $cycle->name }} - {{ $cycle->duration_days }} days / {{ $cycle->daily_profit_percent }}% daily
-                        </option>
-                    @endforeach
-                </select>
-                @error('cycle_id')<span class="form-feedback-error">{{ $message }}</span>@enderror
-            </div>
-
-            <div class="form-group">
-                <label for="tranche">Select Investment Level</label>
-                <select class="form-control" id="tranche" name="tranche_id" required>
-                    <option value="">-- Choose a Level --</option>
-                </select>
-                @error('tranche_id')<span class="form-feedback-error">{{ $message }}</span>@enderror
-            </div>
-
-            <div class="form-group">
-                <label for="amount">Investment Amount ($)</label>
-                <input class="form-control" type="number" id="amount" name="amount" step="0.01" min="0" required value="{{ old('amount') }}">
-                <small style="color: #b0bfd9;" id="amount-hint"></small>
-                @error('amount')<span class="form-feedback-error">{{ $message }}</span>@enderror
-            </div>
-
-            <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-                <button type="submit" class="btn btn-primary" style="flex: 1; min-width: 180px;">Create Investment</button>
-                <a href="{{ route('investments.index') }}" class="btn btn-secondary" style="flex: 1; min-width: 180px; text-align: center;">Cancel</a>
-            </div>
-        </form>
+@if($cycles->isEmpty())
+    <div style="text-align:center; padding: 4rem 2rem; color: #b0bfd9;">
+        Aucun cycle de trading disponible pour le moment.
     </div>
-</div>
+@else
+    <div class="cycles-grid">
+        @foreach($cycles as $cycle)
+            <a href="{{ route('investments.cycle.tranches', $cycle) }}"
+               class="cycle-card {{ !$cycle->is_active ? 'cycle-inactive' : '' }}">
 
-<script>
-    const cyclesData = @json($cycles);
+                <div class="cycle-badge">// Cycle #{{ $loop->iteration }}</div>
+                <div class="cycle-name">{{ $cycle->name }}</div>
+                <div class="cycle-duration">{{ $cycle->duration_days }} jours · {{ $cycle->description ?? 'Cycle de trading' }}</div>
 
-    function updateTranches() {
-        const cycleId = document.getElementById('cycle').value;
-        const trancheSelect = document.getElementById('tranche');
-        trancheSelect.innerHTML = '<option value="">-- Choose a Level --</option>';
+                <div class="cycle-rate-big">{{ $cycle->daily_profit_percent }}%</div>
+                <div class="cycle-rate-label">profit journalier</div>
 
-        const selectedCycle = cyclesData.find(cycle => cycle.id == cycleId);
-        if (!selectedCycle) {
-            document.getElementById('amount-hint').textContent = '';
-            return;
-        }
+                <div class="cycle-return-row">
+                    <span class="key">Retour total</span>
+                    <span class="val">{{ $cycle->total_return_percent }}%</span>
+                </div>
 
-        selectedCycle.tranches.forEach(tranche => {
-            const option = document.createElement('option');
-            option.value = tranche.id;
-            option.textContent = `${tranche.name} - Min: $${tranche.min_amount}${tranche.max_amount ? `, Max: $${tranche.max_amount}` : ''}`;
-            option.dataset.min = tranche.min_amount;
-            option.dataset.max = tranche.max_amount;
-            trancheSelect.appendChild(option);
-        });
+                <div class="cycle-tranches-count">
+                    {{ $cycle->tranches_count }} tranche{{ $cycle->tranches_count > 1 ? 's' : '' }} disponible{{ $cycle->tranches_count > 1 ? 's' : '' }}
+                </div>
 
-        updateAmountHint();
-    }
-
-    function updateAmountHint() {
-        const selected = document.getElementById('tranche').selectedOptions[0];
-        const hint = document.getElementById('amount-hint');
-
-        if (selected && selected.dataset.min) {
-            let text = `Minimum: $${selected.dataset.min}`;
-            if (selected.dataset.max) {
-                text += `, Maximum: $${selected.dataset.max}`;
-            }
-            hint.textContent = text;
-        } else {
-            hint.textContent = '';
-        }
-    }
-
-    document.getElementById('cycle').addEventListener('change', updateTranches);
-    document.getElementById('tranche').addEventListener('change', updateAmountHint);
-</script>
+                <span class="cycle-cta">Choisir ce cycle →</span>
+            </a>
+        @endforeach
+    </div>
+@endif
 @endsection

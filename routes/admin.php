@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\ExchangeRateController;
 use App\Http\Controllers\Admin\FinanceController;
 use App\Http\Controllers\Admin\InvestmentController as AdminInvestmentController;
+use App\Http\Controllers\Admin\MessageController as AdminMessageController;
 use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\PaymentMethodController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,4 +44,14 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
     Route::get('/notifications/create', [NotificationController::class, 'create'])->name('notifications.create');
     Route::post('/notifications/send', [NotificationController::class, 'send'])->name('notifications.send');
+
+    Route::get('/messages', [AdminMessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/broadcast', [AdminMessageController::class, 'broadcast'])->name('messages.broadcast');
+    Route::post('/messages/broadcast', [AdminMessageController::class, 'sendBroadcast'])->name('messages.broadcast.send');
+
+    Route::resource('payment-methods', PaymentMethodController::class);
+    Route::resource('exchange-rates', ExchangeRateController::class);
+    Route::get('/messages/{conversation}', [AdminMessageController::class, 'show'])->name('messages.show');
+    Route::post('/messages/{conversation}/reply', [AdminMessageController::class, 'reply'])->name('messages.reply');
+    Route::post('/messages/{conversation}/close', [AdminMessageController::class, 'close'])->name('messages.close');
 });

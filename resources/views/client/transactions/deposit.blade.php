@@ -6,6 +6,23 @@
 <div style="max-width: 640px; margin: 0 auto;">
     <h1 style="margin-bottom: 2rem; color: #c9a227;">Deposit Request</h1>
 
+    @if($paymentMethods->count())
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <div style="padding: 1rem;">
+                <h2 style="margin:0 0 0.5rem; font-size:1.1rem;">Available Payment Methods</h2>
+                <ul style="list-style:none; padding:0; margin:0;">
+                    @foreach($paymentMethods as $method)
+                        <li style="margin-bottom: 0.75rem; padding: 0.75rem; background:#121212; border:1px solid rgba(255,255,255,.08);">
+                            <strong>{{ $method->name }}</strong>
+                            <div>{{ ucfirst(str_replace('_', ' ', $method->type)) }}</div>
+                            <div style="font-size:0.95rem; color:#bacbcb; margin-top:0.25rem;">{{ $method->details }}</div>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    @endif
+
     <div class="card">
         <form method="POST" action="{{ route('transactions.deposit.store') }}" enctype="multipart/form-data">
             @csrf
@@ -20,8 +37,11 @@
                 <label for="payment_method">Payment Method</label>
                 <select id="payment_method" name="payment_method" required>
                     <option value="">-- Choose a method --</option>
-                    <option value="lumicash" {{ old('payment_method') === 'lumicash' ? 'selected' : '' }}>Lumicash</option>
-                    <option value="bancobu_enoti" {{ old('payment_method') === 'bancobu_enoti' ? 'selected' : '' }}>Banque / Banquobu</option>
+                    @foreach($paymentMethods as $method)
+                        <option value="{{ $method->name }}" {{ old('payment_method') === $method->name ? 'selected' : '' }}>
+                            {{ $method->name }} ({{ $method->type }})
+                        </option>
+                    @endforeach
                 </select>
                 @error('payment_method')<span style="color: #ef5350;">{{ $message }}</span>@enderror
             </div>

@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('client')->middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::get('/investments/cycles/{cycle}/tranches', [InvestmentController::class, 'showTranches'])->name('investments.cycle.tranches');
+    Route::get('/investments/cycles/{cycle}/tranches/{tranche}/invest', [InvestmentController::class, 'invest'])->name('investments.invest');
     Route::resource('investments', InvestmentController::class);
 
     Route::get('/transactions/deposit', [TransactionController::class, 'createDeposit'])->name('transactions.deposit');
@@ -21,8 +23,9 @@ Route::prefix('client')->middleware('auth')->group(function () {
     Route::get('/referral', [ReferralController::class, 'dashboard'])->name('referral.dashboard');
     Route::get('/referral-link', [ReferralController::class, 'generateLink'])->name('referral.link');
 
-    Route::get('/messages/inbox', [MessageController::class, 'inbox'])->name('messages.inbox');
-    Route::get('/messages/sent', [MessageController::class, 'sent'])->name('messages.sent');
-    Route::resource('messages', MessageController::class)->except(['index']);
-    Route::post('/messages/{message}/read', [MessageController::class, 'markAsRead'])->name('messages.read');
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/create', [MessageController::class, 'create'])->name('messages.create');
+    Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
+    Route::get('/messages/{conversation}', [MessageController::class, 'show'])->name('messages.show');
+    Route::post('/messages/{conversation}/reply', [MessageController::class, 'reply'])->name('messages.reply');
 });

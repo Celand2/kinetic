@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Conversation;
 
 class User extends Authenticatable
 {
@@ -78,14 +79,14 @@ class User extends Authenticatable
         return $this->belongsTo(User::class, 'referred_by_id');
     }
 
+    public function conversations()
+    {
+        return $this->hasMany(Conversation::class);
+    }
+
     public function sentMessages()
     {
         return $this->hasMany(Message::class, 'sender_id');
-    }
-
-    public function receivedMessages()
-    {
-        return $this->hasMany(Message::class, 'receiver_id');
     }
 
     public function notifications()

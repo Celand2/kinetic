@@ -10,10 +10,16 @@
     <div class="stat-box">
         <div class="stat-label">Account Balance</div>
         <div class="stat-value">${{ number_format($user->balance, 2) }}</div>
+        @if($exchangeRate)
+            <div class="stat-sub">{{ number_format($user->balance * $exchangeRate->rate_to_usd, 0) }} {{ $exchangeRate->currency }}</div>
+        @endif
     </div>
     <div class="stat-box">
         <div class="stat-label">Referral Balance</div>
         <div class="stat-value">${{ number_format($user->referral_balance, 2) }}</div>
+        @if($exchangeRate)
+            <div class="stat-sub">{{ number_format($user->referral_balance * $exchangeRate->rate_to_usd, 0) }} {{ $exchangeRate->currency }}</div>
+        @endif
     </div>
     <div class="stat-box">
         <div class="stat-label">Total Invested</div>

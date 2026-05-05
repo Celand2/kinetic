@@ -28,15 +28,18 @@
         <div class="stat-label">Pending Withdrawals</div>
         <div class="stat-value">{{ $pendingWithdrawals ?? 0 }}</div>
     </div>
+   
 </div>
 
 <div class="card">
     <div class="card-header">Admin Quick Links</div>
     <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+        <a href="{{ route('admin.exchange-rates.store') }}" class="btn">Add Exchange Rate</a>
         <a href="{{ route('admin.users.index') }}" class="btn">Manage Users</a>
         <a href="{{ route('admin.finance.transactions') }}" class="btn">Review Transactions</a>
         <a href="{{ route('admin.cycles') }}" class="btn">Investment Cycles</a>
         <a href="{{ route('admin.notifications') }}" class="btn">Send Notification</a>
+        <a href="{{ route('admin.payment-methods.store') }}" class="btn">Add Payment Method</a>
     </div>
 </div>
 @endsection

@@ -3,48 +3,45 @@
 @section('title', 'Create Investment - KINETIC')
 
 @section('content')
-<div style="max-width: 600px; margin: 0 auto;">
-    <h1 style="margin-bottom: 2rem; color: #c9a227;">Create New Investment</h1>
-
-    <div class="card">
-        <form method="POST" action="{{ route('investments.store') }}">
-            @csrf
-
-            <div class="form-group">
-                <label for="cycle">Select Investment Cycle</label>
-                <select id="cycle" name="cycle_id" required onchange="updateTranches()">
-                    <option value="">-- Choose a Cycle --</option>
-                    @foreach($cycles as $cycle)
-                        <option value="{{ $cycle->id }}">
-                            {{ $cycle->name }} - {{ $cycle->duration_days }} days / {{ $cycle->daily_profit_percent }}% daily
-                        </option>
-                    @endforeach
-                </select>
-                @error('cycle_id')<span style="color: #ef5350;">{{ $message }}</span>@enderror
-            </div>
-
-            <div class="form-group">
-                <label for="tranche">Select Investment Level</label>
-                <select id="tranche" name="tranche_id" required>
-                    <option value="">-- Choose a Level --</option>
-                </select>
-                @error('tranche_id')<span style="color: #ef5350;">{{ $message }}</span>@enderror
-            </div>
-
-            <div class="form-group">
-                <label for="amount">Investment Amount ($)</label>
-                <input type="number" id="amount" name="amount" step="0.01" min="0" required value="{{ old('amount') }}">
-                <small style="color: #b0bfd9;" id="amount-hint"></small>
-                @error('amount')<span style="color: #ef5350;">{{ $message }}</span>@enderror
-            </div>
-
-            <div style="margin-top: 2rem;">
-                <button type="submit" class="btn" style="width: 100%;">Create Investment</button>
-                <a href="{{ route('investments.index') }}" class="btn btn-secondary" style="width: 100%; text-align: center; margin-top: 0.5rem;">Cancel</a>
-            </div>
-        </form>
+<!-- TRADING CYCLES -->
+<section class="cycles-section" id="cycles-section">
+  <div class="section-header">
+    <div class="section-eyebrow">// Cycles de Trading</div>
+    <h2 class="section-title">Choisissez votre <span>stratégie de rendement</span></h2>
+  </div>
+ 
+  <div class="cycles-grid">
+    <div class="cycle-card flash">
+      <div class="cycle-name">KINETIC FLASH</div>
+      <div class="cycle-days">07 jours · Cycle rapide</div>
+      <div class="cycle-rate">15%</div>
+      <div class="cycle-unit">profit journalier</div>
+      <div class="cycle-return">
+        <span class="key">Retour total</span>
+        <span class="val">105%</span>
+      </div>
+      @auth
+        <a href="{{ route('dashboard') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
+      @else
+        <a href="{{ route('register') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
+      @endauth
     </div>
-</div>
+ 
+    <div class="cycle-card boost">
+      <div class="cycle-name">KINETIC BOOST</div>
+      <div class="cycle-days">15 jours · Cycle intermédiaire</div>
+      <div class="cycle-rate">8%</div>
+      <div class="cycle-unit">profit journalier</div>
+      <div class="cycle-return">
+        <span class="key">Retour total</span>
+        <span class="val">120%</span>
+      </div>
+      @auth
+        <a href="{{ route('dashboard') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
+      @else
+        <a href="{{ route('register') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
+      @endauth
+    </div>
 
 <script>
     const cyclesData = @json($cycles);

@@ -2,43 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Conversation;
 use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
-    public function inbox()
+    public function index()
     {
-        $user = Auth::user();
-        $messages = Message::where('receiver_id', $user->id)
-            ->with('sender')
-            ->latest()
+        $conversations = Conversation::where('user_id', Auth::id())
+            ->withCount('messages')
+            ->orderByDesc('last_message_at')
             ->paginate(20);
 
-        return view('client.messages.inbox', compact('messages'));
-    }
-
-    public function sent()
-    {
-        $user = Auth::user();
-        $messages = Message::where('sender_id', $user->id)
-            ->with('receiver')
-            ->latest()
-            ->paginate(20);
-
-        return view('client.messages.sent', compact('messages'));
-    }
-
-    public function show(Message $message)
-    {
-        $this->authorize('view', $message);
-
-        if ($message->receiver_id === Auth::id() && !$message->is_read) {
-            $message->update(['is_read' => true, 'read_at' => now()]);
-        }
-
-        return view('client.messages.show', compact('message'));
+        return view('client.messages.index', compact('conversations'));
     }
 
     public function create()
@@ -49,28 +27,72 @@ class MessageController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'receiver_id' => 'required|exists:users,id',
-            'subject' => 'required|string|max:255',
-            'content' => 'required|string',
+            'subject'  => 'required|string|max:200',
+            'category' => 'required|in:support,deposit,withdrawal,investment,referral,dispute,other',
+            'body'     => 'required|string|max:5000',
+        ]);
+
+        $conversation = Conversation::create([
+            'user_id'            => Auth::id(),
+            'subject'            => $validated['subject'],
+            'category'           => $validated['category'],
+            'status'             => 'open',
+            'priority'           => 'normal',
+            'last_message_at'    => now(),
+            'unread_admin_count' => 1,
+            'unread_user_count'  => 0,
         ]);
 
         Message::create([
-            'sender_id' => Auth::id(),
-            'receiver_id' => $validated['receiver_id'],
-            'subject' => $validated['subject'],
-            'content' => $validated['content'],
+            'conversation_id' => $conversation->id,
+            'sender_id'       => Auth::id(),
+            'body'            => $validated['body'],
+            'type'            => 'text',
         ]);
 
-        return redirect()->route('messages.sent')
-            ->with('success', 'Message sent successfully!');
+        return redirect()->route('messages.show', $conversation)
+            ->with('success', 'Votre message a été envoyé.');
     }
 
-    public function markAsRead(Message $message)
+    public function show(Conversation $conversation)
     {
-        $this->authorize('view', $message);
+        if ($conversation->user_id !== Auth::id()) {
+            abort(403);
+        }
 
-        $message->update(['is_read' => true, 'read_at' => now()]);
+        if ($conversation->unread_user_count > 0) {
+            $conversation->update(['unread_user_count' => 0]);
+        }
 
-        return response()->json(['success' => true]);
+        $messages = $conversation->messages()->with('sender')->orderBy('created_at')->get();
+
+        return view('client.messages.show', compact('conversation', 'messages'));
+    }
+
+    public function reply(Request $request, Conversation $conversation)
+    {
+        if ($conversation->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'body' => 'required|string|max:5000',
+        ]);
+
+        Message::create([
+            'conversation_id' => $conversation->id,
+            'sender_id'       => Auth::id(),
+            'body'            => $validated['body'],
+            'type'            => 'text',
+        ]);
+
+        $conversation->update([
+            'last_message_at'    => now(),
+            'unread_admin_count' => $conversation->unread_admin_count + 1,
+            'status'             => 'open',
+        ]);
+
+        return redirect()->route('messages.show', $conversation)
+            ->with('success', 'Réponse envoyée.');
     }
 }
