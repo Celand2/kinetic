@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.client')
 
 @section('title', 'Investment Details - KINETIC')
 

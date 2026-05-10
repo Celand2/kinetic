@@ -1,40 +1,64 @@
-@extends('layouts.app')
+﻿@extends('layouts.client')
 
 @section('title', 'Tableau de bord - KINETIC')
-@section('page-title', 'TABLEAU DE BORD')
-@section('page-subtitle', '// Vos investissements et soldes')
-
 @section('content')
-<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem;">
-    <h1 style="margin: 0; color: #c9a227;">Bienvenue, {{ $user->first_name ?? 'Utilisateur' }}</h1>
-    <form method="POST" action="{{ route('logout') }}">
-        @csrf
-        <button type="submit" class="btn btn-secondary">Déconnexion</button>
-    </form>
+@php
+    // Helper de formatage en devise locale
+    function fmtLocal($usd, $currency, $rate) {
+        if ($currency === 'USD') return '$' . number_format($usd, 2);
+        return number_format($usd * $rate, 0, ',', ' ') . ' ' . $currency;
+    }
+@endphp
+
+<div style="margin-bottom:1.25rem;">
+    <h1 style="color:#c9a227; font-size:1.15rem; margin:0;">
+        Bonjour, {{ explode(' ', $user->full_name)[0] }} 👋
+    </h1>
+    @if($userCurrency !== 'USD')
+        <div style="font-size:0.72rem; color:#6b7a9a; margin-top:2px;">
+            Devise : <span style="color:#c9a227; font-weight:600;">{{ $userCurrency }}</span>
+            &nbsp;·&nbsp; 1 USD = {{ number_format($currencyRate, 0, ',', ' ') }} {{ $userCurrency }}
+        </div>
+    @endif
 </div>
 
-<div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-    <div class="stat-box">
-        <div class="stat-label">Solde Principal</div>
-        <div class="stat-value" style="color: #81c784;">${{ number_format($user->balance, 2) }}</div>
-        @if($exchangeRate)
-            <div style="font-size: 0.8rem; color: #7a9cc6; margin-top: 0.25rem;">
-                ≈ {{ strtoupper($exchangeRate->currency) }} {{ number_format($user->balance * $exchangeRate->rate_to_usd, 2) }}
-            </div>
+{{-- SOLDES ────────────────────────────────────────────────────────── --}}
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
+
+    <div class="card" style="padding:1rem; margin-bottom:0;">
+        <div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:4px;">Solde principal</div>
+        <div style="font-family:'Space Mono',monospace; font-size:1.2rem; font-weight:700; color:#81c784; line-height:1.1;">
+            {{ fmtLocal($user->balance, $userCurrency, $currencyRate) }}
+        </div>
+        @if($userCurrency !== 'USD')
+            <div style="font-size:0.7rem; color:#4a5568; margin-top:3px;">${{ number_format($user->balance, 2) }} USD</div>
         @endif
     </div>
-    <div class="stat-box">
-        <div class="stat-label">Solde Parrainage</div>
-        <div class="stat-value" style="color: #c9a227;">${{ number_format($user->referral_balance, 2) }}</div>
+
+    <div class="card" style="padding:1rem; margin-bottom:0;">
+        <div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:4px;">Gains / jour</div>
+        <div style="font-family:'Space Mono',monospace; font-size:1.2rem; font-weight:700; color:#c9a227; line-height:1.1;">
+            +{{ fmtLocal($dailyGains, $userCurrency, $currencyRate) }}
+        </div>
+        @if($userCurrency !== 'USD')
+            <div style="font-size:0.7rem; color:#4a5568; margin-top:3px;">+${{ number_format($dailyGains, 2) }} USD/j</div>
+        @endif
     </div>
-    <div class="stat-box">
-        <div class="stat-label">Gains /jour (Estimé)</div>
-        <div class="stat-value" style="color: #81c784;">+${{ number_format($dailyGains, 2) }}</div>
+
+    <div class="card" style="padding:1rem; margin-bottom:0;">
+        <div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:4px;">Total investi</div>
+        <div style="font-family:'Space Mono',monospace; font-size:1.1rem; font-weight:700; color:#c9a227; line-height:1.1;">
+            {{ fmtLocal($totalInvested, $userCurrency, $currencyRate) }}
+        </div>
     </div>
-    <div class="stat-box">
-        <div class="stat-label">Total Investi</div>
-        <div class="stat-value" style="color: #c9a227;">${{ number_format($totalInvested, 2) }}</div>
+
+    <div class="card" style="padding:1rem; margin-bottom:0;">
+        <div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:4px;">Solde parrainage</div>
+        <div style="font-family:'Space Mono',monospace; font-size:1.1rem; font-weight:700; color:#7a9cc6; line-height:1.1;">
+            {{ fmtLocal($user->referral_balance, $userCurrency, $currencyRate) }}
+        </div>
     </div>
+
 </div>
 
 <div class="card" style="margin-bottom: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">

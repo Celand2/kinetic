@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.client')
 
 @section('title', $cycle->name . ' - Tranches - KINETIC')
 @section('page-title', strtoupper($cycle->name))

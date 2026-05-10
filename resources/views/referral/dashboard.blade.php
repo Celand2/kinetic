@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.client')
 
 @section('title', 'Referral Dashboard - KINETIC')
 

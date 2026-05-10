@@ -1,15 +1,10 @@
-@extends('layouts.app')
+﻿@extends('layouts.client')
 
 @section('title', 'Nouveau Message - KINETIC')
-@section('page-title', 'NOUVEAU MESSAGE')
-@section('page-subtitle', '// Contacter le support')
+@section('back')<a href="{{ route('messages.index') }}" class="kts-back-btn">← Mes messages</a>@endsection
 
 @section('content')
-<div style="margin-bottom:1.5rem;">
-    <a href="{{ route('messages.index') }}" style="color:#c9a227;">← Retour aux messages</a>
-</div>
-
-<div style="max-width:680px; margin:0 auto;">
+<div>
     <div class="card">
         <h2 style="color:#c9a227; margin-bottom:1.5rem;">Envoyer un message à l'administration</h2>
 

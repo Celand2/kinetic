@@ -1,18 +1,17 @@
-@extends('layouts.app')
+﻿@extends('layouts.client')
 
 @section('title', $conversation->subject . ' - KINETIC')
-@section('page-title', 'CONVERSATION')
-@section('page-subtitle', '// ' . $conversation->subject)
+@section('back')<a href="{{ route('messages.index') }}" class="kts-back-btn">← Mes messages</a>@endsection
 
 @section('content')
-<div style="margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
-    <a href="{{ route('messages.index') }}" style="color:#c9a227;">← Retour aux messages</a>
-    @php
-        $colors = ['open'=>'#81c784','resolved'=>'#b0bfd9','closed'=>'#ef5350'];
-        $sc = $colors[$conversation->status] ?? '#b0bfd9';
-    @endphp
-    <span style="color:{{ $sc }}; border:1px solid {{ $sc }}; padding:4px 14px; border-radius:20px; font-size:0.85rem; text-transform:capitalize;">
-        {{ $conversation->status }}
+@php
+    $statusColor = ['open'=>'#81c784','resolved'=>'#b0bfd9','closed'=>'#ef5350'];
+    $statusLabel = ['open'=>'Ouvert','resolved'=>'Résolu','closed'=>'Fermé'];
+    $sc = $statusColor[$conversation->status] ?? '#b0bfd9';
+@endphp
+<div style="display:flex; justify-content:flex-end; margin-bottom:1rem;">
+    <span style="color:{{ $sc }}; border:1px solid {{ $sc }}; padding:4px 12px; border-radius:20px; font-size:0.8rem;">
+        {{ $statusLabel[$conversation->status] ?? $conversation->status }}
     </span>
 </div>
 

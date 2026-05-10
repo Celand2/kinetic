@@ -24,6 +24,7 @@ class User extends Authenticatable
         'email',
         'phone',
         'country',
+        'preferred_currency',
         'password',
         'balance',
         'referral_balance',

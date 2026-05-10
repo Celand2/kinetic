@@ -59,8 +59,10 @@ class DashboardController extends Controller
             ->where('status', 'completed')
             ->sum('commission_amount');
 
-        // Taux de change
-        $exchangeRate = ExchangeRate::latest('updated_at')->first();
+        // Devise préférée et taux de change
+        $userCurrency  = $user->preferred_currency ?? 'USD';
+        $exchangeRate  = $userCurrency !== 'USD' ? ExchangeRate::find($userCurrency) : null;
+        $currencyRate  = $exchangeRate ? (float) $exchangeRate->rate_to_usd : 1.0;
 
         return view('client.dashboard.index', compact(
             'user',
@@ -73,7 +75,9 @@ class DashboardController extends Controller
             'recentTransactions',
             'referralCount',
             'referralEarnings',
-            'exchangeRate'
+            'exchangeRate',
+            'userCurrency',
+            'currencyRate'
         ));
     }
 }

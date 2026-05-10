@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('payment_methods', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->string('name');
-            $table->string('type'); // mobile_money | crypto | bank
-            $table->text('details');
-            $table->boolean('is_active')->default(true);
-            $table->timestamp('created_at');
-        });
+        if (!Schema::hasTable('payment_methods')) {
+            Schema::create('payment_methods', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->string('name');
+                $table->string('type');
+                $table->text('details');
+                $table->boolean('is_active')->default(true);
+                $table->timestamp('created_at');
+            });
+        }
     }
 
     /**

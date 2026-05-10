@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.client')
 
 @section('title', 'Withdrawal Request - KINETIC')
 
@@ -25,6 +25,12 @@
                     <option value="bancobu_enoti" {{ old('payment_method') === 'bancobu_enoti' ? 'selected' : '' }}>Banque / Banquobu</option>
                 </select>
                 @error('payment_method')<span style="color: #ef5350;">{{ $message }}</span>@enderror
+            </div>
+
+            <div class="form-group">
+                <label for="wallet_details">Wallet / Account Details</label>
+                <textarea id="wallet_details" name="wallet_details" rows="4" required placeholder="Enter your wallet address, IBAN, account number, or other payment details...">{{ old('wallet_details') }}</textarea>
+                @error('wallet_details')<span style="color: #ef5350;">{{ $message }}</span>@enderror
             </div>
 
             

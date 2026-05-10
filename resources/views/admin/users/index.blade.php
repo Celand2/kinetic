@@ -1,13 +1,11 @@
-@extends('layouts.app')
+﻿@extends('layouts.admin')
 
 @section('title', 'User Management - KINETIC Admin')
 
+@section('back')<a href="{{ route('admin.dashboard') }}" class="kts-back-btn">← Dashboard</a>@endsection
+
 @section('content')
-<h1 style="margin-bottom: 1rem; color: #c9a227;">User Management</h1>
-    
-<div style="margin-bottom: 2rem;">
-    <a href="{{ route('admin.dashboard') }}" style="color: #c9a227;">← Back to dashboard</a>
-</div>
+<h1 style="margin-bottom:1.25rem; color:#c9a227; font-size:1.2rem;">Utilisateurs</h1>
 
 
 <form method="GET" action="{{ route('admin.users.index') }}" style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap;">
@@ -46,9 +44,9 @@
                                 {{ ucfirst($user->status) }}
                             </span>
                         </td><br>
-                        <td>
-                            <a href="{{ route('admin.users.show', $user) }}" style="color: #c9a227; margin-right: 1rem;">View</a>
-                            <a href="{{ route('admin.users.edit', $user) }}" style="color: #c9a227;">Edit</a>
+                        <td style="white-space:nowrap;">
+                            <a href="{{ route('admin.users.show', $user) }}" class="kts-btn kts-btn-sm" style="margin-right:4px;">Voir</a>
+                            <a href="{{ route('admin.users.edit', $user) }}" class="kts-btn kts-btn-sm">Modifier</a>
                         </td>
                     </tr>
                 @endforeach

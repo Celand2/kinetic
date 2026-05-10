@@ -13,6 +13,7 @@ class PaymentMethod extends Model
         'id',
         'name',
         'type',
+        'currency',
         'details',
         'is_active',
         'created_at',

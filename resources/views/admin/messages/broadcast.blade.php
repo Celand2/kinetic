@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.admin')
 
 @section('title', 'Diffuser un Message - KINETIC Admin')
 @section('page-title', 'DIFFUSION')

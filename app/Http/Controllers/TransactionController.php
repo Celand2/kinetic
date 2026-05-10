@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
 use App\Models\PaymentMethod;
 use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TransactionController extends Controller
 {
+    use AuthorizesRequests;
     public function index()
     {
         $user = Auth::user();
@@ -24,7 +28,8 @@ class TransactionController extends Controller
     public function createDeposit()
     {
         $paymentMethods = PaymentMethod::where('is_active', true)->get();
-        return view('client.transactions.deposit', compact('paymentMethods'));
+        $exchangeRates  = \App\Models\ExchangeRate::all()->keyBy('currency');
+        return view('client.transactions.deposit', compact('paymentMethods', 'exchangeRates'));
     }
 
     public function storeDeposit(Request $request)
@@ -40,8 +45,23 @@ class TransactionController extends Controller
             'description' => 'nullable|string|max:500',
         ]);
 
+        // Récupérer la devise du moyen de paiement choisi
+        $paymentMethod = \App\Models\PaymentMethod::where('name', $validated['payment_method'])
+            ->where('is_active', true)->first();
+        $localCurrency = $paymentMethod->currency ?? 'USD';
+
+        // Montant saisi par le user (dans sa devise locale)
+        $localAmount = (float) $validated['amount'];
+
+        // Convertir en USD pour le stockage interne
+        $usdAmount = \App\Models\ExchangeRate::toUSD($localAmount, $localCurrency);
+
         $metadata = [
-            'payment_method' => $validated['payment_method'],
+            'payment_method'   => $validated['payment_method'],
+            'local_amount'     => $localAmount,
+            'local_currency'   => $localCurrency,
+            'usd_amount'       => $usdAmount,
+            'rate_used'        => \App\Models\ExchangeRate::rate($localCurrency),
         ];
 
         if ($request->hasFile('screenshot')) {
@@ -49,20 +69,39 @@ class TransactionController extends Controller
         }
 
         Transaction::create([
-            'user_id' => $user->id,
-            'type' => 'deposit',
-            'amount' => $validated['amount'],
-            'direction' => 'credit',
-            'balance_after' => $user->balance,
-            'status' => 'pending',
-            'reference' => 'TXN-' . date('Y') . '-' . Str::padLeft(Transaction::count() + 1, 6, '0'),
+            'user_id'        => $user->id,
+            'type'           => 'deposit',
+            'amount'         => $usdAmount,
+            'direction'      => 'credit',
+            'balance_after'  => $user->balance,
+            'status'         => 'pending',
+            'reference'      => 'TXN-' . date('Y') . '-' . Str::padLeft(Transaction::count() + 1, 6, '0'),
             'payment_method' => $validated['payment_method'],
-            'description' => $validated['description'] ?? 'Deposit request submitted',
-            'metadata' => $metadata,
+            'description'    => $validated['description'] ?? 'Depot soumis',
+            'metadata'       => $metadata,
         ]);
 
-        return redirect()->route('transactions.index')
-            ->with('success', 'Demande de dépôt enregistrée. L’admin va la valider sous peu.');
+        // Sauvegarder la devise préférée du user
+        if ($localCurrency !== 'USD') {
+            $user->update(['preferred_currency' => $localCurrency]);
+        }
+
+        // Notifier tous les super_admins
+        $super_admins = User::where('role', 'super_admin')->get();
+        foreach ($super_admins as $super_admin) {
+            Notification::create([
+                "user_id"      => $super_admin->id,
+                "type"         => "system",
+                "title"        => "Nouvelle preuve de depot",
+                "body"         => $user->full_name . " a soumis une preuve de depot de $" . number_format($validated["amount"], 2) . " via " . $validated["payment_method"] . ".",
+                "action_url"   => route("admin.finance.transactions"),
+                "action_label" => "Voir les transactions",
+                "created_by"   => $user->id,
+            ]);
+        }
+
+        return redirect()->route("transactions.index")
+            ->with("success", "Demande de depot enregistree. L’admin va la valider sous peu.");
     }
 
     public function createWithdrawal()
@@ -76,6 +115,7 @@ class TransactionController extends Controller
         $validated = $request->validate([
             'amount' => 'required|numeric|min:1',
             'payment_method' => 'required|in:lumicash,bancobu_enoti',
+            'wallet_details' => 'required|string|max:1000',
             'screenshot' => 'nullable|image|max:4096',
             'description' => 'nullable|string|max:500',
         ]);
@@ -89,6 +129,7 @@ class TransactionController extends Controller
 
         $metadata = [
             'payment_method' => $validated['payment_method'],
+            'wallet_details' => $validated['wallet_details'],
             'fee' => $fee,
         ];
 

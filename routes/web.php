@@ -18,6 +18,16 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Fallback GET /logout : redirige vers login proprement
+Route::get('/logout', function () {
+    if (auth()->check()) {
+        auth()->logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+    }
+    return redirect()->route('login')->with('info', 'Vous avez été déconnecté.');
+});
+
 // Convenience: keep old dashboard path working for authenticated clients.
 Route::redirect('/dashboard', '/client/dashboard');
 

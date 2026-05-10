@@ -1,65 +1,148 @@
-@extends('layouts.app')
-
-@section('title', 'Deposit Request - KINETIC')
+﻿@extends('layouts.client')
+@section('title', 'Depot - KINETIC')
+@section('back')<a href="{{ route('dashboard') }}" class="kts-back-btn">← Tableau de bord</a>@endsection
 
 @section('content')
-<div style="max-width: 640px; margin: 0 auto;">
-    <h1 style="margin-bottom: 2rem; color: #c9a227;">Deposit Request</h1>
+@php $user = auth()->user(); $userCurr = $user->preferred_currency ?? 'USD'; @endphp
 
-    @if($paymentMethods->count())
-        <div class="card" style="margin-bottom: 1.5rem;">
-            <div style="padding: 1rem;">
-                <h2 style="margin:0 0 0.5rem; font-size:1.1rem;">Available Payment Methods</h2>
-                <ul style="list-style:none; padding:0; margin:0;">
-                    @foreach($paymentMethods as $method)
-                        <li style="margin-bottom: 0.75rem; padding: 0.75rem; background:#121212; border:1px solid rgba(255,255,255,.08);">
-                            <strong>{{ $method->name }}</strong>
-                            <div>{{ ucfirst(str_replace('_', ' ', $method->type)) }}</div>
-                            <div style="font-size:0.95rem; color:#bacbcb; margin-top:0.25rem;">{{ $method->details }}</div>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
+<h1 style="color:#c9a227; font-size:1.2rem; margin-bottom:1.25rem;">Demande de Depot</h1>
+
+@if($paymentMethods->count())
+<div class="card" style="margin-bottom:1.25rem; padding:1rem 1.25rem;">
+    <div style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:0.75rem; font-weight:600;">Moyens de paiement disponibles</div>
+    @foreach($paymentMethods as $method)
+    <div style="padding:0.6rem 0; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center; {{ $loop->last ? 'border:none;' : '' }}">
+        <div>
+            <span style="color:#e8e8e8; font-weight:600; font-size:0.9rem;">{{ $method->name }}</span>
+            <span style="color:#6b7a9a; font-size:0.78rem; margin-left:8px;">{{ ucfirst(str_replace('_',' ',$method->type)) }}</span>
         </div>
-    @endif
-
-    <div class="card">
-        <form method="POST" action="{{ route('transactions.deposit.store') }}" enctype="multipart/form-data">
-            @csrf
-
-            <div class="form-group">
-                <label for="amount">Amount ($)</label>
-                <input type="number" id="amount" name="amount" min="1" step="0.01" value="{{ old('amount') }}" required>
-                @error('amount')<span style="color: #ef5350;">{{ $message }}</span>@enderror
-            </div>
-
-            <div class="form-group">
-                <label for="payment_method">Payment Method</label>
-                <select id="payment_method" name="payment_method" required>
-                    <option value="">-- Choose a method --</option>
-                    @foreach($paymentMethods as $method)
-                        <option value="{{ $method->name }}" {{ old('payment_method') === $method->name ? 'selected' : '' }}>
-                            {{ $method->name }} ({{ $method->type }})
-                        </option>
-                    @endforeach
-                </select>
-                @error('payment_method')<span style="color: #ef5350;">{{ $message }}</span>@enderror
-            </div>
-
-            <div class="form-group">
-                <label for="screenshot">Upload Proof (required)</label>
-                <input type="file" id="screenshot" name="screenshot" accept="image/*" required>
-                <small class="form-hint">Please upload a clear screenshot of your payment confirmation</small>
-                @error('screenshot')<span style="color: #ef5350;">{{ $message }}</span>@enderror
-            </div>
-
-            <div class="form-group">
-                <label for="description">Notes</label>
-                <textarea id="description" name="description" rows="4">{{ old('description') }}</textarea>
-            </div>
-
-            <button type="submit" class="btn" style="width: 100%;">Submit Deposit Request</button>
-        </form>
+         <div style="display:flex; align-items:center; gap:0.5rem;">
+            <span style="background:rgba(201,162,39,0.1); border:1px solid rgba(201,162,39,0.25); color:#c9a227; padding:2px 8px; border-radius:20px; font-size:0.72rem; font-weight:700;">{{ $method->currency }}</span>
+            @php $r = $exchangeRates[$method->currency] ?? null; @endphp
+            @if($r && $method->currency !== 'USD')
+                <span style="color:#6b7a9a; font-size:0.72rem;">1 USD = {{ number_format($r->rate_to_usd, 0, ',', ' ') }} {{ $method->currency }}</span>
+            @endif
+        </div>
     </div>
+    @endforeach
 </div>
+@endif
+
+<div class="card">
+    <form method="POST" action="{{ route('transactions.deposit.store') }}" enctype="multipart/form-data" id="depositForm">
+        @csrf
+
+        <div class="form-group">
+            <label class="form-label" for="payment_method">Moyen de paiement</label>
+            <select id="payment_method" name="payment_method" class="form-control" required onchange="updateCurrency(this.value)">
+                <option value="">-- Choisir --</option>
+                @foreach($paymentMethods as $method)
+                    <option value="{{ $method->name }}" data-currency="{{ $method->currency }}" data-rate="{{ $exchangeRates[$method->currency]->rate_to_usd ?? 1 }}" data-details="{{ $method->details }}" {{ old('payment_method') === $method->name ? 'selected' : '' }}>
+                        {{ $method->name }} ({{ $method->currency }})
+                    </option>
+                @endforeach
+            </select>
+            @error('payment_method')<span class="form-feedback-error">{{ $message }}</span>@enderror
+        </div>
+
+        <div id="paymentDetails" style="display:none; margin-top:-0.75rem; margin-bottom:1rem; background:rgba(107,122,154,0.07); border:1px solid rgba(107,122,154,0.2); border-radius:8px; padding:0.65rem 1rem;">
+            <div style="font-size:0.78rem; color:#b0bfd9;">Détails du paiement :</div>
+            <div id="paymentDetailsContent" style="font-family:'Space Mono',monospace; color:#e8e8e8; font-size:0.9rem; margin-top:2px;"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="amount">Montant en <span id="currencyLabel" style="color:#c9a227;">—</span></label>
+            <div style="position:relative;">
+                <input type="number" id="amount" name="amount" class="form-control" min="1" step="1" value="{{ old('amount') }}" required placeholder="0" style="padding-right:70px;" oninput="updatePreview()">
+                <span id="currencySymbol" style="position:absolute; right:14px; top:50%; transform:translateY(-50%); color:#c9a227; font-weight:700; font-size:0.85rem; pointer-events:none;">—</span>
+            </div>
+            @error('amount')<span class="form-feedback-error">{{ $message }}</span>@enderror
+        </div>
+
+        <div id="conversionPreview" style="display:none; margin-top:-0.75rem; margin-bottom:1rem; background:rgba(201,162,39,0.07); border:1px solid rgba(201,162,39,0.2); border-radius:8px; padding:0.65rem 1rem;">
+            <div style="font-size:0.78rem; color:#b0bfd9;">Equivalent USD (apres validation) :</div>
+            <div id="conversionValue" style="font-family:'Space Mono',monospace; color:#c9a227; font-size:1rem; font-weight:700; margin-top:2px;">$0.00</div>
+            <div id="rateInfo" style="font-size:0.7rem; color:#6b7a9a; margin-top:2px;"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="screenshot">Capture d ecran du paiement *</label>
+            <input type="file" id="screenshot" name="screenshot" class="form-control" accept="image/*" required>
+            <span class="form-hint">Photo claire de la confirmation. Max 4 Mo.</span>
+            @error('screenshot')<span class="form-feedback-error">{{ $message }}</span>@enderror
+        </div>
+
+        <div id="imgPreview" style="display:none; margin-top:-0.5rem; margin-bottom:1rem;">
+            <img id="imgPreviewSrc" src="" alt="Apercu" style="max-width:100%; max-height:200px; border-radius:8px; border:2px solid rgba(201,162,39,0.4); object-fit:cover;">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="description">Notes (optionnel)</label>
+            <textarea id="description" name="description" class="form-control" rows="3" placeholder="Reference, remarques...">{{ old('description') }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%;" id="submitBtn">Soumettre la demande</button>
+        <p style="text-align:center; margin-top:0.75rem; color:#6b7a9a; font-size:0.75rem;">L admin validera votre depot sous peu.</p>
+    </form>
+</div>
+
+@push('scripts')
+<script>
+const payMethods = @json($paymentMethods->keyBy('name'));
+const rateMap    = @json($exchangeRates);
+
+function updateCurrency(methodName) {
+    const method   = payMethods[methodName];
+    const currency = method ? method.currency : null;
+    const details  = method ? method.details : '';
+    document.getElementById('currencyLabel').textContent  = currency || 'devise';
+    document.getElementById('currencySymbol').textContent = currency || '—';
+    document.getElementById('amount').value = '';
+
+    const detailsDiv = document.getElementById('paymentDetails');
+    const detailsContent = document.getElementById('paymentDetailsContent');
+    if (details) {
+        detailsContent.textContent = details;
+        detailsDiv.style.display = 'block';
+    } else {
+        detailsDiv.style.display = 'none';
+    }
+
+    updatePreview();
+}
+
+function updatePreview() {
+    const methodName = document.getElementById('payment_method').value;
+    const method     = payMethods[methodName];
+    const currency   = method ? method.currency : null;
+    const rateObj    = currency ? rateMap[currency] : null;
+    const rate       = rateObj  ? parseFloat(rateObj.rate_to_usd) : 1;
+    const localAmt   = parseFloat(document.getElementById('amount').value) || 0;
+    const preview    = document.getElementById('conversionPreview');
+
+    if (localAmt > 0 && currency) {
+        const usd = (currency === 'USD') ? localAmt : (localAmt / rate);
+        document.getElementById('conversionValue').textContent = '$' + usd.toFixed(2) + ' USD';
+        document.getElementById('rateInfo').textContent = (currency !== 'USD') ? 'Taux : 1 USD = ' + rate.toLocaleString('fr-FR') + ' ' + currency : '';
+        preview.style.display = 'block';
+    } else {
+        preview.style.display = 'none';
+    }
+}
+
+document.getElementById('screenshot').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = ev => { document.getElementById('imgPreviewSrc').src = ev.target.result; document.getElementById('imgPreview').style.display = 'block'; };
+        reader.readAsDataURL(file);
+    }
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+    const sel = document.getElementById('payment_method');
+    if (sel.value) updateCurrency(sel.value);
+});
+</script>
+@endpush
 @endsection

@@ -1,11 +1,10 @@
-@extends('layouts.app')
+﻿@extends('layouts.admin')
 
 @section('title', 'User Details - KINETIC Admin')
 
+@section('back')<a href="{{ route('admin.users.index') }}" class="kts-back-btn">← Utilisateurs</a>@endsection
+
 @section('content')
-<div style="margin-bottom: 2rem;">
-    <a href="{{ route('admin.users.index') }}" style="color: #c9a227;">← Back to Users</a>
-</div>
 
 <div class="grid" style="grid-template-columns: 1fr 1fr;">
     

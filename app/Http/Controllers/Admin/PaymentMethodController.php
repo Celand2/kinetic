@@ -32,17 +32,19 @@ class PaymentMethodController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'type' => 'required|in:mobile_money,crypto,bank',
-            'details' => 'required|string',
+            'name'      => 'required|string|max:255',
+            'type'      => 'required|in:mobile_money,crypto,bank',
+            'currency'  => 'required|string|max:10',
+            'details'   => 'required|string',
             'is_active' => 'boolean',
         ]);
 
         PaymentMethod::create([
-            'id' => Str::uuid(),
-            'name' => $validated['name'],
-            'type' => $validated['type'],
-            'details' => $validated['details'],
+            'id'        => Str::uuid(),
+            'name'      => $validated['name'],
+            'type'      => $validated['type'],
+            'currency'  => strtoupper($validated['currency']),
+            'details'   => $validated['details'],
             'is_active' => $request->has('is_active'),
         ]);
 
@@ -74,16 +76,18 @@ class PaymentMethodController extends Controller
         $paymentMethod = PaymentMethod::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'type' => 'required|in:mobile_money,crypto,bank',
-            'details' => 'required|string',
+            'name'      => 'required|string|max:255',
+            'type'      => 'required|in:mobile_money,crypto,bank',
+            'currency'  => 'required|string|max:10',
+            'details'   => 'required|string',
             'is_active' => 'boolean',
         ]);
 
         $paymentMethod->update([
-            'name' => $validated['name'],
-            'type' => $validated['type'],
-            'details' => $validated['details'],
+            'name'      => $validated['name'],
+            'type'      => $validated['type'],
+            'currency'  => strtoupper($validated['currency']),
+            'details'   => $validated['details'],
             'is_active' => $request->has('is_active'),
         ]);
 

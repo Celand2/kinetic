@@ -23,9 +23,17 @@ class AuthController extends Controller
             'phone' => 'required|unique:users|max:20',
             'country' => 'required|string|max:100',
             'password' => 'required|string|min:8|confirmed',
+            'referral_code' => 'nullable|string|exists:users,referral_code',
         ]);
 
         $referralCode = 'KTS-' . strtoupper(Str::random(8));
+        $referrer = null;
+
+        if ($request->filled('referral_code')) {
+            $referrer = User::where('referral_code', $request->input('referral_code'))->first();
+        } elseif (session('referrer_id')) {
+            $referrer = User::find(session('referrer_id'));
+        }
 
         $user = User::create([
             'full_name' => $validated['full_name'],
@@ -34,7 +42,7 @@ class AuthController extends Controller
             'country' => $validated['country'],
             'password' => Hash::make($validated['password']),
             'referral_code' => $referralCode,
-            'referred_by_id' => session('referrer_id'),
+            'referred_by_id' => $referrer?->id,
             'role' => 'user',
         ]);
 
@@ -80,6 +88,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')->with('success', 'Logged out successfully!');
+        return redirect('/')->with('success', 'Logged out successfully!');
     }
 }

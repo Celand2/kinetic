@@ -16,5 +16,26 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // 419 Page Expired : session expirée ou token CSRF invalide
+        $exceptions->render(function (
+            \Illuminate\Session\TokenMismatchException $e,
+            \Illuminate\Http\Request $request
+        ) {
+            // Si c'est une requête AJAX/JSON
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Session expirée. Rechargez la page.'], 419);
+            }
+
+            // Pour les forms auth (login/register), on redirige avec message
+            if ($request->is('login') || $request->is('register')) {
+                return redirect()->route('login')
+                    ->withInput($request->except('password', 'password_confirmation'))
+                    ->with('error', 'Session expirée. Veuillez réessayer.');
+            }
+
+            // Pour tout autre form (logout, etc.), on redirige à la page précédente
+            return redirect()->back()
+                ->withInput($request->except('password', 'password_confirmation'))
+                ->with('error', 'Session expirée. Veuillez soumettre à nouveau.');
+        });
     })->create();

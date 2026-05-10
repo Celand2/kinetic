@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -63,6 +64,16 @@ class MessageController extends Controller
         $conversation->update([
             'last_message_at'   => now(),
             'unread_user_count' => $conversation->unread_user_count + 1,
+        ]);
+
+        Notification::create([
+            'user_id'      => $conversation->user_id,
+            'type'         => 'message_received',
+            'title'        => 'Nouveau message de l\'admin',
+            'body'         => 'L\'administration a répondu à votre message : « ' . \Illuminate\Support\Str::limit($conversation->subject, 60) . ' »',
+            'action_url'   => route('messages.show', $conversation),
+            'action_label' => 'Lire la réponse',
+            'created_by'   => Auth::id(),
         ]);
 
         return redirect()->route('admin.messages.show', $conversation)

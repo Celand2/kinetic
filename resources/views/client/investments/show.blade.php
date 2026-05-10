@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.client')
 
 @section('title', $investment->reference . ' - KINETIC')
 @section('page-title', 'DÉTAILS INVESTISSEMENT')
@@ -160,7 +160,5 @@
         </table>
     </div>
 @endif
-@endsection
-    </div>
-@endif
+
 @endsection

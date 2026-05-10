@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.client')
 
 @section('title', 'Investir - ' . $tranche->name . ' - KINETIC')
 @section('page-title', 'CONFIRMER L\'INVESTISSEMENT')
@@ -205,8 +205,15 @@
 </style>
 @endpush
 
+@section('back')<a href="{{ route('investments.cycle.tranches', $cycle) }}" class="kts-back-btn">← Tranches</a>@endsection
+
 @section('content')
-<a href="{{ route('investments.cycle.tranches', $cycle) }}" class="back-link">← Retour aux tranches</a>
+@php
+    function fmtInvest($usd, $currency, $rate) {
+        if ($currency === 'USD') return '$' . number_format($usd, 2);
+        return number_format($usd * $rate, 0, ',', ' ') . ' ' . $currency;
+    }
+@endphp
 
 <div class="invest-layout">
 
@@ -237,24 +244,30 @@
             </div>
             <div class="recap-row">
                 <span class="rkey">Montant min.</span>
-                <span class="rval">${{ number_format($tranche->min_amount, 2) }}</span>
+                <span class="rval">{{ fmtInvest($tranche->min_amount, $userCurrency, $currencyRate) }}</span>
             </div>
             @if($tranche->max_amount)
             <div class="recap-row">
                 <span class="rkey">Montant max.</span>
-                <span class="rval">${{ number_format($tranche->max_amount, 2) }}</span>
+                <span class="rval">{{ fmtInvest($tranche->max_amount, $userCurrency, $currencyRate) }}</span>
+            </div>
+            @endif
+            @if($userCurrency !== 'USD')
+            <div class="recap-row">
+                <span class="rkey">Taux</span>
+                <span class="rval" style="font-size:0.78rem; color:#6b7a9a;">1 USD = {{ number_format($currencyRate, 0, ',', ' ') }} {{ $userCurrency }}</span>
             </div>
             @endif
 
             <div class="profit-preview">
                 <div class="pp-label">Profit estimé (sur votre montant)</div>
-                <div class="pp-val" id="profit-estimate">$0.00</div>
-                <div class="pp-sub">= montant × {{ $cycle->total_return_percent }}% de retour total</div>
+                <div class="pp-val" id="profit-estimate">{{ fmtInvest(0, $userCurrency, $currencyRate) }}</div>
+                <div class="pp-sub">= montant × {{ $cycle->total_return_percent }}% retour total</div>
             </div>
 
             <div class="wallet-balance">
-                <span class="wlabel">Votre solde wallet</span>
-                <span class="wval">${{ number_format($user->balance, 2) }}</span>
+                <span class="wlabel">Votre solde</span>
+                <span class="wval">{{ fmtInvest($user->balance, $userCurrency, $currencyRate) }}</span>
             </div>
         </div>
     </div>
@@ -292,52 +305,6 @@
                 @error('amount')<div style="color:#ef5350;font-size:.8rem;margin-top:.35rem;">{{ $message }}</div>@enderror
             </div>
 
-            <div class="form-group">
-                <label>Moyen de paiement</label>
-                <div class="payment-methods">
-
-                    {{-- Wallet --}}
-                    <input class="pm-option" type="radio" name="payment_method" id="pm_wallet" value="wallet"
-                        {{ old('payment_method', 'wallet') === 'wallet' ? 'checked' : '' }}>
-                    <label class="pm-label" for="pm_wallet">
-                        <div class="pm-icon">💳</div>
-                        <div class="pm-info">
-                            <div class="pm-name">Solde Wallet</div>
-                            <div class="pm-desc">Débit immédiat · Activation instantanée</div>
-                        </div>
-                    </label>
-
-                    {{-- Lumicash --}}
-                    <input class="pm-option" type="radio" name="payment_method" id="pm_lumicash" value="lumicash"
-                        {{ old('payment_method') === 'lumicash' ? 'checked' : '' }}>
-                    <label class="pm-label" for="pm_lumicash">
-                        <div class="pm-icon">📱</div>
-                        <div class="pm-info">
-                            <div class="pm-name">Lumicash</div>
-                            <div class="pm-desc">Paiement mobile · Confirmation par admin</div>
-                        </div>
-                    </label>
-
-                    {{-- Bancobu --}}
-                    <input class="pm-option" type="radio" name="payment_method" id="pm_bancobu" value="bancobu_enoti"
-                        {{ old('payment_method') === 'bancobu_enoti' ? 'checked' : '' }}>
-                    <label class="pm-label" for="pm_bancobu">
-                        <div class="pm-icon">🏦</div>
-                        <div class="pm-info">
-                            <div class="pm-name">Banque / Bancobu</div>
-                            <div class="pm-desc">Virement bancaire · Confirmation par admin</div>
-                        </div>
-                    </label>
-
-                </div>
-                @error('payment_method')<div style="color:#ef5350;font-size:.8rem;margin-top:.35rem;">{{ $message }}</div>@enderror
-            </div>
-
-            <div class="notice-box" id="external-notice">
-                ⚠️ Votre investissement sera en attente jusqu'à ce qu'un admin confirme la réception de votre paiement.
-                Contactez le support avec votre référence après le virement.
-            </div>
-
             <button type="submit" class="btn-invest">Confirmer l'investissement →</button>
         </form>
     </div>
@@ -347,15 +314,23 @@
 @push('scripts')
 <script>
     const totalReturnPct = {{ $cycle->total_return_percent }};
+    const userCurrency   = '{{ $userCurrency }}';
+    const currencyRate   = {{ $currencyRate }};
     const amountInput    = document.getElementById('amount');
     const profitEl       = document.getElementById('profit-estimate');
     const noticeEl       = document.getElementById('external-notice');
     const pmRadios       = document.querySelectorAll('input[name="payment_method"]');
 
+    function fmtLocal(usdAmt) {
+        if (userCurrency === 'USD') return '$' + usdAmt.toFixed(2);
+        const local = usdAmt * currencyRate;
+        return new Intl.NumberFormat('fr-FR').format(Math.round(local)) + ' ' + userCurrency;
+    }
+
     function updateProfit() {
-        const amt = parseFloat(amountInput.value) || 0;
+        const amt    = parseFloat(amountInput.value) || 0;
         const profit = amt * (totalReturnPct / 100);
-        profitEl.textContent = '$' + profit.toFixed(2);
+        profitEl.textContent = fmtLocal(profit);
     }
 
     function updateNotice() {

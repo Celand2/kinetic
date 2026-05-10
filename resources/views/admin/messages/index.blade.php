@@ -1,20 +1,19 @@
-@extends('layouts.app')
+﻿@extends('layouts.admin')
 
 @section('title', 'Messages - KINETIC Admin')
-@section('page-title', 'MESSAGES')
-@section('page-subtitle', '// Toutes les conversations')
+@section('back')<a href="{{ route('admin.dashboard') }}" class="kts-back-btn">← Dashboard</a>@endsection
 
 @section('content')
-<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
-    <div style="display:flex; align-items:center; gap:1.5rem;">
-        <h1 style="color:#c9a227; margin:0;">Conversations</h1>
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:0.75rem;">
+    <div style="display:flex; align-items:center; gap:1rem;">
+        <h1 style="color:#c9a227; margin:0; font-size:1.2rem;">Conversations</h1>
         @if($unreadCount > 0)
-            <span style="background:#c9a227; color:#0b0f1a; padding:3px 12px; border-radius:20px; font-weight:700; font-size:0.85rem;">
+            <span style="background:#c9a227; color:#0b0f1a; padding:3px 10px; border-radius:20px; font-weight:700; font-size:0.78rem;">
                 {{ $unreadCount }} non lu{{ $unreadCount > 1 ? 's' : '' }}
             </span>
         @endif
     </div>
-    <a href="{{ route('admin.messages.broadcast') }}" class="btn">📢 Diffuser un message</a>
+    <a href="{{ route('admin.messages.broadcast') }}" class="kts-btn">📢 Diffuser</a>
 </div>
 
 {{-- Filtres --}}
@@ -85,7 +84,7 @@
                         <div style="font-size:0.75rem;">{{ $conv->messages_count }} msg</div>
                     </td>
                     <td>
-                        <a href="{{ route('admin.messages.show', $conv) }}" style="color:#c9a227; white-space:nowrap;">Voir →</a>
+                        <a href="{{ route('admin.messages.show', $conv) }}" class="kts-btn kts-btn-sm">Voir →</a>
                     </td>
                 </tr>
                 @endforeach

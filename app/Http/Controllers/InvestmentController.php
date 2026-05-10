@@ -9,9 +9,12 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class InvestmentController extends Controller
 {
+    use AuthorizesRequests;
+    use AuthorizesRequests;
     /**
      * Liste des investissements de l'utilisateur
      */
@@ -62,10 +65,11 @@ class InvestmentController extends Controller
         abort_if(!$cycle->is_active || !$tranche->is_active, 404);
         abort_if($tranche->trading_cycle_id !== $cycle->id, 404);
 
-        $user = Auth::user();
+        $user         = Auth::user();
+        $userCurrency = $user->preferred_currency ?? 'USD';
+        $currencyRate = \App\Models\ExchangeRate::rate($userCurrency);
 
-        // On passe l'utilisateur pour afficher son solde actuel sur la vue
-        return view('client.investments.invest', compact('cycle', 'tranche', 'user'));
+        return view('client.investments.invest', compact('cycle', 'tranche', 'user', 'userCurrency', 'currencyRate'));
     }
 
     /**
@@ -76,15 +80,14 @@ class InvestmentController extends Controller
         $validated = $request->validate([
             'tranche_id'      => 'required|exists:tranches,id',
             'amount'          => 'required|numeric|min:0.01',
-            'payment_method'  => 'nullable|in:wallet,lumicash,bancobu_enoti',
         ]);
 
         $tranche = Tranche::findOrFail($validated['tranche_id']);
         $cycle   = $tranche->tradingCycle;
         $user    = Auth::user();
 
-        // Par défaut wallet
-        $paymentMethod = $validated['payment_method'] ?? 'wallet';
+        // Toujours wallet maintenant
+        $paymentMethod = 'wallet';
 
         // 1. Vérifications des montants min/max de la tranche
         if ($validated['amount'] < $tranche->min_amount) {

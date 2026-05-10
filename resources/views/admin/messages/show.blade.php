@@ -1,12 +1,10 @@
-@extends('layouts.app')
+﻿@extends('layouts.admin')
 
 @section('title', $conversation->subject . ' - Admin KINETIC')
-@section('page-title', 'CONVERSATION')
-@section('page-subtitle', '// ' . $conversation->subject)
+@section('back')<a href="{{ route('admin.messages.index') }}" class="kts-back-btn">← Messages</a>@endsection
 
 @section('content')
-<div style="margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
-    <a href="{{ route('admin.messages.index') }}" style="color:#c9a227;">← Retour aux messages</a>
+<div style="display:flex; justify-content:flex-end; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem;">
     <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
         @php
             $sc = ['open'=>'#81c784','resolved'=>'#b0bfd9','closed'=>'#ef5350'];
