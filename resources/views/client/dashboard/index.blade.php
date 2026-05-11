@@ -68,6 +68,7 @@
             <a href="{{ route('investments.create') }}" class="btn">Investir</a>
             <a href="{{ route('transactions.deposit') }}" class="btn">Demander un Dépôt</a>
             <a href="{{ route('transactions.withdraw') }}" class="btn">Demander un Retrait</a>
+            <a href="{{ route('redeem-bonus.show') }}" class="btn">Échanger Code Bonus</a>
             <a href="{{ route('messages.create') }}" class="btn">Message à l'Admin</a>
         </div>
     </div>

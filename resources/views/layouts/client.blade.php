@@ -34,8 +34,8 @@
             box-shadow: 0 2px 20px rgba(0,0,0,0.4);
         }
 
-        .topbar-left  { display: flex; align-items: center; gap: 0.75rem; }
-        .topbar-right { display: flex; align-items: center; gap: 0.5rem; }
+        .topbar-left  { display: flex; flex-direction: row; align-items: center; gap: 0.75rem; }
+        .topbar-right { display: flex; flex-direction: row; align-items: center; gap: 0.5rem; }
 
         /* Hamburger */
         .kts-hamburger {

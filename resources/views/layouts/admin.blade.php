@@ -26,8 +26,8 @@
             border-bottom: 1px solid rgba(201,162,39,0.25);
             box-shadow: 0 2px 20px rgba(0,0,0,0.5);
         }
-        .topbar-left  { display: flex; align-items: center; gap: 0.75rem; }
-        .topbar-right { display: flex; align-items: center; gap: 0.5rem; }
+        .topbar-left  { display: flex; flex-direction: row; align-items: center; gap: 0.75rem; }
+        .topbar-right { display: flex; flex-direction: row; align-items: center; gap: 0.5rem; }
 
         .kts-hamburger {
             width: 38px; height: 38px;
@@ -160,9 +160,14 @@
         <a href="{{ route('admin.users.index') }}" class="drawer-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}"><span class="dl-icon">👥</span>Utilisateurs</a>
 
         <div class="drawer-section">Finance</div>
-        <a href="{{ route('admin.finance.transactions') }}" class="drawer-link {{ request()->routeIs('admin.finance.*') ? 'active' : '' }}">
+        <a href="{{ route('admin.finance.transactions') }}" class="drawer-link {{ request()->routeIs('admin.finance.transactions') ? 'active' : '' }}">
             <span class="dl-icon">💳</span>Transactions
             @if($pendingTxn > 0)<span class="dl-badge">{{ $pendingTxn }}</span>@endif
+        </a>
+        <a href="{{ route('admin.finance.withdrawals') }}" class="drawer-link {{ request()->routeIs('admin.finance.withdrawals*') ? 'active' : '' }}">
+            <span class="dl-icon">💸</span>Retraits en attente
+            @php $pendingW = \App\Models\Transaction::where('type','withdrawal')->where('status','pending')->count(); @endphp
+            @if($pendingW > 0)<span class="dl-badge">{{ $pendingW }}</span>@endif
         </a>
 
         <div class="drawer-section">Investissements</div>
@@ -183,6 +188,7 @@
         <div class="drawer-section">Paramètres</div>
         <a href="{{ route('admin.payment-methods.index') }}" class="drawer-link {{ request()->routeIs('admin.payment-methods.*') ? 'active' : '' }}"><span class="dl-icon">💰</span>Moyens de paiement</a>
         <a href="{{ route('admin.exchange-rates.index') }}" class="drawer-link {{ request()->routeIs('admin.exchange-rates.*') ? 'active' : '' }}"><span class="dl-icon">💱</span>Taux de change</a>
+        <a href="{{ route('admin.bonus-codes.index') }}" class="drawer-link {{ request()->routeIs('admin.bonus-codes.*') ? 'active' : '' }}"><span class="dl-icon">🎁</span>Codes Bonus</a>
     </div>
     <div class="drawer-footer">
         <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit">🚪 Déconnexion</button></form>

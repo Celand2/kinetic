@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\BonusCodeController;
 use App\Http\Controllers\Admin\ExchangeRateController;
 use App\Http\Controllers\Admin\FinanceController;
 use App\Http\Controllers\Admin\InvestmentController as AdminInvestmentController;
@@ -22,6 +23,8 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::post('/finance/transactions/{transaction}/approve', [FinanceController::class, 'approveTransaction'])->name('finance.approve');
     Route::post('/finance/transactions/{transaction}/reject', [FinanceController::class, 'rejectTransaction'])->name('finance.reject');
     Route::post('/users/{user}/adjust-balance', [FinanceController::class, 'manualAdjustment'])->name('finance.adjust');
+    Route::get('/finance/withdrawals', [FinanceController::class, 'withdrawals'])->name('finance.withdrawals');
+    Route::get('/finance/withdrawals/download', [FinanceController::class, 'downloadWithdrawals'])->name('finance.withdrawals.download');
 
     Route::get('/cycles', [AdminInvestmentController::class, 'cycles'])->name('cycles');
     Route::get('/cycles/create', [AdminInvestmentController::class, 'createCycle'])->name('cycles.create');
@@ -54,4 +57,8 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::get('/messages/{conversation}', [AdminMessageController::class, 'show'])->name('messages.show');
     Route::post('/messages/{conversation}/reply', [AdminMessageController::class, 'reply'])->name('messages.reply');
     Route::post('/messages/{conversation}/close', [AdminMessageController::class, 'close'])->name('messages.close');
+
+    Route::resource('bonus-codes', BonusCodeController::class);
+    Route::get('/bonus-codes/generate/batch', [BonusCodeController::class, 'generateBatch'])->name('bonus-codes.generate-batch');
+    Route::post('/bonus-codes/generate/batch', [BonusCodeController::class, 'generateBatch'])->name('bonus-codes.generate-batch.store');
 });

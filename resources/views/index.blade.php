@@ -147,10 +147,8 @@
     display:flex; align-items:center;
     padding:120px 5% 80px;
   }
- 
-  .hero-content {
-    max-width:620px;
-  }
+
+  .hero-content { max-width:620px; }
  
   .hero-badge {
     display:inline-flex; align-items:center; gap:8px;
@@ -339,6 +337,143 @@
   .cycle-return .key { color:rgba(234,251,255,0.6); }
   .cycle-return .val { font-family:'Orbitron',sans-serif; font-weight:700; color:var(--cyan); }
  
+  /* ══ ABOUT / PRÉSENTATION ════════════════════════════════════ */
+  .about-section {
+    position:relative; z-index:1;
+    padding:0 0 100px;
+  }
+
+  /* Slider pleine largeur */
+  .about-slider {
+    position:relative;
+    width:100%;
+    height:60vh; min-height:340px; max-height:640px;
+    overflow:hidden;
+    background:#021830;
+  }
+  .about-slide {
+    position:absolute; inset:0;
+    background-size:cover;
+    background-position:center center;
+    background-repeat:no-repeat;
+    opacity:0;
+    transition:opacity 1.4s ease;
+  }
+  .about-slide.active { opacity:1; }
+
+  /* Bandeau gradient bas du slider (dégradé vers la section) */
+  .about-slider::after {
+    content:'';
+    position:absolute; bottom:0; left:0; right:0;
+    height:45%;
+    background:linear-gradient(to bottom, transparent, var(--void));
+    pointer-events:none; z-index:1;
+  }
+
+  /* Dots */
+  .about-dots {
+    position:absolute; bottom:18px; left:50%;
+    transform:translateX(-50%);
+    display:flex; gap:8px; z-index:2;
+  }
+  .about-dot {
+    width:8px; height:8px; border-radius:50%;
+    background:rgba(234,251,255,0.25);
+    border:1px solid rgba(28,231,237,0.35);
+    cursor:pointer; transition:all 0.3s;
+  }
+  .about-dot.active {
+    background:var(--cyan);
+    box-shadow:0 0 8px rgba(28,231,237,0.6);
+    width:22px; border-radius:4px;
+  }
+
+  /* Contenu About */
+  .about-content {
+    max-width:1100px; margin:0 auto;
+    padding:64px 5% 0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:60px;
+    align-items:center;
+  }
+  .about-left h2 {
+    font-family:'Orbitron',sans-serif;
+    font-size:clamp(20px,2.5vw,34px);
+    font-weight:700; color:var(--ice);
+    line-height:1.25; margin-bottom:16px;
+  }
+  .about-left h2 span {
+    background:linear-gradient(90deg,var(--cyan),var(--aqua));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  .about-left p {
+    font-size:15px; line-height:1.75;
+    color:rgba(234,251,255,0.68);
+    margin-bottom:28px;
+  }
+  .about-badge-row {
+    display:flex; flex-wrap:wrap; gap:10px;
+  }
+  .about-badge {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:6px 14px;
+    border:1px solid rgba(28,231,237,0.25);
+    background:rgba(28,231,237,0.06);
+    border-radius:4px;
+    font-size:12px; letter-spacing:1.5px; text-transform:uppercase;
+    color:var(--cyan); font-family:'Space Mono',monospace;
+    transition:all 0.25s;
+  }
+  .about-badge:hover {
+    background:rgba(28,231,237,0.12);
+    border-color:rgba(28,231,237,0.5);
+    box-shadow:0 0 12px rgba(28,231,237,0.15);
+  }
+  .about-badge .ab-dot {
+    width:5px; height:5px; border-radius:50%;
+    background:var(--cyan); flex-shrink:0;
+  }
+
+  /* Grille crédibilité (droite) */
+  .cred-grid {
+    display:grid; grid-template-columns:1fr 1fr; gap:14px;
+  }
+  .cred-card {
+    padding:20px 18px;
+    background:linear-gradient(135deg,rgba(3,41,80,0.6),rgba(10,37,64,0.8));
+    border:1px solid var(--glass-border);
+    border-radius:10px; backdrop-filter:blur(12px);
+    transition:all 0.3s;
+  }
+  .cred-card:hover {
+    border-color:var(--cyan);
+    box-shadow:0 8px 30px rgba(28,231,237,0.08);
+    transform:translateY(-3px);
+  }
+  .cred-icon { font-size:22px; margin-bottom:10px; }
+  .cred-val {
+    font-family:'Orbitron',sans-serif;
+    font-size:20px; font-weight:700;
+    color:var(--cyan); line-height:1;
+  }
+  .cred-lbl {
+    font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
+    color:rgba(234,251,255,0.5); margin-top:5px; display:block;
+  }
+
+  @media (max-width:768px) {
+    .about-content { grid-template-columns:1fr; gap:40px; }
+    .about-slider { height:45vw; min-height:220px; }
+    .cred-grid { grid-template-columns:1fr 1fr; }
+  }
+  @media (max-width:480px) {
+    .about-content { padding:40px 5% 0; }
+    .cred-grid { grid-template-columns:1fr 1fr; gap:10px; }
+    .cred-card { padding:16px 14px; }
+  }
+  /* ══ FIN ABOUT ════════════════════════════════════════════════ */
+
   /* ── REFERRAL SECTION ── */
   .referral-section {
     position:relative; z-index:1;
@@ -554,6 +689,20 @@
     .ref-level { padding:16px 20px; }
     .cta-box { padding:32px 20px; }
     .cta-box h2 { font-size:28px; }
+    /* Nav CTA : réduction sur petits écrans */
+    .btn-glass, .btn-primary {
+      padding:7px 14px; font-size:11px; letter-spacing:1px;
+    }
+    .btn-xl { padding:13px 26px; font-size:12px; letter-spacing:2px; }
+    .nav-cta { gap:8px; }
+    /* Cacher le sous-titre du logo pour gagner de la place */
+    .nav-brand span { display:none; }
+  }
+  @media (max-width:380px) {
+    /* Très petits écrans : masquer "Connexion", garder "Commencer" */
+    .nav-cta .btn-glass { display:none; }
+    .btn-primary { padding:7px 12px; font-size:11px; }
+    nav { padding:0 4%; }
   }
 </style>
 </head>
@@ -574,10 +723,10 @@
   </div>
   <div class="nav-links">
     <a href="#home">Accueil</a>
+    <a href="#about-section">À Propos</a>
     <a href="#cycles-section">Cycles</a>
     <a href="#referral-section">Parrainage</a>
     <a href="#features-section">Fonctionnalités</a>
-    <a href="#cta-section">Support</a>
   </div>
   <div class="nav-cta">
     @guest
@@ -675,6 +824,80 @@
   </div>
 </section>
  
+<!-- ══ ABOUT / PRÉSENTATION ══════════════════════════════════════ -->
+<section class="about-section" id="about-section">
+
+  <!-- Slideshow pleine largeur -->
+  <!-- Mets tes photos dans public/images/slides/ avec les noms slide1.jpg … slide4.jpg -->
+  <div class="about-slider" id="about-slider">
+    <div class="about-slide active" style="background-image:url('{{ asset('images/slides/slide1.jpg') }}')"></div>
+    <div class="about-slide"        style="background-image:url('{{ asset('images/slides/slide2.jpg') }}')"></div>
+    <div class="about-slide"        style="background-image:url('{{ asset('images/slides/slide3.jpg') }}')"></div>
+    <div class="about-slide"        style="background-image:url('{{ asset('images/slides/slide4.jpg') }}')"></div>
+    <div class="about-dots" id="about-dots"></div>
+  </div>
+
+  <!-- Contenu : texte gauche + crédibilité droite -->
+  <div class="about-content">
+
+    <!-- Gauche : présentation + badges -->
+    <div class="about-left">
+      <h2>La plateforme qui <span>transforme vos épargnes</span> en revenus réels</h2>
+      <p>
+        Kinetic Trading System est un écosystème d'investissement de nouvelle génération.
+        Grâce à nos cycles de trading algorithmique, chaque membre perçoit des profits
+        automatiques chaque 24 heures — de manière transparente, sécurisée et vérifiable.
+        Rejoignez une communauté qui bâtit sa liberté financière, un cycle à la fois.
+      </p>
+      <div class="about-badge-row">
+        <span class="about-badge"><span class="ab-dot"></span>Profits Automatiques</span>
+        <span class="about-badge"><span class="ab-dot"></span>100% Transparent</span>
+        <span class="about-badge"><span class="ab-dot"></span>Sécurisé</span>
+        <span class="about-badge"><span class="ab-dot"></span>Multi-niveaux</span>
+        <span class="about-badge"><span class="ab-dot"></span>Retraits Rapides</span>
+        <span class="about-badge"><span class="ab-dot"></span>Support Réactif</span>
+        <span class="about-badge"><span class="ab-dot"></span>Cycles Répétables</span>
+        <span class="about-badge"><span class="ab-dot"></span>Accessible 24/7</span>
+      </div>
+    </div>
+
+    <!-- Droite : chiffres de crédibilité -->
+    <div class="cred-grid">
+      <div class="cred-card">
+        <div class="cred-icon">⚡</div>
+        <div class="cred-val">4</div>
+        <span class="cred-lbl">Cycles de trading</span>
+      </div>
+      <div class="cred-card">
+        <div class="cred-icon">📈</div>
+        <div class="cred-val">15%</div>
+        <span class="cred-lbl">Profit max / jour</span>
+      </div>
+      <div class="cred-card">
+        <div class="cred-icon">🤝</div>
+        <div class="cred-val">3 Niv.</div>
+        <span class="cred-lbl">Commissions parrainage</span>
+      </div>
+      <div class="cred-card">
+        <div class="cred-icon">🔒</div>
+        <div class="cred-val">98%</div>
+        <span class="cred-lbl">Retraits traités</span>
+      </div>
+      <div class="cred-card">
+        <div class="cred-icon">💳</div>
+        <div class="cred-val">2</div>
+        <span class="cred-lbl">Méthodes de paiement</span>
+      </div>
+      <div class="cred-card">
+        <div class="cred-icon">🌍</div>
+        <div class="cred-val">24/7</div>
+        <span class="cred-lbl">Disponibilité plateforme</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 <!-- TRADING CYCLES -->
 <section class="cycles-section" id="cycles-section">
   <div class="section-header">
@@ -873,7 +1096,41 @@
 </footer>
  
 <script>
-  // Live profit counter animation
+  /* ── ABOUT SLIDESHOW ────────────────────────────────────────────── */
+  (function() {
+    var slides   = document.querySelectorAll('#about-slider .about-slide');
+    var dotsWrap = document.getElementById('about-dots');
+    if (!slides.length || !dotsWrap) return;
+
+    var current = 0, timer;
+
+    slides.forEach(function(_, i) {
+      var dot = document.createElement('span');
+      dot.className = 'about-dot' + (i === 0 ? ' active' : '');
+      dot.addEventListener('click', function() { goTo(i); restart(); });
+      dotsWrap.appendChild(dot);
+    });
+
+    var dots = dotsWrap.querySelectorAll('.about-dot');
+
+    function goTo(n) {
+      slides[current].classList.remove('active');
+      dots[current].classList.remove('active');
+      current = (n + slides.length) % slides.length;
+      slides[current].classList.add('active');
+      dots[current].classList.add('active');
+    }
+    function next() { goTo(current + 1); }
+    function restart() { clearInterval(timer); timer = setInterval(next, 5000); }
+
+    restart();
+
+    var sliderEl = document.getElementById('about-slider');
+    sliderEl.addEventListener('mouseenter', function() { clearInterval(timer); });
+    sliderEl.addEventListener('mouseleave', restart);
+  })();
+
+  /* ── Live profit counter animation ─────────────────────────────── */
   const el = document.getElementById('live-profit');
   let val = 24891.50;
   setInterval(() => {

@@ -60,7 +60,7 @@
         </div>
 
         <div id="conversionPreview" style="display:none; margin-top:-0.75rem; margin-bottom:1rem; background:rgba(201,162,39,0.07); border:1px solid rgba(201,162,39,0.2); border-radius:8px; padding:0.65rem 1rem;">
-            <div style="font-size:0.78rem; color:#b0bfd9;">Equivalent USD (apres validation) :</div>
+            <div style="font-size:0.78rem; color:#b0bfd9;">Equivalent USD (après validation) :</div>
             <div id="conversionValue" style="font-family:'Space Mono',monospace; color:#c9a227; font-size:1rem; font-weight:700; margin-top:2px;">$0.00</div>
             <div id="rateInfo" style="font-size:0.7rem; color:#6b7a9a; margin-top:2px;"></div>
         </div>
@@ -115,15 +115,30 @@ function updatePreview() {
     const methodName = document.getElementById('payment_method').value;
     const method     = payMethods[methodName];
     const currency   = method ? method.currency : null;
-    const rateObj    = currency ? rateMap[currency] : null;
-    const rate       = rateObj  ? parseFloat(rateObj.rate_to_usd) : 1;
     const localAmt   = parseFloat(document.getElementById('amount').value) || 0;
     const preview    = document.getElementById('conversionPreview');
 
     if (localAmt > 0 && currency) {
+        // Récupérer le taux de change de la carte
+        const rateObj = rateMap[currency];
+        const rate    = rateObj ? parseFloat(rateObj.rate_to_usd) : 1;
+        
+        // Convertir le montant local en USD
+        // Si devise = USD: usd = localAmt
+        // Si devise ≠ USD: usd = localAmt / rate (où rate = 1 USD = X devise_locale)
         const usd = (currency === 'USD') ? localAmt : (localAmt / rate);
+        
+        // Afficher la valeur USD avec 2 décimales
         document.getElementById('conversionValue').textContent = '$' + usd.toFixed(2) + ' USD';
-        document.getElementById('rateInfo').textContent = (currency !== 'USD') ? 'Taux : 1 USD = ' + rate.toLocaleString('fr-FR') + ' ' + currency : '';
+        
+        // Afficher le taux de change pour référence
+        if (currency !== 'USD') {
+            document.getElementById('rateInfo').textContent = 
+                'Taux utilisé : 1 USD = ' + rate.toLocaleString('fr-FR', {maximumFractionDigits: 2}) + ' ' + currency;
+        } else {
+            document.getElementById('rateInfo').textContent = '';
+        }
+        
         preview.style.display = 'block';
     } else {
         preview.style.display = 'none';
@@ -134,7 +149,10 @@ document.getElementById('screenshot').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = ev => { document.getElementById('imgPreviewSrc').src = ev.target.result; document.getElementById('imgPreview').style.display = 'block'; };
+        reader.onload = ev => { 
+            document.getElementById('imgPreviewSrc').src = ev.target.result; 
+            document.getElementById('imgPreview').style.display = 'block'; 
+        };
         reader.readAsDataURL(file);
     }
 });

@@ -32,4 +32,7 @@ Route::prefix('client')->middleware('auth')->group(function () {
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+
+    Route::get('/redeem-bonus', [\App\Http\Controllers\BonusController::class, 'show'])->name('redeem-bonus.show');
+    Route::post('/redeem-bonus', [\App\Http\Controllers\BonusController::class, 'redeem'])->name('redeem-bonus.redeem');
 });

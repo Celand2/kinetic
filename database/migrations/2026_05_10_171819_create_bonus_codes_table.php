@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('bonus_codes', function (Blueprint $table) {
             $table->id();
+            $table->string('code')->unique()->index();
+            $table->decimal('bonus_amount', 10, 2);
+            $table->enum('status', ['active', 'used', 'expired'])->default('active');
+            $table->foreignId('used_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamp('used_at')->nullable();
+            $table->timestamp('expires_at')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
