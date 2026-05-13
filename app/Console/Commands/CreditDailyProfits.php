@@ -46,6 +46,7 @@ class CreditDailyProfits extends Command
             }
 
             $user->increment('balance', $profit);
+            $user->increment('profit_balance', $profit);
             $newBalance = (float) $user->balance + $profit;
 
             Transaction::create([

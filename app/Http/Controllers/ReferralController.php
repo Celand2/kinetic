@@ -17,12 +17,12 @@ class ReferralController extends Controller
         $totalReferrals = $user->referrals()->count();
         
         $commissions = $user->referralCommissionsAsReferrer()
-            ->with('referred')
+            ->with('sourceUser')
             ->latest()
             ->paginate(15);
 
         $totalCommissions = $user->referralCommissionsAsReferrer()
-            ->where('status', 'completed')
+            ->where('status', 'paid')
             ->sum('commission_amount');
 
         $pendingCommissions = $user->referralCommissionsAsReferrer()

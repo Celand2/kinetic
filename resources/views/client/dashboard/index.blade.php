@@ -17,7 +17,7 @@
     @if($userCurrency !== 'USD')
         <div style="font-size:0.72rem; color:#6b7a9a; margin-top:2px;">
             Devise : <span style="color:#c9a227; font-weight:600;">{{ $userCurrency }}</span>
-            &nbsp;·&nbsp; 1 USD = {{ number_format($currencyRate, 0, ',', ' ') }} {{ $userCurrency }}
+            &nbsp;·&nbsp; 1 $ = {{ number_format($currencyRate, 0, ',', ' ') }} {{ $userCurrency }}
         </div>
     @endif
 </div>
@@ -25,14 +25,16 @@
 {{-- SOLDES ────────────────────────────────────────────────────────── --}}
 <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
 
-    <div class="card" style="padding:1rem; margin-bottom:0;">
-        <div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:4px;">Solde principal</div>
+    {{-- Gains retirables (profit_balance) --}}
+    <div class="card" style="padding:1rem; margin-bottom:0; border-color:rgba(129,199,132,0.3);">
+        <div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:4px;">Gains retirables</div>
         <div style="font-family:'Space Mono',monospace; font-size:1.2rem; font-weight:700; color:#81c784; line-height:1.1;">
-            {{ fmtLocal($user->balance, $userCurrency, $currencyRate) }}
+            {{ fmtLocal($user->profit_balance, $userCurrency, $currencyRate) }}
         </div>
         @if($userCurrency !== 'USD')
-            <div style="font-size:0.7rem; color:#4a5568; margin-top:3px;">${{ number_format($user->balance, 2) }} USD</div>
+            <div style="font-size:0.7rem; color:#4a5568; margin-top:3px;">${{ number_format($user->profit_balance, 2) }} USD</div>
         @endif
+        <div style="font-size:0.6rem; color:#2d3748; margin-top:3px;">Profits + parrainage + bonus</div>
     </div>
 
     <div class="card" style="padding:1rem; margin-bottom:0;">
@@ -46,16 +48,19 @@
     </div>
 
     <div class="card" style="padding:1rem; margin-bottom:0;">
-        <div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:4px;">Total investi</div>
+        <div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:4px;">Solde total</div>
         <div style="font-family:'Space Mono',monospace; font-size:1.1rem; font-weight:700; color:#c9a227; line-height:1.1;">
-            {{ fmtLocal($totalInvested, $userCurrency, $currencyRate) }}
+            {{ fmtLocal($user->balance, $userCurrency, $currencyRate) }}
         </div>
+        @if($userCurrency !== 'USD')
+            <div style="font-size:0.7rem; color:#4a5568; margin-top:3px;">${{ number_format($user->balance, 2) }} USD</div>
+        @endif
     </div>
 
     <div class="card" style="padding:1rem; margin-bottom:0;">
-        <div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:4px;">Solde parrainage</div>
+        <div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:4px;">Total investi</div>
         <div style="font-family:'Space Mono',monospace; font-size:1.1rem; font-weight:700; color:#7a9cc6; line-height:1.1;">
-            {{ fmtLocal($user->referral_balance, $userCurrency, $currencyRate) }}
+            {{ fmtLocal($totalInvested, $userCurrency, $currencyRate) }}
         </div>
     </div>
 
@@ -82,7 +87,7 @@
             </div>
             <div>
                 <div style="color: #b0bfd9; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Gains Parrainage</div>
-                <div style="font-size: 1.5rem; color: #81c784; font-weight: 600;">${{ number_format($referralEarnings, 2) }}</div>
+                <div style="font-size: 1.5rem; color: #81c784; font-weight: 600;">{{ fmtLocal($referralEarnings, $userCurrency, $currencyRate) }}</div>
             </div>
             <a href="{{ route('referral.dashboard') }}" class="btn">Voir Tableau Parrainage</a>
         </div>
@@ -114,7 +119,7 @@
                     <tr style="font-size: 0.85rem; opacity: 0.9;">
                         <td style="padding: 0.5rem 0;">
                             @foreach($pendingInvestments as $inv)
-                                <div>{{ $inv->reference }} · {{ $inv->tradingCycle->name }} · ${{ number_format($inv->amount, 2) }}</div>
+                                <div>{{ $inv->reference }} · {{ $inv->tradingCycle->name }} · ${{ number_format($inv->amount, 2) }} USD</div>
                             @endforeach
                         </td>
                     </tr>
@@ -142,7 +147,12 @@
                     <tr>
                         <td><strong>{{ $investment->reference }}</strong></td>
                         <td>{{ $investment->tradingCycle->name }}</td>
-                        <td style="color: #c9a227; font-weight: 600;">${{ number_format($investment->amount, 2) }}</td>
+                        <td style="color: #c9a227; font-weight: 600;">
+                            {{ fmtLocal($investment->amount, $userCurrency, $currencyRate) }}
+                            @if($userCurrency !== 'USD')
+                                <div style="font-size:0.68rem; color:#4a5568;">${{ number_format($investment->amount, 2) }}</div>
+                            @endif
+                        </td>
                         <td><span style="color: #81c784; font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">{{ ucfirst($investment->status) }}</span></td>
                         <td>{{ $investment->ends_at->format('d/m/Y') }}</td>
                         <td><a href="{{ route('investments.show', $investment) }}" style="color: #c9a227;">Voir →</a></td>
@@ -173,7 +183,7 @@
                     <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
                         <td style="padding: 0.75rem 0;">{{ $transaction->created_at->format('d/m/Y H:i') }}</td>
                         <td style="padding: 0.75rem 0;">{{ str_replace('_', ' ', ucfirst($transaction->type)) }}</td>
-                        <td style="padding: 0.75rem 0; color: #c9a227; font-weight: 600;">${{ number_format($transaction->amount, 2) }}</td>
+                        <td style="padding: 0.75rem 0; color: #c9a227; font-weight: 600;">{{ $transaction->formatted_amount }}</td>
                         <td style="padding: 0.75rem 0;">
                             <span style="font-size: 0.8rem; text-transform: uppercase; font-weight: 600; color: {{ $transaction->status === 'completed' ? '#81c784' : ($transaction->status === 'pending' ? '#fbc02d' : '#ef5350') }};">
                                 {{ ucfirst($transaction->status) }}

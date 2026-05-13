@@ -37,7 +37,7 @@
                     <td style="font-size:0.8rem; color:#b0bfd9; white-space:nowrap;">{{ $transaction->created_at->format('d/m/Y H:i') }}</td>
                     <td style="font-family:monospace; font-size:0.78rem;">{{ $transaction->reference }}</td>
                     <td><span style="color:{{ $tc[$transaction->type] ?? '#b0bfd9' }}; font-size:0.82rem; font-weight:600;">{{ $tl[$transaction->type] ?? ucfirst($transaction->type) }}</span></td>
-                    <td style="color:#c9a227; font-weight:700;">${{ number_format($transaction->amount, 2) }}</td>
+                    <td style="color:#c9a227; font-weight:700;">{{ $transaction->formatted_amount }}</td>
                     <td><span style="color:{{ $sc[$transaction->status] ?? '#b0bfd9' }}; font-size:0.82rem; font-weight:600;">{{ $sl[$transaction->status] ?? ucfirst($transaction->status) }}</span></td>
                     <td><a href="{{ route('transactions.show', $transaction) }}" class="kts-btn kts-btn-sm">Voir →</a></td>
                 </tr>

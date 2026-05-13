@@ -56,13 +56,12 @@ class DashboardController extends Controller
         // Données de parrainage
         $referralCount = $user->referrals()->count();
         $referralEarnings = $user->referralCommissionsAsReferrer()
-            ->where('status', 'completed')
+            ->where('status', 'paid')
             ->sum('commission_amount');
 
         // Devise préférée et taux de change
-        $userCurrency  = $user->preferred_currency ?? 'USD';
-        $exchangeRate  = $userCurrency !== 'USD' ? ExchangeRate::find($userCurrency) : null;
-        $currencyRate  = $exchangeRate ? (float) $exchangeRate->rate_to_usd : 1.0;
+        $userCurrency = $user->preferred_currency ?? 'USD';
+        $currencyRate = (float) ExchangeRate::rate($userCurrency);
 
         return view('client.dashboard.index', compact(
             'user',
@@ -75,7 +74,6 @@ class DashboardController extends Controller
             'recentTransactions',
             'referralCount',
             'referralEarnings',
-            'exchangeRate',
             'userCurrency',
             'currencyRate'
         ));

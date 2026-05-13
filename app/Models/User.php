@@ -28,6 +28,7 @@ class User extends Authenticatable
         'password',
         'balance',
         'referral_balance',
+        'profit_balance',
         'role',
         'status',
         'referral_code',
@@ -56,6 +57,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'balance' => 'decimal:2',
             'referral_balance' => 'decimal:2',
+            'profit_balance' => 'decimal:2',
         ];
     }
 

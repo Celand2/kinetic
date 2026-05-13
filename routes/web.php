@@ -4,9 +4,7 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 // Welcome page
-Route::get('/', function () {
-    return view('index');
-})->name('home');
+Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {

@@ -30,7 +30,7 @@ class ExchangeRate extends Model
     public static function fromUSD(float $usdAmount, string $currency): float
     {
         if ($currency === 'USD') return $usdAmount;
-        $rate = static::find(strtoupper($currency));
+        $rate = static::where('currency', strtoupper($currency))->first();
         if (!$rate || $rate->rate_to_usd == 0) return $usdAmount;
         return round($usdAmount * (float) $rate->rate_to_usd, 2);
     }
@@ -42,7 +42,7 @@ class ExchangeRate extends Model
     public static function toUSD(float $localAmount, string $currency): float
     {
         if ($currency === 'USD') return $localAmount;
-        $rate = static::find(strtoupper($currency));
+        $rate = static::where('currency', strtoupper($currency))->first();
         if (!$rate || $rate->rate_to_usd == 0) return $localAmount;
         return round($localAmount / (float) $rate->rate_to_usd, 8);
     }
@@ -66,7 +66,7 @@ class ExchangeRate extends Model
     public static function rate(string $currency): float
     {
         if ($currency === 'USD') return 1.0;
-        $rate = static::find(strtoupper($currency));
+        $rate = static::where('currency', strtoupper($currency))->first();
         return $rate ? (float) $rate->rate_to_usd : 1.0;
     }
 }

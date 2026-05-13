@@ -134,6 +134,12 @@
 @endpush
 
 @section('content')
+@php
+    function fmtTranche($usd, $currency, $rate) {
+        if ($currency === 'USD') return '$' . number_format($usd, 0);
+        return number_format(round($usd * $rate), 0, ',', ' ') . ' ' . $currency;
+    }
+@endphp
 <a href="{{ route('investments.create') }}" class="back-link">← Retour aux cycles</a>
 
 <div class="cycle-summary">
@@ -170,13 +176,19 @@
                 <div class="tranche-amounts">
                     <div class="amount-box">
                         <div class="alabel">Min</div>
-                        <div class="aval">${{ number_format($tranche->min_amount, 0) }}</div>
+                        <div class="aval">{{ fmtTranche($tranche->min_amount, $userCurrency, $currencyRate) }}</div>
+                        @if($userCurrency !== 'USD')
+                            <div style="font-size:0.65rem; color:#4a5568; margin-top:2px;">${{ number_format($tranche->min_amount, 0) }}</div>
+                        @endif
                     </div>
                     <div class="amount-box">
                         <div class="alabel">Max</div>
                         <div class="aval {{ !$tranche->max_amount ? 'unlimited' : '' }}">
-                            {{ $tranche->max_amount ? '$' . number_format($tranche->max_amount, 0) : 'Illimité' }}
+                            {{ $tranche->max_amount ? fmtTranche($tranche->max_amount, $userCurrency, $currencyRate) : 'Illimité' }}
                         </div>
+                        @if($userCurrency !== 'USD' && $tranche->max_amount)
+                            <div style="font-size:0.65rem; color:#4a5568; margin-top:2px;">${{ number_format($tranche->max_amount, 0) }}</div>
+                        @endif
                     </div>
                 </div>
 

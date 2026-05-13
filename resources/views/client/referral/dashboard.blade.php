@@ -76,10 +76,10 @@
                 @foreach($commissions as $commission)
                     <tr>
                         <td>{{ $commission->created_at->format('M d, Y') }}</td>
-                        <td>{{ $commission->referred->full_name }}</td>
-                        <td>{{ ucfirst(str_replace('_', ' ', $commission->transaction_type ?? 'commission')) }}</td>
+                        <td>{{ $commission->sourceUser->full_name ?? '—' }}</td>
+                        <td>Niveau {{ $commission->level }}</td>
                         <td>${{ number_format($commission->commission_amount, 2) }}</td>
-                        <td><span style="color: {{ $commission->status === 'completed' ? '#81c784' : '#fbc02d' }};">{{ ucfirst($commission->status) }}</span></td>
+                        <td><span style="color: {{ $commission->status === 'paid' ? '#81c784' : '#fbc02d' }};">{{ ucfirst($commission->status) }}</span></td>
                     </tr>
                 @endforeach
             </tbody>

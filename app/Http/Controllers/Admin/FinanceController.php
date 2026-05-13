@@ -66,7 +66,10 @@ class FinanceController extends Controller
             ]);
 
             $user = $transaction->user;
-            $user->decrement('balance', $transaction->amount + $transaction->fee_amount);
+            $totalDeducted = $transaction->amount + $transaction->fee_amount;
+            $user->decrement('balance', $totalDeducted);
+            // Déduire aussi des gains retirables (ne peut pas dépasser le solde actuel)
+            $user->decrement('profit_balance', min($totalDeducted, (float) $user->profit_balance));
 
             Notification::create([
                 'user_id'      => $user->id,
@@ -220,6 +223,7 @@ class FinanceController extends Controller
 
             $referrer->increment('balance', $commission);
             $referrer->increment('referral_balance', $commission);
+            $referrer->increment('profit_balance', $commission);
 
             $creditTransaction = Transaction::create([
                 'user_id'       => $referrer->id,

@@ -205,6 +205,17 @@
     $user        = auth()->user();
     $unreadNotif = $user ? \App\Models\Notification::where('user_id',$user->id)->where('is_read',false)->count() : 0;
     $unreadMsg   = $user ? \App\Models\Conversation::where('user_id',$user->id)->where('unread_user_count','>',0)->count() : 0;
+    // Solde en devise locale pour le drawer
+    if ($user) {
+        $drawerCurrency = $user->preferred_currency ?? 'USD';
+        $drawerRate     = (float) \App\Models\ExchangeRate::rate($drawerCurrency);
+        $drawerBalance  = $drawerCurrency === 'USD'
+            ? '$' . number_format($user->balance, 2)
+            : number_format(round((float)$user->balance * $drawerRate), 0, ',', ' ') . ' ' . $drawerCurrency;
+    } else {
+        $drawerCurrency = 'USD';
+        $drawerBalance  = '$0.00';
+    }
 @endphp
 
 {{-- TOPBAR --}}
@@ -236,8 +247,11 @@
         <div class="drawer-brand">KINETIC</div>
         <div class="drawer-user"><strong>{{ $user->full_name }}</strong>{{ $user->email }}</div>
         <div class="drawer-balance">
-            <div class="bal-label">Solde</div>
-            <div class="bal-val">${{ number_format($user->balance, 2) }}</div>
+            <div class="bal-label">Solde · {{ $drawerCurrency }}</div>
+            <div class="bal-val">{{ $drawerBalance }}</div>
+            @if($drawerCurrency !== 'USD')
+                <div style="font-size:0.6rem; color:#2d3748; margin-top:2px;">${{ number_format($user->balance, 2) }} USD</div>
+            @endif
         </div>
     </div>
     <div class="drawer-nav">

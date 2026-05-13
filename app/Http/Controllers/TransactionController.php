@@ -106,7 +106,9 @@ class TransactionController extends Controller
 
     public function createWithdrawal()
     {
-        return view('client.transactions.withdraw');
+        $paymentMethods = PaymentMethod::where('is_active', true)->get();
+        $exchangeRates  = \App\Models\ExchangeRate::all()->keyBy('currency');
+        return view('client.transactions.withdraw', compact('paymentMethods', 'exchangeRates'));
     }
 
     public function storeWithdrawal(Request $request)
@@ -114,23 +116,45 @@ class TransactionController extends Controller
         $user = Auth::user();
         $validated = $request->validate([
             'amount' => 'required|numeric|min:1',
-            'payment_method' => 'required|in:lumicash,bancobu_enoti',
+            'payment_method' => [
+                'required',
+                Rule::exists('payment_methods', 'name')->where('is_active', true),
+            ],
             'wallet_details' => 'required|string|max:1000',
             'screenshot' => 'nullable|image|max:4096',
             'description' => 'nullable|string|max:500',
         ]);
 
-        $fee = round($validated['amount'] * 0.10, 2);
-        $totalAmount = $validated['amount'] + $fee;
+        $paymentMethod = PaymentMethod::where('name', $validated['payment_method'])
+            ->where('is_active', true)->first();
+        $localCurrency = $paymentMethod->currency ?? 'USD';
+        $localAmount   = (float) $validated['amount'];
 
-        if ($totalAmount > $user->balance) {
-            return back()->withErrors(['amount' => 'Solde insuffisant pour couvrir le montant et les frais.'])->withInput();
+        // Convertir en USD pour la vérification du solde et le stockage
+        $usdAmount = \App\Models\ExchangeRate::toUSD($localAmount, $localCurrency);
+        $fee       = round($usdAmount * 0.10, 2);
+        $total     = $usdAmount + $fee;
+
+        // Seuls les gains (profit_balance) sont retirables, pas le capital déposé
+        if ($total > $user->profit_balance) {
+            $userCurrency = $user->preferred_currency ?? 'USD';
+            $rate         = \App\Models\ExchangeRate::rate($userCurrency);
+            $availableFmt = $userCurrency === 'USD'
+                ? '$' . number_format($user->profit_balance, 2)
+                : number_format(round((float)$user->profit_balance * $rate), 0, ',', ' ') . ' ' . $userCurrency;
+            return back()->withErrors([
+                'amount' => 'Gains insuffisants. Seuls vos gains sont retirables. Gains disponibles : ' . $availableFmt . '.',
+            ])->withInput();
         }
 
         $metadata = [
-            'payment_method' => $validated['payment_method'],
-            'wallet_details' => $validated['wallet_details'],
-            'fee' => $fee,
+            'payment_method'  => $validated['payment_method'],
+            'local_amount'    => $localAmount,
+            'local_currency'  => $localCurrency,
+            'usd_amount'      => $usdAmount,
+            'rate_used'       => \App\Models\ExchangeRate::rate($localCurrency),
+            'wallet_details'  => $validated['wallet_details'],
+            'fee'             => $fee,
         ];
 
         if ($request->hasFile('screenshot')) {
@@ -138,17 +162,17 @@ class TransactionController extends Controller
         }
 
         Transaction::create([
-            'user_id' => $user->id,
-            'type' => 'withdrawal',
-            'amount' => $validated['amount'],
-            'direction' => 'debit',
-            'balance_after' => $user->balance,
-            'fee_amount' => $fee,
-            'status' => 'pending',
-            'reference' => 'TXN-' . date('Y') . '-' . Str::padLeft(Transaction::count() + 1, 6, '0'),
+            'user_id'        => $user->id,
+            'type'           => 'withdrawal',
+            'amount'         => $usdAmount,
+            'direction'      => 'debit',
+            'balance_after'  => $user->balance,
+            'fee_amount'     => $fee,
+            'status'         => 'pending',
+            'reference'      => 'TXN-' . date('Y') . '-' . Str::padLeft(Transaction::count() + 1, 6, '0'),
             'payment_method' => $validated['payment_method'],
-            'description' => $validated['description'] ?? 'Withdrawal request submitted',
-            'metadata' => $metadata,
+            'description'    => $validated['description'] ?? 'Demande de retrait soumise',
+            'metadata'       => $metadata,
         ]);
 
         return redirect()->route('transactions.index')

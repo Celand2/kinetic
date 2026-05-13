@@ -1,6 +1,15 @@
 ﻿@extends('layouts.client')
 
 @section('title', 'Mes Investissements - KINETIC')
+@php
+    $iUser      = auth()->user();
+    $iCurrency  = $iUser->preferred_currency ?? 'USD';
+    $iRate      = \App\Models\ExchangeRate::rate($iCurrency);
+    function fmtInvAmt($usd, $currency, $rate) {
+        if ($currency === 'USD') return '$' . number_format($usd, 2);
+        return number_format($usd * $rate, 0, ',', ' ') . ' ' . $currency;
+    }
+@endphp
 @section('page-title', 'INVESTISSEMENTS')
 @section('page-subtitle', '// Vos placements actifs')
 
@@ -31,7 +40,12 @@
                         <td><strong>{{ $investment->reference }}</strong></td>
                         <td>{{ $investment->tradingCycle->name }}</td>
                         <td>{{ $investment->tranche->name }}</td>
-                        <td>${{ number_format($investment->amount, 2) }}</td>
+                        <td>
+                            {{ fmtInvAmt($investment->amount, $iCurrency, $iRate) }}
+                            @if($iCurrency !== 'USD')
+                                <div style="font-size:0.7rem; color:#4a5568;">${{ number_format($investment->amount, 2) }}</div>
+                            @endif
+                        </td>
                         <td>{{ $investment->daily_profit_rate }}%</td>
                         <td>
                             <span style="color: {{ $investment->status === 'active' ? '#81c784' : ($investment->status === 'pending' ? '#fbc02d' : '#ef5350') }}; text-transform: uppercase; font-size: 0.82rem; font-weight: 600;">
@@ -45,7 +59,13 @@
                                 —
                             @endif
                         </td>
-                        <td><a href="{{ route('investments.show', $investment) }}" style="color: #c9a227;">Voir →</a></td>
+                        <td style="display:flex; gap:0.4rem; align-items:center; flex-wrap:wrap;">
+                            <a href="{{ route('investments.show', $investment) }}" class="kts-btn kts-btn-sm">Voir →</a>
+                            @if($investment->tradingCycle->is_active && $investment->tranche->is_active)
+                            <a href="{{ route('investments.invest', [$investment->tradingCycle, $investment->tranche]) }}"
+                               class="kts-btn kts-btn-sm kts-btn-success" title="Réinvestir dans cette tranche">🔁</a>
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
             </tbody>

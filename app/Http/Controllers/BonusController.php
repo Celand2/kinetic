@@ -70,10 +70,11 @@ class BonusController extends Controller
             'used_at' => now(),
         ]);
 
-        // Add bonus to user's balance
+        // Le bonus est un gain : ajoute au solde total ET aux gains retirables
         $user->increment('balance', $bonusCode->bonus_amount);
+        $user->increment('profit_balance', $bonusCode->bonus_amount);
 
         return redirect()->route('dashboard')
-            ->with('success', "Code bonus appliqué avec succès ! +\${$bonusCode->bonus_amount} ajouté à votre solde.");
+            ->with('success', "Code bonus appliqué ! +\${$bonusCode->bonus_amount} ajouté à vos gains retirables.");
     }
 }

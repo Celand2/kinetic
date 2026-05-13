@@ -50,4 +50,34 @@ class Transaction extends Model
     {
         return $this->belongsTo(User::class, 'processed_by');
     }
+
+    // Montant dans la devise originale (locale pour dépôts/retraits, USD pour le reste)
+    public function getDisplayAmountAttribute(): float
+    {
+        if (isset($this->metadata['local_amount'])) {
+            return (float) $this->metadata['local_amount'];
+        }
+        return (float) $this->amount;
+    }
+
+    // Devise d'affichage (locale pour dépôts/retraits, USD pour le reste)
+    public function getDisplayCurrencyAttribute(): string
+    {
+        if (isset($this->metadata['local_currency'])) {
+            return $this->metadata['local_currency'];
+        }
+        return 'USD';
+    }
+
+    // Montant formaté avec symbole de devise
+    public function getFormattedAmountAttribute(): string
+    {
+        $currency = $this->display_currency;
+        $amount   = $this->display_amount;
+
+        if ($currency === 'USD') {
+            return '$' . number_format($amount, 2);
+        }
+        return number_format($amount, 0, ',', ' ') . ' ' . $currency;
+    }
 }

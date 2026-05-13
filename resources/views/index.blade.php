@@ -3,762 +3,541 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>home</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>KINETIC — Plateforme d'Investissement Elite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --void:        #010F1E;
-    --deep-ocean:  #032950;
-    --cyan:        #1CE7ED;
-    --teal:        #1F9AA5;
-    --aqua:        #1DA7DB;
-    --royal:       #1A71E0;
-    --ice:         #EAFBFF;
-    --mid:         #0A2540;
-    --glass:       rgba(28,231,237,0.07);
-    --glass-border:rgba(28,231,237,0.22);
-    --glow-sm:     0 0 12px rgba(28,231,237,0.35);
-    --glow-md:     0 0 28px rgba(28,231,237,0.45), 0 0 60px rgba(29,167,219,0.2);
-    --glow-lg:     0 0 50px rgba(28,231,237,0.55), 0 0 120px rgba(26,113,224,0.3);
-  }
- 
-  * { margin:0; padding:0; box-sizing:border-box; }
- 
-  body {
-    font-family:'Rajdhani', sans-serif;
-    background: linear-gradient(135deg, #021830 0%, #032950 35%, #041E38 70%, #021830 100%);
-    color: var(--ice);
-    overflow-x: hidden;
-    min-height: 100vh;
-  }
- 
-  /* ── GRID MESH BACKGROUND ── */
-  body::before {
-    content:'';
-    position:fixed; inset:0;
-    background-image:
-      linear-gradient(rgba(28,231,237,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(28,231,237,0.04) 1px, transparent 1px);
-    background-size: 60px 60px;
-    pointer-events:none; z-index:0;
-  }
- 
-  /* ── ANIMATED GRADIENT ORBS ── */
-  .orb {
-    position:fixed; border-radius:50%;
-    filter:blur(90px); pointer-events:none; z-index:0;
-    animation: float 12s ease-in-out infinite;
-  }
-  .orb1 { width:500px; height:500px; background:rgba(28,231,237,0.08); top:-100px; right:-100px; animation-delay:0s; }
-  .orb2 { width:400px; height:400px; background:rgba(26,113,224,0.1); bottom:-80px; left:-80px; animation-delay:-5s; }
-  .orb3 { width:300px; height:300px; background:rgba(31,154,165,0.08); top:40%; left:30%; animation-delay:-3s; }
- 
-  @keyframes float {
-    0%,100% { transform:translateY(0) scale(1); }
-    50%      { transform:translateY(-30px) scale(1.06); }
-  }
- 
-  /* ── NAV ── */
-  nav {
-    position:fixed; top:0; left:0; right:0; z-index:100;
-    backdrop-filter:blur(20px);
-    background:rgba(3,41,80,0.55);
-    border-bottom:1px solid var(--glass-border);
-    padding:0 5%;
-    display:flex; align-items:center; justify-content:space-between;
-    height:72px;
-  }
- 
-  .nav-logo {
-    display:flex; align-items:center; gap:12px;
-  }
-  .logo-k {
-    width:44px; height:44px;
-    background: linear-gradient(135deg, var(--cyan), var(--royal));
-    clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
-    display:flex; align-items:center; justify-content:center;
-    font-family:'Orbitron',sans-serif; font-weight:900; font-size:20px;
-    color:#010F1E; box-shadow:var(--glow-sm);
-    animation: pulse-logo 3s ease-in-out infinite;
-  }
-  @keyframes pulse-logo {
-    0%,100% { box-shadow:var(--glow-sm); }
-    50%      { box-shadow:var(--glow-md); }
-  }
-  .nav-brand {
-    font-family:'Orbitron',sans-serif; font-size:13px; font-weight:700;
-    letter-spacing:2px; color:var(--cyan);
-    line-height:1.2;
-  }
-  .nav-brand span { display:block; font-size:9px; letter-spacing:4px; color:var(--teal); font-weight:400; }
- 
-  .nav-links { display:flex; gap:32px; }
-  .nav-links a {
-    font-family:'Rajdhani',sans-serif; font-size:14px; font-weight:600;
-    letter-spacing:2px; text-transform:uppercase;
-    color:rgba(234,251,255,0.7); text-decoration:none;
-    transition:color .3s; position:relative;
-  }
-  .nav-links a::after {
-    content:''; position:absolute; bottom:-4px; left:0; right:0;
-    height:1px; background:var(--cyan);
-    transform:scaleX(0); transition:transform .3s;
-  }
-  .nav-links a:hover { color:var(--cyan); }
-  .nav-links a:hover::after { transform:scaleX(1); }
- 
-  .nav-cta {
-    display:flex; gap:12px;
-  }
-  .btn-glass {
-    padding:9px 22px;
-    border:1px solid var(--glass-border);
-    background:var(--glass);
-    backdrop-filter:blur(10px);
-    color:var(--ice); font-family:'Rajdhani',sans-serif;
-    font-size:13px; font-weight:600; letter-spacing:2px; text-transform:uppercase;
-    border-radius:4px; cursor:pointer; text-decoration:none;
-    transition:all .3s;
-  }
-  .btn-glass:hover {
-    border-color:var(--cyan); color:var(--cyan);
-    background:rgba(28,231,237,0.12);
-    box-shadow:var(--glow-sm);
-  }
-  .btn-primary {
-    padding:9px 22px;
-    background: linear-gradient(135deg, var(--cyan), var(--royal));
-    border:none; color:#010F1E;
-    font-family:'Rajdhani',sans-serif; font-size:13px;
-    font-weight:700; letter-spacing:2px; text-transform:uppercase;
-    border-radius:4px; cursor:pointer; text-decoration:none;
-    transition:all .3s;
-    box-shadow: 0 4px 20px rgba(28,231,237,0.3);
-  }
-  .btn-primary:hover {
-    transform:translateY(-2px);
-    box-shadow:var(--glow-md);
-  }
- 
-  /* ── HERO ── */
-  .hero {
-    position:relative; z-index:1;
-    min-height:100vh;
-    display:flex; align-items:center;
-    padding:120px 5% 80px;
-  }
+/* ── RESET & BASE ─────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --gold:    #c9a227;
+  --gold-d:  #a07d1a;
+  --gold-l:  #e8c050;
+  --bg:      #060b14;
+  --bg2:     #0a1220;
+  --bg3:     #0d1a2e;
+  --navy:    #0f2040;
+  --green:   #81c784;
+  --blue:    #7a9cc6;
+  --red:     #ef5350;
+  --text:    #e8e8e8;
+  --muted:   #b0bfd9;
+  --dim:     #6b7a9a;
+  --border:  rgba(201,162,39,0.18);
+  --glow-sm: 0 0 14px rgba(201,162,39,0.3);
+  --glow-md: 0 0 30px rgba(201,162,39,0.45), 0 0 70px rgba(201,162,39,0.15);
+}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Rajdhani',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+  min-height:100vh;
+}
 
-  .hero-content { max-width:620px; }
- 
-  .hero-badge {
-    display:inline-flex; align-items:center; gap:8px;
-    padding:6px 16px;
-    border:1px solid rgba(28,231,237,0.3);
-    background:rgba(28,231,237,0.08);
-    border-radius:2px; margin-bottom:32px;
-    font-size:11px; letter-spacing:4px; text-transform:uppercase;
-    color:var(--cyan); font-family:'Space Mono',monospace;
-  }
-  .hero-badge::before {
-    content:''; width:6px; height:6px; border-radius:50%;
-    background:var(--cyan);
-    animation:blink 1.5s ease-in-out infinite;
-  }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
- 
-  .hero h1 {
-    font-family:'Orbitron',sans-serif; font-weight:900;
-    font-size:clamp(36px,5vw,72px); line-height:1.05;
-    letter-spacing:-1px; margin-bottom:24px;
-  }
-  .hero h1 .line1 { display:block; color:var(--ice); }
-  .hero h1 .line2 {
-    display:block;
-    background: linear-gradient(90deg, var(--cyan), var(--aqua), var(--royal));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    background-clip:text;
-    text-shadow:none;
-    filter:drop-shadow(0 0 20px rgba(28,231,237,0.4));
-  }
- 
-  .hero-desc {
-    font-size:18px; font-weight:400; line-height:1.7;
-    color:rgba(234,251,255,0.72); margin-bottom:40px;
-    max-width:520px;
-  }
- 
-  .hero-actions { display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
- 
-  .btn-xl {
-    padding:16px 40px;
-    font-size:14px; letter-spacing:3px;
-  }
- 
-  .hero-stat-row {
-    display:flex; gap:40px; margin-top:64px;
-    padding-top:40px; border-top:1px solid rgba(28,231,237,0.15);
-  }
-  .hero-stat { }
-  .hero-stat .val {
-    font-family:'Orbitron',sans-serif; font-size:28px; font-weight:700;
-    color:var(--cyan); display:block;
-    text-shadow:0 0 20px rgba(28,231,237,0.5);
-  }
-  .hero-stat .lbl {
-    font-size:11px; letter-spacing:3px; text-transform:uppercase;
-    color:rgba(234,251,255,0.5); margin-top:4px; display:block;
-  }
- 
-  /* ── HERO VISUAL ── */
-  .hero-visual {
-    position:absolute; right:5%; top:50%;
-    transform:translateY(-50%);
-    width:min(500px, 42vw);
-    pointer-events:none;
-  }
- 
-  .kpi-card {
-    background: linear-gradient(135deg, rgba(3,41,80,0.85), rgba(10,37,64,0.9));
-    border:1px solid var(--glass-border);
-    backdrop-filter:blur(20px);
-    border-radius:12px;
-    padding:20px 24px;
-    box-shadow:var(--glow-sm);
-    position:relative;
-    overflow:hidden;
-  }
-  .kpi-card::before {
-    content:''; position:absolute; top:0; left:0; right:0; height:2px;
-    background: linear-gradient(90deg, var(--cyan), var(--royal));
-  }
- 
-  .kpi-main {
-    width:100%; margin-bottom:16px;
-    animation: slideUp .8s ease both;
-  }
-  .kpi-row { display:flex; gap:12px; margin-bottom:12px; }
-  .kpi-small { flex:1; animation: slideUp .8s ease both; }
-  .kpi-small:nth-child(2) { animation-delay:.1s; }
-  .kpi-small:nth-child(3) { animation-delay:.2s; }
- 
-  @keyframes slideUp {
-    from { opacity:0; transform:translateY(20px); }
-    to   { opacity:1; transform:translateY(0); }
-  }
- 
-  .kpi-label {
-    font-size:10px; letter-spacing:3px; text-transform:uppercase;
-    color:rgba(234,251,255,0.5); margin-bottom:8px;
-    font-family:'Space Mono',monospace;
-  }
-  .kpi-value {
-    font-family:'Orbitron',sans-serif; font-size:26px; font-weight:700;
-    color:var(--cyan);
-  }
-  .kpi-small .kpi-value { font-size:18px; }
-  .kpi-change {
-    display:inline-flex; align-items:center; gap:4px;
-    font-size:12px; font-weight:600; letter-spacing:1px;
-    color:#1aed7a; margin-top:4px;
-  }
- 
-  /* Cycle cards */
-  .cycles-section {
-    position:relative; z-index:1;
-    padding:100px 5%;
-  }
-  .section-header { text-align:center; margin-bottom:64px; }
-  .section-eyebrow {
-    font-family:'Space Mono',monospace; font-size:11px;
-    letter-spacing:5px; text-transform:uppercase;
-    color:var(--teal); margin-bottom:16px;
-  }
-  .section-title {
-    font-family:'Orbitron',sans-serif; font-size:clamp(24px,3vw,42px);
-    font-weight:700; color:var(--ice);
-  }
-  .section-title span {
-    background: linear-gradient(90deg, var(--cyan), var(--aqua));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    background-clip:text;
-  }
- 
-  .cycles-grid {
-    display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-    gap:20px;
-  }
- 
-  .cycle-card {
-    background: linear-gradient(160deg, rgba(3,41,80,0.7), rgba(10,37,64,0.85));
-    border:1px solid var(--glass-border);
-    border-radius:12px; padding:32px 28px;
-    backdrop-filter:blur(16px);
-    position:relative; overflow:hidden;
-    transition:all .4s ease; cursor:pointer;
-  }
-  .cycle-card:hover {
-    transform:translateY(-6px);
-    border-color:var(--cyan);
-    box-shadow:var(--glow-md);
-  }
-  .cycle-card::before {
-    content:''; position:absolute;
-    top:0; left:0; right:0; height:3px;
-  }
-  .cycle-card.flash::before  { background:linear-gradient(90deg,#ff6b35,#ffd700); }
-  .cycle-card.boost::before  { background:linear-gradient(90deg,var(--cyan),var(--teal)); }
-  .cycle-card.pro::before    { background:linear-gradient(90deg,var(--royal),var(--cyan)); }
-  .cycle-card.infinity::before{ background:linear-gradient(90deg,#9b59b6,var(--royal)); }
- 
-  .cycle-name {
-    font-family:'Orbitron',sans-serif; font-size:13px; font-weight:700;
-    letter-spacing:2px; color:var(--ice); margin-bottom:8px;
-  }
-  .cycle-days {
-    font-size:11px; letter-spacing:3px; text-transform:uppercase;
-    color:rgba(234,251,255,0.5); margin-bottom:24px;
-    font-family:'Space Mono',monospace;
-  }
-  .cycle-rate {
-    font-family:'Orbitron',sans-serif; font-size:40px; font-weight:900;
-    line-height:1; margin-bottom:4px;
-  }
-  .cycle-card.flash .cycle-rate  { color:#ffd700; text-shadow:0 0 20px rgba(255,215,0,0.4); }
-  .cycle-card.boost .cycle-rate  { color:var(--cyan); text-shadow:var(--glow-sm); }
-  .cycle-card.pro .cycle-rate    { color:var(--aqua); text-shadow:0 0 20px rgba(29,167,219,0.4); }
-  .cycle-card.infinity .cycle-rate{ color:#c77dff; text-shadow:0 0 20px rgba(199,125,255,0.4); }
- 
-  .cycle-unit { font-size:14px; color:rgba(234,251,255,0.5); margin-bottom:20px; }
-  .cycle-return {
-    display:flex; justify-content:space-between; align-items:center;
-    padding:12px 0; border-top:1px solid rgba(28,231,237,0.15);
-    font-size:13px; letter-spacing:1px;
-  }
-  .cycle-return .key { color:rgba(234,251,255,0.6); }
-  .cycle-return .val { font-family:'Orbitron',sans-serif; font-weight:700; color:var(--cyan); }
- 
-  /* ══ ABOUT / PRÉSENTATION ════════════════════════════════════ */
-  .about-section {
-    position:relative; z-index:1;
-    padding:0 0 100px;
-  }
+/* ── MESH BACKGROUND ──────────────────────────────────────────────── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(201,162,39,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(201,162,39,0.03) 1px,transparent 1px);
+  background-size:64px 64px;
+  pointer-events:none;z-index:0;
+}
 
-  /* Slider pleine largeur */
-  .about-slider {
-    position:relative;
-    width:100%;
-    height:60vh; min-height:340px; max-height:640px;
-    overflow:hidden;
-    background:#021830;
-  }
-  .about-slide {
-    position:absolute; inset:0;
-    background-size:cover;
-    background-position:center center;
-    background-repeat:no-repeat;
-    opacity:0;
-    transition:opacity 1.4s ease;
-  }
-  .about-slide.active { opacity:1; }
+/* ── NAV ──────────────────────────────────────────────────────────── */
+.kts-nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  height:62px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5%;
+  background:rgba(6,11,20,0.88);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo-icon{
+  width:38px;height:38px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-d));
+  clip-path:polygon(20% 0%,80% 0%,100% 20%,100% 80%,80% 100%,20% 100%,0% 80%,0% 20%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;font-weight:900;font-size:17px;
+  color:#060b14;
+  animation:pulse-logo 3s ease-in-out infinite;
+}
+@keyframes pulse-logo{0%,100%{box-shadow:var(--glow-sm);}50%{box-shadow:var(--glow-md);}}
+.nav-brand{
+  font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;
+  letter-spacing:2px;color:var(--gold);line-height:1.15;
+}
+.nav-brand span{display:block;font-size:8px;letter-spacing:4px;color:var(--dim);font-weight:400;}
+.nav-links{display:flex;gap:28px;}
+.nav-links a{
+  font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;
+  letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;
+  transition:color .25s;position:relative;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-3px;left:0;right:0;
+  height:1px;background:var(--gold);
+  transform:scaleX(0);transition:transform .25s;
+}
+.nav-links a:hover{color:var(--gold);}
+.nav-links a:hover::after{transform:scaleX(1);}
+.nav-cta{display:flex;gap:10px;}
+.btn-outline{
+  padding:8px 20px;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--muted);
+  font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;
+  letter-spacing:1.5px;text-transform:uppercase;
+  border-radius:4px;text-decoration:none;
+  transition:all .25s;
+}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);background:rgba(201,162,39,0.07);}
+.btn-gold{
+  padding:8px 20px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-d));
+  border:none;color:#060b14;
+  font-family:'Rajdhani',sans-serif;font-size:12px;
+  font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  border-radius:4px;text-decoration:none;
+  transition:all .25s;
+  box-shadow:0 4px 16px rgba(201,162,39,0.25);
+}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:var(--glow-md);}
+.btn-gold-xl{
+  padding:14px 36px;font-size:14px;letter-spacing:2px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-d));
+  border:none;color:#060b14;
+  font-family:'Orbitron',sans-serif;font-weight:700;
+  border-radius:6px;text-decoration:none;
+  display:inline-block;transition:all .25s;
+  box-shadow:0 6px 24px rgba(201,162,39,0.3);
+}
+.btn-gold-xl:hover{transform:translateY(-3px);box-shadow:var(--glow-md);}
+.btn-ghost-xl{
+  padding:14px 36px;font-size:13px;letter-spacing:2px;
+  border:1px solid rgba(201,162,39,0.35);background:rgba(201,162,39,0.06);
+  color:var(--gold);
+  font-family:'Orbitron',sans-serif;font-weight:600;
+  border-radius:6px;text-decoration:none;
+  display:inline-block;transition:all .25s;
+}
+.btn-ghost-xl:hover{background:rgba(201,162,39,0.12);border-color:var(--gold);}
 
-  /* Bandeau gradient bas du slider (dégradé vers la section) */
-  .about-slider::after {
-    content:'';
-    position:absolute; bottom:0; left:0; right:0;
-    height:45%;
-    background:linear-gradient(to bottom, transparent, var(--void));
-    pointer-events:none; z-index:1;
-  }
+/* ── HERO SLIDESHOW ───────────────────────────────────────────────── */
+.hero{
+  position:relative;
+  height:100vh;min-height:600px;
+  display:flex;align-items:center;
+  overflow:hidden;
+  margin-top:0;
+}
 
-  /* Dots */
-  .about-dots {
-    position:absolute; bottom:18px; left:50%;
-    transform:translateX(-50%);
-    display:flex; gap:8px; z-index:2;
-  }
-  .about-dot {
-    width:8px; height:8px; border-radius:50%;
-    background:rgba(234,251,255,0.25);
-    border:1px solid rgba(28,231,237,0.35);
-    cursor:pointer; transition:all 0.3s;
-  }
-  .about-dot.active {
-    background:var(--cyan);
-    box-shadow:0 0 8px rgba(28,231,237,0.6);
-    width:22px; border-radius:4px;
-  }
+/* Slides en arrière-plan */
+.hero-slides{position:absolute;inset:0;z-index:0;}
+.hero-slide{
+  position:absolute;inset:0;
+  background-size:cover;
+  background-position:center center;
+  opacity:0;
+  transition:opacity 1.6s ease;
+  transform:scale(1.06);
+  animation:kenburns 14s ease-in-out infinite alternate;
+}
+.hero-slide.active{opacity:1;}
+@keyframes kenburns{
+  0%  {transform:scale(1.06) translate(0,0);}
+  100%{transform:scale(1.0) translate(-1%,-0.5%);}
+}
 
-  /* Contenu About */
-  .about-content {
-    max-width:1100px; margin:0 auto;
-    padding:64px 5% 0;
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:60px;
-    align-items:center;
-  }
-  .about-left h2 {
-    font-family:'Orbitron',sans-serif;
-    font-size:clamp(20px,2.5vw,34px);
-    font-weight:700; color:var(--ice);
-    line-height:1.25; margin-bottom:16px;
-  }
-  .about-left h2 span {
-    background:linear-gradient(90deg,var(--cyan),var(--aqua));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-  }
-  .about-left p {
-    font-size:15px; line-height:1.75;
-    color:rgba(234,251,255,0.68);
-    margin-bottom:28px;
-  }
-  .about-badge-row {
-    display:flex; flex-wrap:wrap; gap:10px;
-  }
-  .about-badge {
-    display:inline-flex; align-items:center; gap:6px;
-    padding:6px 14px;
-    border:1px solid rgba(28,231,237,0.25);
-    background:rgba(28,231,237,0.06);
-    border-radius:4px;
-    font-size:12px; letter-spacing:1.5px; text-transform:uppercase;
-    color:var(--cyan); font-family:'Space Mono',monospace;
-    transition:all 0.25s;
-  }
-  .about-badge:hover {
-    background:rgba(28,231,237,0.12);
-    border-color:rgba(28,231,237,0.5);
-    box-shadow:0 0 12px rgba(28,231,237,0.15);
-  }
-  .about-badge .ab-dot {
-    width:5px; height:5px; border-radius:50%;
-    background:var(--cyan); flex-shrink:0;
-  }
+/* Dégradé sombre sur les slides */
+.hero-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(
+    135deg,
+    rgba(6,11,20,0.82) 0%,
+    rgba(6,11,20,0.55) 50%,
+    rgba(6,11,20,0.72) 100%
+  );
+}
+/* Bande dorée bas */
+.hero-overlay::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;
+  height:30%;
+  background:linear-gradient(to bottom,transparent,var(--bg));
+  pointer-events:none;
+}
 
-  /* Grille crédibilité (droite) */
-  .cred-grid {
-    display:grid; grid-template-columns:1fr 1fr; gap:14px;
-  }
-  .cred-card {
-    padding:20px 18px;
-    background:linear-gradient(135deg,rgba(3,41,80,0.6),rgba(10,37,64,0.8));
-    border:1px solid var(--glass-border);
-    border-radius:10px; backdrop-filter:blur(12px);
-    transition:all 0.3s;
-  }
-  .cred-card:hover {
-    border-color:var(--cyan);
-    box-shadow:0 8px 30px rgba(28,231,237,0.08);
-    transform:translateY(-3px);
-  }
-  .cred-icon { font-size:22px; margin-bottom:10px; }
-  .cred-val {
-    font-family:'Orbitron',sans-serif;
-    font-size:20px; font-weight:700;
-    color:var(--cyan); line-height:1;
-  }
-  .cred-lbl {
-    font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
-    color:rgba(234,251,255,0.5); margin-top:5px; display:block;
-  }
+/* Contenu hero */
+.hero-content{
+  position:relative;z-index:2;
+  max-width:660px;padding:0 5%;
+  margin-top:62px;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 16px;
+  border:1px solid rgba(201,162,39,0.35);
+  background:rgba(201,162,39,0.08);
+  border-radius:2px;margin-bottom:28px;
+  font-size:10px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--gold);font-family:'Space Mono',monospace;
+}
+.hero-badge::before{
+  content:'';width:6px;height:6px;border-radius:50%;
+  background:var(--gold);animation:blink 1.5s ease-in-out infinite;
+  flex-shrink:0;
+}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+.hero h1{
+  font-family:'Orbitron',sans-serif;font-weight:900;
+  font-size:clamp(32px,5vw,68px);line-height:1.05;
+  letter-spacing:-1px;margin-bottom:20px;
+}
+.hero h1 .line1{display:block;color:var(--text);}
+.hero h1 .line2{
+  display:block;
+  background:linear-gradient(90deg,var(--gold),var(--gold-l),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  filter:drop-shadow(0 0 20px rgba(201,162,39,0.45));
+}
+.hero-desc{
+  font-size:17px;font-weight:400;line-height:1.75;
+  color:rgba(232,232,232,0.78);
+  margin-bottom:36px;max-width:520px;
+}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center;}
+.hero-stats{
+  display:flex;gap:36px;
+  margin-top:56px;padding-top:32px;
+  border-top:1px solid rgba(201,162,39,0.15);
+  flex-wrap:wrap;
+}
+.hero-stat .val{
+  font-family:'Orbitron',sans-serif;font-size:24px;font-weight:700;
+  color:var(--gold);display:block;
+}
+.hero-stat .lbl{
+  font-size:10px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--dim);margin-top:3px;display:block;
+}
 
-  @media (max-width:768px) {
-    .about-content { grid-template-columns:1fr; gap:40px; }
-    .about-slider { height:45vw; min-height:220px; }
-    .cred-grid { grid-template-columns:1fr 1fr; }
-  }
-  @media (max-width:480px) {
-    .about-content { padding:40px 5% 0; }
-    .cred-grid { grid-template-columns:1fr 1fr; gap:10px; }
-    .cred-card { padding:16px 14px; }
-  }
-  /* ══ FIN ABOUT ════════════════════════════════════════════════ */
+/* Dots navigation slideshow */
+.hero-dots{
+  position:absolute;bottom:100px;left:5%;z-index:3;
+  display:flex;gap:8px;align-items:center;
+}
+.hero-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:rgba(201,162,39,0.25);
+  border:1px solid rgba(201,162,39,0.4);
+  cursor:pointer;transition:all .3s;
+}
+.hero-dot.active{
+  background:var(--gold);width:24px;border-radius:4px;
+  box-shadow:0 0 8px rgba(201,162,39,0.5);
+}
 
-  /* ── REFERRAL SECTION ── */
-  .referral-section {
-    position:relative; z-index:1;
-    padding:100px 5%;
-    background: linear-gradient(180deg, transparent, rgba(3,41,80,0.3), transparent);
-  }
- 
-  .referral-visual {
-    display:grid; grid-template-columns:1fr 1fr; gap:60px;
-    align-items:center; max-width:1100px; margin:0 auto;
-  }
- 
-  .referral-tree {
-    display:flex; flex-direction:column; gap:16px;
-  }
- 
-  .ref-level {
-    display:flex; align-items:center; gap:16px;
-    padding:18px 24px;
-    background: linear-gradient(135deg, rgba(3,41,80,0.7), rgba(10,37,64,0.8));
-    border:1px solid var(--glass-border);
-    border-radius:8px; backdrop-filter:blur(16px);
-    transition:all .3s;
-  }
-  .ref-level:hover {
-    border-color:var(--cyan); transform:translateX(8px);
-    box-shadow:var(--glow-sm);
-  }
-  .ref-level-badge {
-    width:40px; height:40px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    font-family:'Orbitron',sans-serif; font-weight:700; font-size:13px;
-    flex-shrink:0;
-  }
-  .ref-level:nth-child(1) .ref-level-badge { background:linear-gradient(135deg,var(--cyan),var(--teal)); color:#010F1E; }
-  .ref-level:nth-child(2) .ref-level-badge { background:linear-gradient(135deg,var(--royal),var(--aqua)); color:#fff; }
-  .ref-level:nth-child(3) .ref-level-badge { background:linear-gradient(135deg,#1F9AA5,#032950); color:var(--ice); border:1px solid var(--teal); }
- 
-  .ref-level-info .name { font-weight:700; font-size:16px; color:var(--ice); }
-  .ref-level-info .desc { font-size:13px; color:rgba(234,251,255,0.6); margin-top:2px; }
-  .ref-pct {
-    margin-left:auto; font-family:'Orbitron',sans-serif;
-    font-size:22px; font-weight:700; color:var(--cyan);
-    text-shadow:var(--glow-sm);
-  }
- 
-  .referral-info { }
-  .referral-info h2 {
-    font-family:'Orbitron',sans-serif; font-size:clamp(22px,2.5vw,36px);
-    font-weight:700; color:var(--ice); margin-bottom:20px; line-height:1.2;
-  }
-  .referral-info h2 span {
-    background:linear-gradient(90deg,var(--cyan),var(--aqua));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-  }
-  .referral-info p { font-size:16px; line-height:1.7; color:rgba(234,251,255,0.7); margin-bottom:32px; }
- 
-  /* ── FEATURES GRID ── */
-  .features-section {
-    position:relative; z-index:1;
-    padding:100px 5%;
-  }
- 
-  .features-grid {
-    display:grid; grid-template-columns:repeat(3,1fr); gap:20px;
-    max-width:1100px; margin:0 auto;
-  }
- 
-  .feature-card {
-    padding:32px;
-    background: linear-gradient(135deg, rgba(3,41,80,0.6), rgba(10,37,64,0.75));
-    border:1px solid var(--glass-border);
-    border-radius:12px; backdrop-filter:blur(16px);
-    transition:all .4s; position:relative; overflow:hidden;
-  }
-  .feature-card:hover {
-    transform:translateY(-4px);
-    border-color:rgba(28,231,237,0.4);
-    box-shadow:0 20px 60px rgba(28,231,237,0.12);
-  }
-  .feature-icon {
-    width:52px; height:52px; border-radius:10px;
-    background: linear-gradient(135deg, rgba(28,231,237,0.15), rgba(26,113,224,0.15));
-    border:1px solid rgba(28,231,237,0.25);
-    display:flex; align-items:center; justify-content:center;
-    font-size:24px; margin-bottom:20px;
-  }
-  .feature-title {
-    font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700;
-    letter-spacing:1px; color:var(--ice); margin-bottom:10px;
-  }
-  .feature-desc { font-size:14px; line-height:1.6; color:rgba(234,251,255,0.65); }
- 
-  /* ── DEPOSIT METHODS ── */
-  .deposit-section {
-    position:relative; z-index:1;
-    padding:80px 5%;
-    text-align:center;
-  }
-  .deposit-cards {
-    display:flex; justify-content:center; gap:24px;
-    margin-top:48px; flex-wrap:wrap;
-  }
-  .deposit-card {
-    padding:32px 48px;
-    background: linear-gradient(135deg, rgba(3,41,80,0.8), rgba(10,37,64,0.9));
-    border:1px solid var(--glass-border);
-    border-radius:12px; backdrop-filter:blur(20px);
-    transition:all .3s;
-  }
-  .deposit-card:hover {
-    border-color:var(--cyan); box-shadow:var(--glow-sm);
-    transform:translateY(-4px);
-  }
-  .deposit-card .icon { font-size:40px; margin-bottom:12px; }
-  .deposit-card .name {
-    font-family:'Orbitron',sans-serif; font-size:15px;
-    font-weight:700; color:var(--cyan); letter-spacing:2px;
-  }
-  .deposit-card .sub { font-size:12px; color:rgba(234,251,255,0.5); margin-top:4px; letter-spacing:2px; }
- 
-  /* ── CTA SECTION ── */
-  .cta-section {
-    position:relative; z-index:1;
-    padding:120px 5%; text-align:center;
-  }
-  .cta-box {
-    max-width:700px; margin:0 auto;
-    padding:64px;
-    background: linear-gradient(135deg, rgba(3,41,80,0.85), rgba(26,113,224,0.15));
-    border:1px solid rgba(28,231,237,0.25);
-    border-radius:16px; backdrop-filter:blur(24px);
-    box-shadow:0 40px 100px rgba(28,231,237,0.08);
-    position:relative; overflow:hidden;
-  }
-  .cta-box::before {
-    content:''; position:absolute; top:0; left:0; right:0; height:2px;
-    background: linear-gradient(90deg, transparent, var(--cyan), var(--royal), transparent);
-  }
-  .cta-box h2 {
-    font-family:'Orbitron',sans-serif; font-size:clamp(24px,3vw,42px);
-    font-weight:900; color:var(--ice); margin-bottom:20px;
-  }
-  .cta-box p { font-size:17px; color:rgba(234,251,255,0.7); margin-bottom:40px; line-height:1.7; }
-  .cta-actions { display:flex; justify-content:center; gap:16px; flex-wrap:wrap; }
- 
-  /* ── FOOTER ── */
-  footer {
-    position:relative; z-index:1;
-    border-top:1px solid rgba(28,231,237,0.1);
-    padding:40px 5%;
-    display:flex; justify-content:space-between; align-items:center;
-    flex-wrap:wrap; gap:20px;
-  }
-  .footer-brand {
-    font-family:'Orbitron',sans-serif; font-size:11px;
-    letter-spacing:3px; color:var(--teal);
-  }
-  .footer-copy { font-size:12px; color:rgba(234,251,255,0.4); letter-spacing:1px; }
- 
-  /* ── TICKER ── */
-  .ticker {
-    background:rgba(3,41,80,0.7); border-top:1px solid var(--glass-border);
-    border-bottom:1px solid var(--glass-border);
-    backdrop-filter:blur(10px);
-    overflow:hidden; height:36px; position:relative; z-index:1;
-  }
-  .ticker-inner {
-    display:flex; gap:64px; align-items:center; height:100%;
-    white-space:nowrap;
-    animation:ticker 25s linear infinite;
-  }
-  @keyframes ticker {
-    0%   { transform:translateX(0); }
-    100% { transform:translateX(-50%); }
-  }
-  .ticker-item {
-    font-family:'Space Mono',monospace; font-size:11px;
-    color:rgba(234,251,255,0.7); display:flex; gap:10px; align-items:center;
-  }
-  .ticker-item .up   { color:#1aed7a; }
-  .ticker-item .name { color:var(--cyan); font-weight:700; }
-  .ticker-item .sep  { color:rgba(28,231,237,0.3); }
- 
-  @media (max-width:900px) {
-    .hero-visual { display:none; }
-    .features-grid { grid-template-columns:1fr 1fr; }
-    .referral-visual { grid-template-columns:1fr; }
-    .nav-links { display:none; }
-    .cycles-grid { gap:16px; }
-    .cycle-card { padding:24px 20px; }
-    .hero-actions { flex-direction:column; align-items:flex-start; }
-  }
-  @media (max-width:600px) {
-    .features-grid { grid-template-columns:1fr; }
-    .hero-stat-row { flex-wrap:wrap; gap:24px; }
-    .cta-box { padding:40px 24px; }
-    .deposit-cards { flex-direction:column; align-items:center; }
-    .cta-actions { flex-direction:column; align-items:center; }
-    .footer { flex-direction:column; text-align:center; gap:16px; }
-    .ticker-item { font-size:10px; }
-  }
-  @media (max-width:480px) {
-    .hero { padding:100px 5% 60px; }
-    .hero h1 { font-size:clamp(28px,6vw,48px); }
-    .hero-desc { font-size:16px; margin-bottom:32px; }
-    .cycles-grid { grid-template-columns:1fr; gap:12px; }
-    .cycle-card { padding:20px 16px; }
-    .cycle-rate { font-size:32px; }
-    .features-grid { gap:16px; }
-    .feature-card { padding:24px; }
-    .referral-visual { gap:40px; }
-    .ref-level { padding:16px 20px; }
-    .cta-box { padding:32px 20px; }
-    .cta-box h2 { font-size:28px; }
-    /* Nav CTA : réduction sur petits écrans */
-    .btn-glass, .btn-primary {
-      padding:7px 14px; font-size:11px; letter-spacing:1px;
-    }
-    .btn-xl { padding:13px 26px; font-size:12px; letter-spacing:2px; }
-    .nav-cta { gap:8px; }
-    /* Cacher le sous-titre du logo pour gagner de la place */
-    .nav-brand span { display:none; }
-  }
-  @media (max-width:380px) {
-    /* Très petits écrans : masquer "Connexion", garder "Commencer" */
-    .nav-cta .btn-glass { display:none; }
-    .btn-primary { padding:7px 12px; font-size:11px; }
-    nav { padding:0 4%; }
-  }
+/* Flèches navigation */
+.hero-arrows{
+  position:absolute;bottom:85px;right:5%;z-index:3;
+  display:flex;gap:8px;
+}
+.hero-arrow{
+  width:38px;height:38px;border-radius:6px;
+  border:1px solid rgba(201,162,39,0.3);
+  background:rgba(201,162,39,0.06);
+  color:var(--gold);font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .2s;
+}
+.hero-arrow:hover{background:rgba(201,162,39,0.15);border-color:var(--gold);}
+
+/* Numéro slide courant */
+.hero-slide-count{
+  position:absolute;top:50%;right:5%;transform:translateY(-50%);
+  z-index:3;
+  font-family:'Space Mono',monospace;font-size:11px;
+  color:rgba(201,162,39,0.5);letter-spacing:2px;
+}
+
+/* ── TICKER ───────────────────────────────────────────────────────── */
+.ticker{
+  background:rgba(10,18,32,0.95);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  overflow:hidden;height:38px;position:relative;z-index:10;
+}
+.ticker-inner{
+  display:flex;gap:60px;align-items:center;height:100%;
+  white-space:nowrap;
+  animation:ticker-move 30s linear infinite;
+}
+@keyframes ticker-move{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+.ticker-item{
+  font-family:'Space Mono',monospace;font-size:11px;
+  color:var(--muted);display:flex;gap:10px;align-items:center;
+}
+.ticker-item .t-name{color:var(--gold);font-weight:700;}
+.ticker-item .t-rate{color:var(--green);}
+.ticker-item .t-sep{color:var(--border);}
+
+/* ── SECTION COMMUNES ─────────────────────────────────────────────── */
+.section{position:relative;z-index:1;padding:90px 5%;}
+.s-header{text-align:center;margin-bottom:56px;}
+.s-eyebrow{
+  font-family:'Space Mono',monospace;font-size:10px;
+  letter-spacing:5px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:14px;
+}
+.s-title{
+  font-family:'Orbitron',sans-serif;font-size:clamp(22px,3vw,40px);
+  font-weight:700;color:var(--text);line-height:1.2;
+}
+.s-title span{
+  background:linear-gradient(90deg,var(--gold),var(--gold-l));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.s-sub{font-size:15px;color:var(--muted);margin-top:12px;max-width:560px;margin-left:auto;margin-right:auto;line-height:1.6;}
+
+/* ── CYCLES ───────────────────────────────────────────────────────── */
+.cycles-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:18px;max-width:1100px;margin:0 auto;
+}
+.cycle-card{
+  background:linear-gradient(155deg,rgba(13,26,46,0.9),rgba(10,18,32,0.95));
+  border:1px solid var(--border);
+  border-radius:14px;padding:28px 24px;
+  position:relative;overflow:hidden;
+  transition:transform .3s,border-color .3s,box-shadow .3s;
+  text-decoration:none;color:inherit;display:block;
+}
+.cycle-card:hover{
+  transform:translateY(-6px);
+  border-color:var(--gold);
+  box-shadow:0 12px 40px rgba(201,162,39,0.18);
+}
+.cycle-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--gold),var(--gold-l),var(--gold));
+}
+.cycle-card::after{
+  content:'';position:absolute;top:-60px;right:-60px;
+  width:150px;height:150px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,162,39,0.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+.c-index{
+  font-family:'Space Mono',monospace;font-size:9px;
+  letter-spacing:4px;text-transform:uppercase;
+  color:var(--dim);margin-bottom:10px;
+}
+.c-name{
+  font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;
+  letter-spacing:1.5px;color:var(--text);margin-bottom:6px;
+}
+.c-days{
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--dim);margin-bottom:22px;
+  font-family:'Space Mono',monospace;
+}
+.c-rate{
+  font-family:'Orbitron',sans-serif;font-size:44px;font-weight:900;
+  line-height:1;color:var(--gold);
+  text-shadow:0 0 20px rgba(201,162,39,0.35);
+  margin-bottom:4px;
+}
+.c-unit{font-size:13px;color:var(--dim);margin-bottom:20px;letter-spacing:1px;}
+.c-return{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0;
+  border-top:1px solid rgba(201,162,39,0.12);
+  font-size:12px;letter-spacing:1px;
+  margin-bottom:20px;
+}
+.c-return .k{color:var(--dim);}
+.c-return .v{font-family:'Orbitron',sans-serif;font-weight:700;color:var(--green);}
+.c-btn{
+  display:block;width:100%;text-align:center;
+  background:linear-gradient(135deg,var(--gold),var(--gold-d));
+  color:#060b14;font-family:'Orbitron',sans-serif;
+  font-size:12px;font-weight:700;letter-spacing:1.5px;
+  padding:10px;border-radius:7px;text-decoration:none;
+  transition:opacity .2s;
+}
+.c-btn:hover{opacity:.88;}
+.c-empty{
+  grid-column:1/-1;text-align:center;padding:3rem;color:var(--dim);
+  font-family:'Space Mono',monospace;font-size:13px;
+}
+
+/* ── ABOUT ────────────────────────────────────────────────────────── */
+.about-section{background:linear-gradient(180deg,var(--bg),var(--bg2),var(--bg));}
+.about-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:56px;align-items:center;max-width:1100px;margin:0 auto;
+}
+.about-left h2{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(20px,2.5vw,34px);
+  font-weight:700;color:var(--text);line-height:1.25;margin-bottom:16px;
+}
+.about-left h2 span{
+  background:linear-gradient(90deg,var(--gold),var(--gold-l));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.about-left p{
+  font-size:15px;line-height:1.8;color:var(--muted);margin-bottom:28px;
+}
+.about-tags{display:flex;flex-wrap:wrap;gap:8px;}
+.about-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 12px;
+  border:1px solid rgba(201,162,39,0.22);
+  background:rgba(201,162,39,0.05);
+  border-radius:4px;
+  font-size:11px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--gold);font-family:'Space Mono',monospace;
+  transition:all .2s;
+}
+.about-tag:hover{background:rgba(201,162,39,0.1);border-color:rgba(201,162,39,0.45);}
+.about-tag::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+
+/* Stats grid droite */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.stat-card{
+  padding:22px 18px;
+  background:linear-gradient(135deg,rgba(13,26,46,0.7),rgba(10,18,32,0.85));
+  border:1px solid var(--border);
+  border-radius:12px;transition:all .3s;
+}
+.stat-card:hover{border-color:var(--gold);box-shadow:0 8px 28px rgba(201,162,39,0.1);transform:translateY(-3px);}
+.stat-icon{font-size:22px;margin-bottom:10px;}
+.stat-val{
+  font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700;
+  color:var(--gold);line-height:1;
+}
+.stat-lbl{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:5px;display:block;}
+
+/* ── AUTH CTA (guest only) ────────────────────────────────────────── */
+.auth-section{
+  position:relative;z-index:1;
+  padding:100px 5%;text-align:center;
+}
+.auth-box{
+  max-width:680px;margin:0 auto;
+  padding:60px 40px;
+  background:linear-gradient(135deg,rgba(13,26,46,0.9),rgba(201,162,39,0.04));
+  border:1px solid rgba(201,162,39,0.22);
+  border-radius:18px;
+  position:relative;overflow:hidden;
+  box-shadow:0 40px 100px rgba(0,0,0,0.5);
+}
+.auth-box::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),var(--gold-l),var(--gold),transparent);
+}
+.auth-box::after{
+  content:'';position:absolute;
+  bottom:-80px;right:-80px;width:220px;height:220px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,162,39,0.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+.auth-box h2{
+  font-family:'Orbitron',sans-serif;font-size:clamp(20px,3vw,34px);
+  font-weight:900;color:var(--text);margin-bottom:16px;
+}
+.auth-box h2 span{
+  background:linear-gradient(90deg,var(--gold),var(--gold-l));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.auth-box p{font-size:16px;color:var(--muted);margin-bottom:36px;line-height:1.7;}
+.auth-actions{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;}
+
+/* ── FOOTER ───────────────────────────────────────────────────────── */
+footer{
+  position:relative;z-index:1;
+  border-top:1px solid var(--border);
+  padding:32px 5%;
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:16px;
+}
+.footer-brand{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:3px;color:var(--gold);}
+.footer-copy{font-size:12px;color:var(--dim);letter-spacing:1px;}
+
+/* ── RESPONSIVE ───────────────────────────────────────────────────── */
+@media(max-width:900px){
+  .nav-links{display:none;}
+  .about-grid{grid-template-columns:1fr;gap:40px;}
+  .hero-slide-count{display:none;}
+}
+@media(max-width:600px){
+  .hero-stats{gap:20px;}
+  .auth-box{padding:40px 24px;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .auth-actions{flex-direction:column;align-items:center;}
+  .hero-dots{bottom:70px;}
+  .hero-arrows{bottom:55px;}
+}
+@media(max-width:400px){
+  .nav-cta .btn-outline{display:none;}
+  .hero h1{font-size:clamp(28px,8vw,42px);}
+  .hero-badge{font-size:9px;letter-spacing:3px;}
+}
+
+/* ── ANIMATIONS ENTRÉE ────────────────────────────────────────────── */
+.fade-up{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease;}
+.fade-up.visible{opacity:1;transform:translateY(0);}
 </style>
 </head>
 <body>
- 
-<div class="orb orb1"></div>
-<div class="orb orb2"></div>
-<div class="orb orb3"></div>
- 
+
 <!-- NAV -->
-<nav>
-  <div class="nav-logo">
-    <div class="logo-k">K</div>
-    <div class="nav-brand">
-      KINETIC
-      <span>TRADING SYSTEM</span>
-    </div>
-  </div>
+<nav class="kts-nav">
+  <a href="{{ route('home') }}" class="nav-logo">
+    <div class="nav-logo-icon">K</div>
+    <div class="nav-brand">KINETIC<span>TRADING SYSTEM</span></div>
+  </a>
   <div class="nav-links">
-    <a href="#home">Accueil</a>
-    <a href="#about-section">À Propos</a>
-    <a href="#cycles-section">Cycles</a>
-    <a href="#referral-section">Parrainage</a>
-    <a href="#features-section">Fonctionnalités</a>
+    <a href="#cycles">Cycles</a>
+    <a href="#about">À Propos</a>
+    @guest
+    <a href="{{ route('login') }}">Connexion</a>
+    @endguest
   </div>
   <div class="nav-cta">
     @guest
-    <a href="{{ route('login') }}" class="btn-glass">Connexion</a>
-    <a href="{{ route('register') }}" class="btn-primary">Commencer</a>
-    @endguest
+      <a href="{{ route('login') }}" class="btn-outline">Connexion</a>
+      <a href="{{ route('register') }}" class="btn-gold">Commencer</a>
+    @else
+      <a href="{{ route('dashboard') }}" class="btn-gold">Mon Dashboard</a>
+    @endauth
   </div>
 </nav>
- 
-<!-- TICKER -->
-<div style="margin-top:72px;">
-<div class="ticker">
-  <div class="ticker-inner">
-    <div class="ticker-item"><span class="name">KINETIC FLASH</span><span class="sep">|</span><span class="up">+15%/jr</span><span class="sep">·</span>7J</div>
-    <div class="ticker-item"><span class="name">KINETIC BOOST</span><span class="sep">|</span><span class="up">+8%/jr</span><span class="sep">·</span>15J</div>
-    <div class="ticker-item"><span class="name">KINETIC PRO-PERF</span><span class="sep">|</span><span class="up">+6%/jr</span><span class="sep">·</span>30J</div>
-    <div class="ticker-item"><span class="name">KINETIC INFINITY</span><span class="sep">|</span><span class="up">+5%/jr</span><span class="sep">·</span>60J</div>
-    <div class="ticker-item"><span class="name">LUMICASH</span><span class="sep">|</span>Dépôt actif</div>
-    <div class="ticker-item"><span class="name">BANCOBU eNOTI</span><span class="sep">|</span>Dépôt actif</div>
-    <!-- duplicate for loop -->
-    <div class="ticker-item"><span class="name">KINETIC FLASH</span><span class="sep">|</span><span class="up">+15%/jr</span><span class="sep">·</span>7J</div>
-    <div class="ticker-item"><span class="name">KINETIC BOOST</span><span class="sep">|</span><span class="up">+8%/jr</span><span class="sep">·</span>15J</div>
-    <div class="ticker-item"><span class="name">KINETIC PRO-PERF</span><span class="sep">|</span><span class="up">+6%/jr</span><span class="sep">·</span>30J</div>
-    <div class="ticker-item"><span class="name">KINETIC INFINITY</span><span class="sep">|</span><span class="up">+5%/jr</span><span class="sep">·</span>60J</div>
-    <div class="ticker-item"><span class="name">LUMICASH</span><span class="sep">|</span>Dépôt actif</div>
-    <div class="ticker-item"><span class="name">BANCOBU eNOTI</span><span class="sep">|</span>Dépôt actif</div>
-  </div>
-</div>
-</div>
- 
-<!-- HERO -->
+
+<!-- ══ HERO SLIDESHOW ══════════════════════════════════════════════ -->
 <section class="hero" id="home">
+  <!-- Slides photos -->
+  <div class="hero-slides" id="heroSlides">
+    @foreach($slides as $i => $slide)
+      <div class="hero-slide {{ $i === 0 ? 'active' : '' }}"
+           style="background-image:url('{{ asset($slide) }}')"></div>
+    @endforeach
+  </div>
+
+  <!-- Overlay -->
+  <div class="hero-overlay"></div>
+
+  <!-- Contenu -->
   <div class="hero-content">
     <div class="hero-badge">⚡ Plateforme Elite — Cycle Quotidien Actif</div>
     <h1>
@@ -766,82 +545,118 @@
       <span class="line2">Intelligent &amp; Puissant</span>
     </h1>
     <p class="hero-desc">
-      Rejoignez l'écosystème d'investissement le plus avancé du marché.
-      Profits journaliers automatiques, cycles répétables et commissions multi-niveaux
-      pour bâtir votre liberté financière.
+      Rejoignez l'écosystème d'investissement le plus avancé.
+      Profits journaliers automatiques, cycles répétables et commissions
+      multi-niveaux pour bâtir votre liberté financière.
     </p>
     <div class="hero-actions">
       @auth
-        <a href="{{ route('dashboard') }}" class="btn-primary btn-xl">Accéder au Dashboard</a>
+        <a href="{{ route('dashboard') }}" class="btn-gold-xl">Accéder au Dashboard</a>
       @else
-        <a href="{{ route('register') }}" class="btn-primary btn-xl">Ouvrir un Compte</a>
+        <a href="{{ route('register') }}" class="btn-gold-xl">Ouvrir un Compte</a>
+        <a href="#cycles" class="btn-ghost-xl">Voir les Cycles</a>
       @endauth
-      <a href="#cycles-section" class="btn-glass btn-xl">Voir les Cycles</a>
     </div>
-    <div class="hero-stat-row">
+    <div class="hero-stats">
       <div class="hero-stat">
-        <span class="val">4 Cycles</span>
-        <span class="lbl">de trading actifs</span>
+        <span class="val">{{ $cycles->count() ?: '—' }}</span>
+        <span class="lbl">Cycles actifs</span>
       </div>
+      @if($cycles->count())
+        <div class="hero-stat">
+          <span class="val">{{ number_format($cycles->max('daily_profit_percent'), 0) }}%/jr</span>
+          <span class="lbl">Profit maximum</span>
+        </div>
+      @endif
       <div class="hero-stat">
-        <span class="val">15%/jr</span>
-        <span class="lbl">profit maximum</span>
-      </div>
-      <div class="hero-stat">
-        <span class="val">3 Niveaux</span>
-        <span class="lbl">de parrainage</span>
+        <span class="val">3 Niv.</span>
+        <span class="lbl">Parrainage</span>
       </div>
     </div>
   </div>
- 
-  <!-- Hero KPI Visual -->
-  <div class="hero-visual">
-    <div class="kpi-card kpi-main">
-      <div class="kpi-label">Profit cumulé aujourd'hui</div>
-      <div class="kpi-value" id="live-profit">$24,891.50</div>
-      <div class="kpi-change">▲ +12.4% depuis hier</div>
-    </div>
-    <div class="kpi-row">
-      <div class="kpi-card kpi-small">
-        <div class="kpi-label">Investisseurs actifs</div>
-        <div class="kpi-value">1,247</div>
+
+  <!-- Dots -->
+  <div class="hero-dots" id="heroDots"></div>
+
+  <!-- Flèches -->
+  @if(count($slides) > 1)
+  <div class="hero-arrows">
+    <button class="hero-arrow" onclick="heroSlide(-1)">‹</button>
+    <button class="hero-arrow" onclick="heroSlide(1)">›</button>
+  </div>
+  <!-- Compteur -->
+  <div class="hero-slide-count" id="heroCount">01 / {{ str_pad(count($slides), 2, '0', STR_PAD_LEFT) }}</div>
+  @endif
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner" id="tickerInner">
+    @php $tickItems = $cycles->count() ? $cycles : collect(); @endphp
+    @forelse($tickItems as $c)
+      <div class="ticker-item">
+        <span class="t-name">{{ strtoupper($c->name) }}</span>
+        <span class="t-sep">|</span>
+        <span class="t-rate">+{{ $c->daily_profit_percent }}%/jr</span>
+        <span class="t-sep">·</span>
+        <span>{{ $c->duration_days }}J</span>
       </div>
-      <div class="kpi-card kpi-small">
-        <div class="kpi-label">Ref. payés</div>
-        <div class="kpi-value">$3,490</div>
+    @empty
+      <div class="ticker-item"><span class="t-name">KINETIC TRADING SYSTEM</span><span class="t-sep">|</span><span class="t-rate">Plateforme Active</span></div>
+    @endforelse
+    {{-- Dupliquer pour boucle infinie --}}
+    @forelse($tickItems as $c)
+      <div class="ticker-item">
+        <span class="t-name">{{ strtoupper($c->name) }}</span>
+        <span class="t-sep">|</span>
+        <span class="t-rate">+{{ $c->daily_profit_percent }}%/jr</span>
+        <span class="t-sep">·</span>
+        <span>{{ $c->duration_days }}J</span>
       </div>
-    </div>
-    <div class="kpi-row">
-      <div class="kpi-card kpi-small">
-        <div class="kpi-label">Retraits traités</div>
-        <div class="kpi-value">98%</div>
+    @empty
+      <div class="ticker-item"><span class="t-name">KINETIC TRADING SYSTEM</span><span class="t-sep">|</span><span class="t-rate">Plateforme Active</span></div>
+    @endforelse
+  </div>
+</div>
+
+<!-- ══ CYCLES DYNAMIQUES ══════════════════════════════════════════ -->
+<section class="section" id="cycles">
+  <div class="s-header">
+    <div class="s-eyebrow">// Cycles de Trading</div>
+    <h2 class="s-title">Choisissez votre <span>stratégie de rendement</span></h2>
+    <p class="s-sub">Des cycles calculés pour maximiser votre retour sur investissement, chaque jour.</p>
+  </div>
+
+  <div class="cycles-grid">
+    @forelse($cycles as $i => $cycle)
+      <div class="cycle-card fade-up">
+        <div class="c-index">// Cycle #{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</div>
+        <div class="c-name">{{ strtoupper($cycle->name) }}</div>
+        <div class="c-days">{{ $cycle->duration_days }} jours · {{ $cycle->description ?? 'Cycle de trading' }}</div>
+        <div class="c-rate">{{ $cycle->daily_profit_percent }}%</div>
+        <div class="c-unit">profit journalier</div>
+        <div class="c-return">
+          <span class="k">Retour total</span>
+          <span class="v">{{ $cycle->total_return_percent }}%</span>
+        </div>
+        @auth
+          <a href="{{ route('investments.cycle.tranches', $cycle) }}" class="c-btn">Investir →</a>
+        @else
+          <a href="{{ route('register') }}" class="c-btn">Commencer →</a>
+        @endauth
       </div>
-      <div class="kpi-card kpi-small">
-        <div class="kpi-label">Tranches dispo</div>
-        <div class="kpi-value">K-1→18</div>
-      </div>
-    </div>
+    @empty
+      <div class="c-empty">// Aucun cycle actif pour le moment</div>
+    @endforelse
   </div>
 </section>
- 
-<!-- ══ ABOUT / PRÉSENTATION ══════════════════════════════════════ -->
-<section class="about-section" id="about-section">
 
-  <!-- Slideshow pleine largeur -->
-  <!-- Mets tes photos dans public/images/slides/ avec les noms slide1.jpg … slide4.jpg -->
-  <div class="about-slider" id="about-slider">
-    <div class="about-slide active" style="background-image:url('{{ asset('images/slides/slide1.jpg') }}')"></div>
-    <div class="about-slide"        style="background-image:url('{{ asset('images/slides/slide2.jpg') }}')"></div>
-    <div class="about-slide"        style="background-image:url('{{ asset('images/slides/slide3.jpg') }}')"></div>
-    <div class="about-slide"        style="background-image:url('{{ asset('images/slides/slide4.jpg') }}')"></div>
-    <div class="about-dots" id="about-dots"></div>
-  </div>
-
-  <!-- Contenu : texte gauche + crédibilité droite -->
-  <div class="about-content">
-
-    <!-- Gauche : présentation + badges -->
-    <div class="about-left">
+<!-- ══ ABOUT ═══════════════════════════════════════════════════════ -->
+<section class="section about-section" id="about">
+  <div class="about-grid">
+    <!-- Gauche : texte -->
+    <div class="about-left fade-up">
+      <div class="s-eyebrow" style="text-align:left;margin-bottom:14px;">// À Propos</div>
       <h2>La plateforme qui <span>transforme vos épargnes</span> en revenus réels</h2>
       <p>
         Kinetic Trading System est un écosystème d'investissement de nouvelle génération.
@@ -849,311 +664,128 @@
         automatiques chaque 24 heures — de manière transparente, sécurisée et vérifiable.
         Rejoignez une communauté qui bâtit sa liberté financière, un cycle à la fois.
       </p>
-      <div class="about-badge-row">
-        <span class="about-badge"><span class="ab-dot"></span>Profits Automatiques</span>
-        <span class="about-badge"><span class="ab-dot"></span>100% Transparent</span>
-        <span class="about-badge"><span class="ab-dot"></span>Sécurisé</span>
-        <span class="about-badge"><span class="ab-dot"></span>Multi-niveaux</span>
-        <span class="about-badge"><span class="ab-dot"></span>Retraits Rapides</span>
-        <span class="about-badge"><span class="ab-dot"></span>Support Réactif</span>
-        <span class="about-badge"><span class="ab-dot"></span>Cycles Répétables</span>
-        <span class="about-badge"><span class="ab-dot"></span>Accessible 24/7</span>
+      <div class="about-tags">
+        <span class="about-tag">Profits Automatiques</span>
+        <span class="about-tag">100% Transparent</span>
+        <span class="about-tag">Sécurisé</span>
+        <span class="about-tag">Multi-niveaux</span>
+        <span class="about-tag">Retraits Rapides</span>
+        <span class="about-tag">Support Réactif</span>
+        <span class="about-tag">Cycles Répétables</span>
+        <span class="about-tag">Accessible 24/7</span>
       </div>
     </div>
 
-    <!-- Droite : chiffres de crédibilité -->
-    <div class="cred-grid">
-      <div class="cred-card">
-        <div class="cred-icon">⚡</div>
-        <div class="cred-val">4</div>
-        <span class="cred-lbl">Cycles de trading</span>
+    <!-- Droite : stats -->
+    <div class="stats-grid fade-up">
+      <div class="stat-card">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-val">{{ $cycles->count() ?: '—' }}</div>
+        <span class="stat-lbl">Cycles de trading</span>
       </div>
-      <div class="cred-card">
-        <div class="cred-icon">📈</div>
-        <div class="cred-val">15%</div>
-        <span class="cred-lbl">Profit max / jour</span>
+      <div class="stat-card">
+        <div class="stat-icon">📈</div>
+        <div class="stat-val">{{ $cycles->count() ? number_format($cycles->max('daily_profit_percent'), 0) . '%' : '—' }}</div>
+        <span class="stat-lbl">Profit max / jour</span>
       </div>
-      <div class="cred-card">
-        <div class="cred-icon">🤝</div>
-        <div class="cred-val">3 Niv.</div>
-        <span class="cred-lbl">Commissions parrainage</span>
+      <div class="stat-card">
+        <div class="stat-icon">🤝</div>
+        <div class="stat-val">3 Niv.</div>
+        <span class="stat-lbl">Commissions parrainage</span>
       </div>
-      <div class="cred-card">
-        <div class="cred-icon">🔒</div>
-        <div class="cred-val">98%</div>
-        <span class="cred-lbl">Retraits traités</span>
+      <div class="stat-card">
+        <div class="stat-icon">🔒</div>
+        <div class="stat-val">98%</div>
+        <span class="stat-lbl">Retraits traités</span>
       </div>
-      <div class="cred-card">
-        <div class="cred-icon">💳</div>
-        <div class="cred-val">2</div>
-        <span class="cred-lbl">Méthodes de paiement</span>
+      <div class="stat-card">
+        <div class="stat-icon">💳</div>
+        <div class="stat-val">10%</div>
+        <span class="stat-lbl">Commission niveau 1</span>
       </div>
-      <div class="cred-card">
-        <div class="cred-icon">🌍</div>
-        <div class="cred-val">24/7</div>
-        <span class="cred-lbl">Disponibilité plateforme</span>
+      <div class="stat-card">
+        <div class="stat-icon">🌍</div>
+        <div class="stat-val">24/7</div>
+        <span class="stat-lbl">Disponibilité</span>
       </div>
     </div>
-
   </div>
 </section>
 
-<!-- TRADING CYCLES -->
-<section class="cycles-section" id="cycles-section">
-  <div class="section-header">
-    <div class="section-eyebrow">// Cycles de Trading</div>
-    <h2 class="section-title">Choisissez votre <span>stratégie de rendement</span></h2>
-  </div>
- 
-  <div class="cycles-grid">
-    <div class="cycle-card flash">
-      <div class="cycle-name">KINETIC FLASH</div>
-      <div class="cycle-days">07 jours · Cycle rapide</div>
-      <div class="cycle-rate">15%</div>
-      <div class="cycle-unit">profit journalier</div>
-      <div class="cycle-return">
-        <span class="key">Retour total</span>
-        <span class="val">105%</span>
-      </div>
-      @auth
-        <a href="{{ route('dashboard') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
-      @else
-        <a href="{{ route('register') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
-      @endauth
-    </div>
- 
-    <div class="cycle-card boost">
-      <div class="cycle-name">KINETIC BOOST</div>
-      <div class="cycle-days">15 jours · Cycle intermédiaire</div>
-      <div class="cycle-rate">8%</div>
-      <div class="cycle-unit">profit journalier</div>
-      <div class="cycle-return">
-        <span class="key">Retour total</span>
-        <span class="val">120%</span>
-      </div>
-      @auth
-        <a href="{{ route('dashboard') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
-      @else
-        <a href="{{ route('register') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
-      @endauth
-    </div>
- 
-    <div class="cycle-card pro">
-      <div class="cycle-name">KINETIC PRO-PERF</div>
-      <div class="cycle-days">30 jours · Cycle pro</div>
-      <div class="cycle-rate">6%</div>
-      <div class="cycle-unit">profit journalier</div>
-      <div class="cycle-return">
-        <span class="key">Retour total</span>
-        <span class="val">180%</span>
-      </div>
-      @auth
-        <a href="{{ route('dashboard') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
-      @else
-        <a href="{{ route('register') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
-      @endauth
-    </div>
- 
-    <div class="cycle-card infinity">
-      <div class="cycle-name">KINETIC INFINITY</div>
-      <div class="cycle-days">60 jours · Cycle élite</div>
-      <div class="cycle-rate">5%</div>
-      <div class="cycle-unit">profit journalier</div>
-      <div class="cycle-return">
-        <span class="key">Retour total</span>
-        <span class="val">300%</span>
-      </div>
-      @auth
-        <a href="{{ route('dashboard') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
-      @else
-        <a href="{{ route('register') }}" class="btn-primary" style="display:block;text-align:center;margin-top:20px;">Investir →</a>
-      @endauth
-    </div>
-  </div>
-</section>
- 
-<!-- REFERRAL -->
-<section class="referral-section" id="referral-section">
-  <div class="referral-visual">
-    <div class="referral-tree">
-      <div class="section-eyebrow" style="margin-bottom:8px;">// Système de Parrainage</div>
-      <div class="ref-level">
-        <div class="ref-level-badge">L1</div>
-        <div class="ref-level-info">
-          <div class="name">Niveau 1 — Direct</div>
-          <div class="desc">Sur dépôts et achats de votre filleul direct</div>
-        </div>
-        <div class="ref-pct">10%</div>
-      </div>
-      <div class="ref-level">
-        <div class="ref-level-badge">L2</div>
-        <div class="ref-level-info">
-          <div class="name">Niveau 2 — Indirect</div>
-          <div class="desc">Sur les dépôts des filleuls de vos filleuls</div>
-        </div>
-        <div class="ref-pct">3%</div>
-      </div>
-      <div class="ref-level">
-        <div class="ref-level-badge">L3</div>
-        <div class="ref-level-info">
-          <div class="name">Niveau 3 — Réseau</div>
-          <div class="desc">Commissions sur le troisième niveau de réseau</div>
-        </div>
-        <div class="ref-pct">1%</div>
-      </div>
-    </div>
- 
-    <div class="referral-info">
-      <h2>Gagnez sur <span>3 niveaux</span> de réseau</h2>
-      <p>
-        Invitez des partenaires, construisez votre réseau et percevez des commissions
-        automatiques sur chaque dépôt et achat de tranche réalisé par votre équipe.
-        Votre solde de parrainage est retirable à tout moment.
-      </p>
-      <a href="{{ route('register') }}" class="btn-primary btn-xl">Obtenir mon lien de parrainage</a>
-    </div>
-  </div>
-</section>
- 
-<!-- FEATURES -->
-<section class="features-section" id="features-section">
-  <div class="section-header">
-    <div class="section-eyebrow">// Fonctionnalités Clés</div>
-    <h2 class="section-title">Une plateforme <span>conçue pour l'élite</span></h2>
-  </div>
- 
-  <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-icon">⚡</div>
-      <div class="feature-title">Profits Journaliers Automatiques</div>
-      <div class="feature-desc">Chaque contrat actif génère ses profits toutes les 24h. Chaque achat est un actif indépendant suivi individuellement.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">🔁</div>
-      <div class="feature-title">Achats Répétables Illimités</div>
-      <div class="feature-desc">Investissez dans la même tranche ou le même cycle autant de fois que vous le souhaitez. Chaque achat est un contrat unique.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">🛡️</div>
-      <div class="feature-title">Sécurité Niveau Institutionnel</div>
-      <div class="feature-desc">JWT + RBAC, hachage bcrypt, contrôle d'accès à deux rôles avec surveillance anti-fraude en temps réel.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">📊</div>
-      <div class="feature-title">Dashboard Temps Réel</div>
-      <div class="feature-desc">KPIs animés, compteurs de profits en direct, historique de transactions complet et analytics de portefeuille.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">👑</div>
-      <div class="feature-title">Cockpit Admin Absolu</div>
-      <div class="feature-desc">L'administrateur dispose d'un contrôle total : ajustements manuels, gestion de cycles, approbation des retraits.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">💬</div>
-      <div class="feature-title">Support Intégré</div>
-      <div class="feature-desc">Chat interne user-admin, tickets de support, résolution de litiges financiers et notifications en temps réel.</div>
-    </div>
-  </div>
-</section>
- 
-<!-- DEPOSIT METHODS -->
-<section class="deposit-section">
-  <div class="section-eyebrow">// Méthodes de Paiement</div>
-  <h2 class="section-title" style="margin-top:12px;">Dépôts <span>sécurisés &amp; locaux</span></h2>
- 
-  <div class="deposit-cards">
-    <div class="deposit-card">
-      <div class="icon">💳</div>
-      <div class="name">LUMICASH</div>
-      <div class="sub">Mobile Money · Burundi</div>
-    </div>
-    <div class="deposit-card">
-      <div class="icon">🏦</div>
-      <div class="name">BANCOBU eNOTI</div>
-      <div class="sub">Virement Bancaire · Burundi</div>
-    </div>
-  </div>
-</section>
- 
-<!-- CTA -->
-<section class="cta-section" id="cta-section">
-  <div class="cta-box">
-    <h2>Rejoignez KTS dès aujourd'hui</h2>
+<!-- ══ AUTH CTA (guests uniquement) ═══════════════════════════════ -->
+@guest
+<section class="auth-section">
+  <div class="auth-box fade-up">
+    <h2>Rejoignez <span>KTS</span> dès aujourd'hui</h2>
     <p>Créez votre compte en moins de 2 minutes et commencez à générer des profits dès demain avec le système de trading le plus puissant du marché.</p>
-    <div class="cta-actions">
-      @guest
-      <a href="{{route('register')}}" class="btn-primary btn-xl">Créer mon compte</a>
-      <a href="{{route('login')}}" class="btn-glass btn-xl">Se connecter</a>
-      @endguest
+    <div class="auth-actions">
+      <a href="{{ route('register') }}" class="btn-gold-xl">Créer mon compte</a>
+      <a href="{{ route('login') }}" class="btn-ghost-xl">Se connecter</a>
     </div>
   </div>
 </section>
- 
+@endguest
+
 <!-- FOOTER -->
 <footer>
-  <div class="footer-brand">© 2025 KINETIC TRADING SYSTEM</div>
-  <div class="footer-copy">Plateforme d'investissement premium · Tous droits réservés</div>
+  <div class="footer-brand">KINETIC TRADING SYSTEM</div>
+  <div class="footer-copy">© {{ date('Y') }} · Plateforme d'investissement premium</div>
 </footer>
- 
+
 <script>
-  /* ── ABOUT SLIDESHOW ────────────────────────────────────────────── */
-  (function() {
-    var slides   = document.querySelectorAll('#about-slider .about-slide');
-    var dotsWrap = document.getElementById('about-dots');
-    if (!slides.length || !dotsWrap) return;
+/* ══ HERO SLIDESHOW ════════════════════════════════════════════════ */
+(function(){
+  var slides  = document.querySelectorAll('#heroSlides .hero-slide');
+  var dotsWrap= document.getElementById('heroDots');
+  var countEl = document.getElementById('heroCount');
+  if(!slides.length) return;
 
-    var current = 0, timer;
+  var total   = slides.length;
+  var current = 0;
+  var timer;
 
-    slides.forEach(function(_, i) {
-      var dot = document.createElement('span');
-      dot.className = 'about-dot' + (i === 0 ? ' active' : '');
-      dot.addEventListener('click', function() { goTo(i); restart(); });
-      dotsWrap.appendChild(dot);
-    });
+  // Créer dots
+  for(var i=0;i<total;i++){
+    var d=document.createElement('span');
+    d.className='hero-dot'+(i===0?' active':'');
+    (function(idx){d.addEventListener('click',function(){go(idx);restart();});})(i);
+    dotsWrap.appendChild(d);
+  }
+  var dots=dotsWrap.querySelectorAll('.hero-dot');
 
-    var dots = dotsWrap.querySelectorAll('.about-dot');
+  function go(n){
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current=(n+total)%total;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+    if(countEl) countEl.textContent=String(current+1).padStart(2,'0')+' / '+String(total).padStart(2,'0');
+  }
+  function restart(){clearInterval(timer);timer=setInterval(function(){go(current+1);},6000);}
 
-    function goTo(n) {
-      slides[current].classList.remove('active');
-      dots[current].classList.remove('active');
-      current = (n + slides.length) % slides.length;
-      slides[current].classList.add('active');
-      dots[current].classList.add('active');
-    }
-    function next() { goTo(current + 1); }
-    function restart() { clearInterval(timer); timer = setInterval(next, 5000); }
+  restart();
 
-    restart();
+  // Pause au survol
+  document.querySelector('.hero').addEventListener('mouseenter',function(){clearInterval(timer);});
+  document.querySelector('.hero').addEventListener('mouseleave',restart);
 
-    var sliderEl = document.getElementById('about-slider');
-    sliderEl.addEventListener('mouseenter', function() { clearInterval(timer); });
-    sliderEl.addEventListener('mouseleave', restart);
-  })();
-
-  /* ── Live profit counter animation ─────────────────────────────── */
-  const el = document.getElementById('live-profit');
-  let val = 24891.50;
-  setInterval(() => {
-    val += Math.random() * 0.8;
-    el.textContent = '$' + val.toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}).replace(',','.');
-  }, 2400);
- 
-  // Intersection Observer for fade-in
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if(e.isIntersecting) {
-        e.target.style.opacity = '1';
-        e.target.style.transform = 'translateY(0)';
-      }
-    });
-  }, { threshold: 0.1 });
- 
-  document.querySelectorAll('.cycle-card, .feature-card, .ref-level, .deposit-card').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(24px)';
-    el.style.transition = 'opacity .6s ease, transform .6s ease';
-    observer.observe(el);
+  // Touch swipe mobile
+  var startX=0;
+  document.querySelector('.hero').addEventListener('touchstart',function(e){startX=e.touches[0].clientX;},{passive:true});
+  document.querySelector('.hero').addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-startX;
+    if(Math.abs(dx)>50){go(current+(dx<0?1:-1));restart();}
   });
+
+  // Exposer pour les flèches
+  window.heroSlide=function(dir){go(current+dir);restart();};
+})();
+
+/* ══ INTERSECTION OBSERVER fade-up ════════════════════════════════ */
+var obs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');}});
+},{threshold:0.12});
+document.querySelectorAll('.fade-up').forEach(function(el){obs.observe(el);});
 </script>
 </body>
 </html>

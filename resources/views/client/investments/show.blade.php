@@ -5,10 +5,23 @@
 @section('page-subtitle', '// ' . $investment->tradingCycle->name . ' · ' . $investment->tranche->name)
 
 @section('content')
-<div style="margin-bottom: 1.5rem;">
+@php
+    function fmtShowInv($usd, $currency, $rate) {
+        if ($currency === 'USD') return '$' . number_format($usd, 2);
+        return number_format(round($usd * $rate), 0, ',', ' ') . ' ' . $currency;
+    }
+@endphp
+<div style="margin-bottom: 1.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.75rem;">
     <a href="{{ route('investments.index') }}" style="color: #c9a227; display: inline-flex; align-items: center; gap: 0.4rem;">
         ← Retour aux investissements
     </a>
+    {{-- Bouton Réinvestir : disponible peu importe le statut du contrat --}}
+    @if($investment->tradingCycle->is_active && $investment->tranche->is_active)
+    <a href="{{ route('investments.invest', [$investment->tradingCycle, $investment->tranche]) }}"
+       class="kts-btn kts-btn-success">
+        🔁 Réinvestir dans cette tranche
+    </a>
+    @endif
 </div>
 
 {{-- Status Alert --}}
@@ -42,7 +55,10 @@
             </div>
             <div>
                 <div style="color: #b0bfd9; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Montant investi</div>
-                <div style="font-size: 1.15rem; color: #c9a227; font-weight: 700;">${{ number_format($investment->amount, 2) }}</div>
+                <div style="font-size: 1.15rem; color: #c9a227; font-weight: 700;">{{ fmtShowInv($investment->amount, $userCurrency, $currencyRate) }}</div>
+                @if($userCurrency !== 'USD')
+                    <div style="font-size:0.72rem; color:#4a5568;">${{ number_format($investment->amount, 2) }} USD</div>
+                @endif
             </div>
             <div>
                 <div style="color: #b0bfd9; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Statut</div>
@@ -77,13 +93,16 @@
             <div>
                 <div style="color: #b0bfd9; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Profit estimé</div>
                 <div style="font-size: 1.15rem; color: #81c784; font-weight: 700;">
-                    ${{ number_format($investment->amount * ($investment->total_return_rate / 100), 2) }}
+                    {{ fmtShowInv($investment->amount * ($investment->total_return_rate / 100), $userCurrency, $currencyRate) }}
                 </div>
+                @if($userCurrency !== 'USD')
+                    <div style="font-size:0.72rem; color:#4a5568;">${{ number_format($investment->amount * ($investment->total_return_rate / 100), 2) }} USD</div>
+                @endif
             </div>
             <div>
                 <div style="color: #b0bfd9; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Profit crédité</div>
                 <div style="font-size: 1rem;">
-                    ${{ number_format($investment->total_profit_credited ?? 0, 2) }}
+                    {{ fmtShowInv($investment->total_profit_credited ?? 0, $userCurrency, $currencyRate) }}
                     @if($investment->days_credited)
                         <span style="color: #7a9cc6; font-size: 0.8rem;">
                             ({{ $investment->days_credited }}/{{ $investment->duration_days }} jours)
@@ -148,7 +167,7 @@
                     <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
                         <td style="padding: 0.75rem 0;">{{ $transaction->created_at->format('d/m/Y H:i') }}</td>
                         <td style="padding: 0.75rem 0;">{{ str_replace('_', ' ', ucfirst($transaction->type)) }}</td>
-                        <td style="padding: 0.75rem 0; color: #c9a227; font-weight: 600;">${{ number_format($transaction->amount, 2) }}</td>
+                        <td style="padding: 0.75rem 0; color: #c9a227; font-weight: 600;">{{ $transaction->formatted_amount }}</td>
                         <td style="padding: 0.75rem 0;">
                             <span style="font-size: 0.8rem; text-transform: uppercase; font-weight: 600; color: {{ $transaction->status === 'completed' ? '#81c784' : ($transaction->status === 'pending' ? '#fbc02d' : '#ef5350') }};">
                                 {{ ucfirst($transaction->status) }}

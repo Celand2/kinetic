@@ -211,8 +211,13 @@
 @php
     function fmtInvest($usd, $currency, $rate) {
         if ($currency === 'USD') return '$' . number_format($usd, 2);
-        return number_format($usd * $rate, 0, ',', ' ') . ' ' . $currency;
+        return number_format(round($usd * $rate), 0, ',', ' ') . ' ' . $currency;
     }
+    // Limites converties en devise locale pour l'input HTML
+    $localMin     = $userCurrency === 'USD' ? $tranche->min_amount : round($tranche->min_amount * $currencyRate);
+    $localMax     = $tranche->max_amount ? ($userCurrency === 'USD' ? $tranche->max_amount : round($tranche->max_amount * $currencyRate)) : null;
+    $localDefault = old('amount', $localMin);
+    $step         = $userCurrency === 'USD' ? '0.01' : '1';
 @endphp
 
 <div class="invest-layout">
@@ -274,32 +279,69 @@
 
     {{-- Colonne droite : formulaire --}}
     <div class="form-card">
-        <h3>Formulaire d'investissement</h3>
+        {{-- Badge réinvestissement libre --}}
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:1.25rem;
+                    background:rgba(129,199,132,0.07); border:1px solid rgba(129,199,132,0.22);
+                    border-radius:8px; padding:0.6rem 0.9rem;">
+            <span style="color:#81c784; font-size:1rem;">🔁</span>
+            <div>
+                <div style="font-size:0.78rem; color:#81c784; font-weight:700;">Réinvestissement libre</div>
+                <div style="font-size:0.7rem; color:#4a5568;">Investissez dans cette tranche autant de fois que vous voulez. Chaque contrat est indépendant.</div>
+            </div>
+        </div>
+
+        {{-- Contrats actifs dans cette tranche --}}
+        @if($activeInThisTranche->count())
+        <div style="margin-bottom:1.25rem; background:rgba(201,162,39,0.05); border:1px solid rgba(201,162,39,0.18); border-radius:8px; padding:0.75rem 0.9rem;">
+            <div style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:0.5rem;">
+                Contrats actifs dans cette tranche ({{ $activeInThisTranche->count() }})
+            </div>
+            @foreach($activeInThisTranche as $inv)
+            <div style="display:flex; justify-content:space-between; align-items:center;
+                        padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.04);
+                        font-size:0.78rem; {{ $loop->last ? 'border:none' : '' }}">
+                <span style="font-family:monospace; color:#b0bfd9;">{{ $inv->reference }}</span>
+                <span style="color:#c9a227;">{{ fmtInvest($inv->amount, $userCurrency, $currencyRate) }}</span>
+                <span style="color:#6b7a9a;">
+                    @if($inv->ends_at) expire {{ $inv->ends_at->format('d/m/Y') }} @else en attente @endif
+                </span>
+            </div>
+            @endforeach
+            <div style="font-size:0.7rem; color:#4a5568; margin-top:0.5rem;">
+                Les gains de tous ces contrats s'accumulent dans vos <span style="color:#81c784;">gains retirables</span>.
+            </div>
+        </div>
+        @endif
+
+        <h3>Nouveau contrat</h3>
 
         <form method="POST" action="{{ route('investments.store') }}">
             @csrf
             <input type="hidden" name="tranche_id" value="{{ $tranche->id }}">
 
             <div class="form-group">
-                <label for="amount">Montant à investir ($)</label>
+                <label for="amount">Montant à investir ({{ $userCurrency }})</label>
                 <input
                     class="form-control"
                     type="number"
                     id="amount"
                     name="amount"
-                    step="0.01"
-                    min="{{ $tranche->min_amount }}"
-                    @if($tranche->max_amount) max="{{ $tranche->max_amount }}" @endif
-                    value="{{ old('amount', $tranche->min_amount) }}"
+                    step="{{ $step }}"
+                    min="{{ $localMin }}"
+                    @if($localMax) max="{{ $localMax }}" @endif
+                    value="{{ $localDefault }}"
                     required
-                    placeholder="{{ number_format($tranche->min_amount, 2) }}"
+                    placeholder="{{ number_format($localMin, 0) }}"
                 >
                 <div class="amount-hint">
-                    Min : ${{ number_format($tranche->min_amount, 2) }}
+                    Min : {{ fmtInvest($tranche->min_amount, $userCurrency, $currencyRate) }}
                     @if($tranche->max_amount)
-                        &nbsp;·&nbsp; Max : ${{ number_format($tranche->max_amount, 2) }}
+                        &nbsp;·&nbsp; Max : {{ fmtInvest($tranche->max_amount, $userCurrency, $currencyRate) }}
                     @else
                         &nbsp;·&nbsp; Pas de maximum
+                    @endif
+                    @if($userCurrency !== 'USD')
+                        <span style="color:#4a5568; margin-left:6px;">(base admin : ${{ number_format($tranche->min_amount, 2) }}{{ $tranche->max_amount ? ' – $' . number_format($tranche->max_amount, 2) : '' }} USD)</span>
                     @endif
                 </div>
                 @error('amount')<div style="color:#ef5350;font-size:.8rem;margin-top:.35rem;">{{ $message }}</div>@enderror
@@ -315,11 +357,9 @@
 <script>
     const totalReturnPct = {{ $cycle->total_return_percent }};
     const userCurrency   = '{{ $userCurrency }}';
-    const currencyRate   = {{ $currencyRate }};
+    const currencyRate   = {{ $currencyRate > 0 ? $currencyRate : 1 }};
     const amountInput    = document.getElementById('amount');
     const profitEl       = document.getElementById('profit-estimate');
-    const noticeEl       = document.getElementById('external-notice');
-    const pmRadios       = document.querySelectorAll('input[name="payment_method"]');
 
     function fmtLocal(usdAmt) {
         if (userCurrency === 'USD') return '$' + usdAmt.toFixed(2);
@@ -328,20 +368,14 @@
     }
 
     function updateProfit() {
-        const amt    = parseFloat(amountInput.value) || 0;
-        const profit = amt * (totalReturnPct / 100);
-        profitEl.textContent = fmtLocal(profit);
-    }
-
-    function updateNotice() {
-        const selected = document.querySelector('input[name="payment_method"]:checked');
-        noticeEl.style.display = (selected && selected.value !== 'wallet') ? 'block' : 'none';
+        const localAmt = parseFloat(amountInput.value) || 0;
+        // Convertir la saisie locale en USD pour calculer le profit
+        const usdAmt   = (userCurrency === 'USD') ? localAmt : (localAmt / currencyRate);
+        const usdProfit = usdAmt * (totalReturnPct / 100);
+        profitEl.textContent = fmtLocal(usdProfit);
     }
 
     amountInput.addEventListener('input', updateProfit);
-    pmRadios.forEach(r => r.addEventListener('change', updateNotice));
-
     updateProfit();
-    updateNotice();
 </script>
 @endpush
