@@ -47,7 +47,7 @@ class FinanceController extends Controller
                 'user_id'      => $user->id,
                 'type'         => 'deposit_approved',
                 'title'        => 'Dépôt approuvé',
-                'body'         => 'Votre dépôt de $' . number_format($transaction->amount, 2) . ' a été approuvé et crédité sur votre compte.',
+                'body'         => 'Votre dépôt de ' . $transaction->formatted_amount . ($transaction->display_currency !== 'USD' ? ' (≈$' . number_format($transaction->amount, 2) . ')' : '') . ' a été approuvé et crédité sur votre compte.',
                 'action_url'   => route('transactions.index'),
                 'action_label' => 'Voir mes transactions',
                 'created_by'   => Auth::id(),
@@ -75,7 +75,7 @@ class FinanceController extends Controller
                 'user_id'      => $user->id,
                 'type'         => 'withdrawal_approved',
                 'title'        => 'Retrait approuvé',
-                'body'         => 'Votre demande de retrait de $' . number_format($transaction->amount, 2) . ' a été approuvée.',
+                'body'         => 'Votre demande de retrait de ' . $transaction->formatted_amount . ($transaction->display_currency !== 'USD' ? ' (≈$' . number_format($transaction->amount, 2) . ')' : '') . ' a été approuvée.',
                 'action_url'   => route('transactions.index'),
                 'action_label' => 'Voir mes transactions',
                 'created_by'   => Auth::id(),
@@ -106,7 +106,7 @@ class FinanceController extends Controller
                 'user_id'      => $transaction->user_id,
                 'type'         => $notifType,
                 'title'        => ucfirst($typeLabel) . ' refusé',
-                'body'         => 'Votre demande de ' . $typeLabel . ' de $' . number_format($transaction->amount, 2) . ' a été refusée. Motif : ' . $validated['reason'],
+                'body'         => 'Votre demande de ' . $typeLabel . ' de ' . $transaction->formatted_amount . ($transaction->display_currency !== 'USD' ? ' (≈$' . number_format($transaction->amount, 2) . ')' : '') . ' a été refusée. Motif : ' . $validated['reason'],
                 'action_url'   => route('transactions.index'),
                 'action_label' => 'Voir mes transactions',
                 'created_by'   => Auth::id(),
@@ -172,12 +172,14 @@ class FinanceController extends Controller
             ->get();
 
         $lines   = [];
-        $lines[] = implode(';', ['Référence', 'Date', 'Nom', 'Téléphone', 'Méthode', 'Détails adresse', 'Montant ($)', 'Frais ($)', 'Total ($)']);
+        $lines[] = implode(';', ['Référence', 'Date', 'Nom', 'Téléphone', 'Méthode', 'Détails adresse', 'Montant local', 'Devise', 'Montant (USD)', 'Frais (USD)', 'Total (USD)']);
 
         foreach ($withdrawals as $txn) {
-            $meta    = $txn->metadata ?? [];
-            $details = $meta['wallet_details'] ?? '—';
-            $details = str_replace(["\r\n", "\n", "\r", ';'], [' ', ' ', ' ', ' '], $details);
+            $meta       = $txn->metadata ?? [];
+            $details    = $meta['wallet_details'] ?? '—';
+            $details    = str_replace(["\r\n", "\n", "\r", ';'], [' ', ' ', ' ', ' '], $details);
+            $localAmt   = isset($meta['local_amount']) ? number_format((float) $meta['local_amount'], 0, '.', '') : number_format($txn->amount, 2, '.', '');
+            $localCurr  = $meta['local_currency'] ?? 'USD';
 
             $lines[] = implode(';', [
                 $txn->reference,
@@ -186,6 +188,8 @@ class FinanceController extends Controller
                 $txn->user->phone      ?? '—',
                 $txn->payment_method   ?? '—',
                 $details,
+                $localAmt,
+                $localCurr,
                 number_format($txn->amount, 2, '.', ''),
                 number_format($txn->fee_amount, 2, '.', ''),
                 number_format($txn->amount + $txn->fee_amount, 2, '.', ''),

@@ -62,7 +62,12 @@
                         </span>
                     </td>
                     <td style="color:#c9a227; font-weight:700; white-space:nowrap;">
-                        ${{ number_format($transaction->amount, 2) }}
+                        {{ $transaction->formatted_amount }}
+                        @if($transaction->display_currency !== 'USD')
+                            <div style="font-size:0.75rem; color:#b0bfd9; font-weight:400;">
+                                ≈ ${{ number_format($transaction->amount, 2) }} USD
+                            </div>
+                        @endif
                         @if($transaction->fee_amount > 0)
                             <div style="font-size:0.75rem; color:#b0bfd9; font-weight:400;">
                                 Frais: ${{ number_format($transaction->fee_amount, 2) }}

@@ -59,11 +59,11 @@
             @error('amount')<span class="form-feedback-error">{{ $message }}</span>@enderror
         </div>
 
-        {{-- <div id="conversionPreview" style="display:none; margin-top:-0.75rem; margin-bottom:1rem; background:rgba(201,162,39,0.07); border:1px solid rgba(201,162,39,0.2); border-radius:8px; padding:0.65rem 1rem;">
+         <div id="conversionPreview" style="display:none; margin-top:-0.75rem; margin-bottom:1rem; background:rgba(201,162,39,0.07); border:1px solid rgba(201,162,39,0.2); border-radius:8px; padding:0.65rem 1rem;">
             <div style="font-size:0.78rem; color:#b0bfd9;">Equivalent USD (après validation) :</div>
             <div id="conversionValue" style="font-family:'Space Mono',monospace; color:#c9a227; font-size:1rem; font-weight:700; margin-top:2px;">$0.00</div>
             <div id="rateInfo" style="font-size:0.7rem; color:#6b7a9a; margin-top:2px;"></div>
-        </div> --}}
+        </div> 
 
         <div class="form-group">
             <label class="form-label" for="screenshot">Capture d ecran du paiement *</label>

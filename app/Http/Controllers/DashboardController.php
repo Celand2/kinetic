@@ -63,6 +63,15 @@ class DashboardController extends Controller
         $userCurrency = $user->preferred_currency ?? 'USD';
         $currencyRate = (float) ExchangeRate::rate($userCurrency);
 
+        // Solde investissable = balance totale - gains retirables (capital déposé, non retirable)
+        $investableBalance = max(0, (float) $user->balance - (float) $user->profit_balance);
+
+        // Retrait disponible uniquement après le premier crédit de profit journalier (≥ 24h après 1er investissement)
+        $canWithdraw = Transaction::where('user_id', $user->id)
+            ->where('type', 'daily_profit')
+            ->where('status', 'completed')
+            ->exists();
+
         return view('client.dashboard.index', compact(
             'user',
             'activeInvestments',
@@ -75,7 +84,9 @@ class DashboardController extends Controller
             'referralCount',
             'referralEarnings',
             'userCurrency',
-            'currencyRate'
+            'currencyRate',
+            'investableBalance',
+            'canWithdraw'
         ));
     }
 }

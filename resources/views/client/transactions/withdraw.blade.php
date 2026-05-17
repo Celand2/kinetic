@@ -7,6 +7,21 @@
 
 <h1 style="color:#c9a227; font-size:1.2rem; margin-bottom:1.25rem;">Demande de Retrait</h1>
 
+{{-- Bannière bloquante si retrait non disponible --}}
+@if(!$canWithdraw)
+<div style="background:rgba(239,83,80,0.08); border:1px solid rgba(239,83,80,0.4); border-radius:10px; padding:1rem 1.25rem; margin-bottom:1.25rem;">
+    <div style="color:#ef5350; font-weight:700; font-size:0.95rem; margin-bottom:0.4rem;">🔒 Retrait non disponible</div>
+    <div style="color:#b0bfd9; font-size:0.85rem; line-height:1.6;">
+        Votre premier <strong style="color:#fbc02d;">crédit de profit journalier</strong> doit être reçu avant tout retrait.<br>
+        Cela se fait automatiquement <strong>24h après l'activation de votre premier investissement</strong>.<br>
+        <span style="font-size:0.78rem; color:#6b7a9a;">Ce délai garantit que vos gains sont bien consolidés avant tout retrait.</span>
+    </div>
+    <a href="{{ route('investments.create') }}" class="btn" style="margin-top:0.75rem; display:inline-block; font-size:0.82rem; padding:6px 16px;">
+        Investir maintenant →
+    </a>
+</div>
+@endif
+
 @if($paymentMethods->count())
 <div class="card" style="margin-bottom:1.25rem; padding:1rem 1.25rem;">
     <div style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:0.75rem; font-weight:600;">Moyens de paiement disponibles</div>
@@ -48,7 +63,7 @@
     </div>
 </div>
 
-<div class="card">
+<div class="card" style="{{ !$canWithdraw ? 'opacity:0.45; pointer-events:none;' : '' }}">
     <form method="POST" action="{{ route('transactions.withdraw.store') }}" enctype="multipart/form-data" id="withdrawForm">
         @csrf
 
