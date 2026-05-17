@@ -108,12 +108,29 @@ class TransactionController extends Controller
     {
         $paymentMethods = PaymentMethod::where('is_active', true)->get();
         $exchangeRates  = \App\Models\ExchangeRate::all()->keyBy('currency');
-        return view('client.transactions.withdraw', compact('paymentMethods', 'exchangeRates'));
+        $canWithdraw    = Transaction::where('user_id', Auth::id())
+            ->where('type', 'daily_profit')
+            ->where('status', 'completed')
+            ->exists();
+        return view('client.transactions.withdraw', compact('paymentMethods', 'exchangeRates', 'canWithdraw'));
     }
 
     public function storeWithdrawal(Request $request)
     {
         $user = Auth::user();
+
+        // Condition délai : au moins un crédit de profit journalier doit exister
+        $hasFirstProfit = Transaction::where('user_id', $user->id)
+            ->where('type', 'daily_profit')
+            ->where('status', 'completed')
+            ->exists();
+
+        if (!$hasFirstProfit) {
+            return back()->withErrors([
+                'amount' => 'Retrait non disponible : votre premier profit journalier doit être crédité avant tout retrait (minimum 24h après votre premier investissement actif).',
+            ])->withInput();
+        }
+
         $validated = $request->validate([
             'amount' => 'required|numeric|min:1',
             'payment_method' => [

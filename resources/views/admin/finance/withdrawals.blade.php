@@ -33,11 +33,12 @@
     <div style="display:flex; flex-direction:column; gap:1rem;">
         @foreach($withdrawals as $txn)
         @php
-            $meta    = $txn->metadata ?? [];
-            $details = $meta['wallet_details'] ?? '—';
-            $method  = $txn->payment_method ?? '—';
-            $total   = $txn->amount + $txn->fee_amount;
-            $copyId  = 'copy-' . $txn->id;
+            $meta      = $txn->metadata ?? [];
+            $details   = $meta['wallet_details'] ?? '—';
+            $method    = $txn->payment_method ?? '—';
+            $total     = $txn->amount + $txn->fee_amount;
+            $copyId    = 'copy-' . $txn->id;
+            $isLocal   = $txn->display_currency !== 'USD';
         @endphp
         <div class="card" style="padding:1.25rem; position:relative;">
 
@@ -90,10 +91,13 @@
                 </div>
 
                 <div style="background:rgba(201,162,39,0.05); border:1px solid rgba(201,162,39,0.15); border-radius:8px; padding:0.75rem;">
-                    <div style="font-size:0.7rem; color:#6b7a9a; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px;">Montant demandé</div>
-                    <div style="color:#c9a227; font-weight:700; font-size:1.05rem;">${{ number_format($txn->amount, 2) }}</div>
-                    <div style="color:#b0bfd9; font-size:0.75rem;">Frais : ${{ number_format($txn->fee_amount, 2) }}</div>
-                    <div style="color:#ef5350; font-weight:700; font-size:0.85rem;">Total déduit : ${{ number_format($total, 2) }}</div>
+                    <div style="font-size:0.7rem; color:#6b7a9a; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px;">Montant à envoyer</div>
+                    <div style="color:#c9a227; font-weight:700; font-size:1.05rem;">{{ $txn->formatted_amount }}</div>
+                    @if($isLocal)
+                        <div style="color:#b0bfd9; font-size:0.78rem;">≈ ${{ number_format($txn->amount, 2) }} USD</div>
+                    @endif
+                    <div style="color:#b0bfd9; font-size:0.75rem; margin-top:4px;">Frais : ${{ number_format($txn->fee_amount, 2) }}</div>
+                    <div style="color:#ef5350; font-weight:700; font-size:0.85rem;">Total déduit wallet : ${{ number_format($total, 2) }}</div>
                 </div>
 
             </div>
@@ -122,13 +126,13 @@
                                cursor:pointer; text-align:left;">
                     📋 Copier toutes les infos (nom + téléphone + adresse + montant)
                 </button>
-                <div id="block-{{ $txn->id }}" style="display:none;">{{ $txn->user->full_name ?? '' }} | {{ $txn->user->phone ?? '' }} | {{ $method }} | {{ $details }} | ${{ number_format($txn->amount, 2) }}</div>
+                <div id="block-{{ $txn->id }}" style="display:none;">{{ $txn->user->full_name ?? '' }} | {{ $txn->user->phone ?? '' }} | {{ $method }} | {{ $details }} | {{ $txn->formatted_amount }}@if($isLocal) (≈${{ number_format($txn->amount, 2) }})@endif</div>
             </div>
 
             {{-- Actions --}}
             <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
                 <form method="POST" action="{{ route('admin.finance.approve', $txn) }}"
-                      onsubmit="return confirm('Approuver ce retrait de ${{ number_format($txn->amount,2) }} ?')"
+                      onsubmit="return confirm('Approuver ce retrait de {{ $txn->formatted_amount }}{{ $isLocal ? ' (≈$'.number_format($txn->amount,2).')' : '' }} ?')"
                       style="flex:1; min-width:120px;">
                     @csrf
                     <button type="submit" class="btn" style="width:100%; font-size:0.85rem;">

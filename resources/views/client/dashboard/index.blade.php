@@ -26,45 +26,61 @@
 <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
 
     {{-- Gains retirables (profit_balance) --}}
-    <div class="card" style="padding:1rem; margin-bottom:0; border-color:rgba(129,199,132,0.3);">
-        <div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:4px;">Gains retirables</div>
+    <div class="card" style="padding:1rem; margin-bottom:0; border-color:rgba(129,199,132,0.35);">
+        <div style="font-size:0.62rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:4px;">Gains retirables</div>
         <div style="font-family:'Space Mono',monospace; font-size:1.2rem; font-weight:700; color:#81c784; line-height:1.1;">
             {{ fmtLocal($user->profit_balance, $userCurrency, $currencyRate) }}
         </div>
         @if($userCurrency !== 'USD')
-            <div style="font-size:0.7rem; color:#4a5568; margin-top:3px;">${{ number_format($user->profit_balance, 2) }} USD</div>
+            <div style="font-size:0.68rem; color:#4a5568; margin-top:2px;">${{ number_format($user->profit_balance, 2) }} USD</div>
         @endif
-        <div style="font-size:0.6rem; color:#2d3748; margin-top:3px;">Profits + parrainage + bonus</div>
+        <div style="font-size:0.6rem; color:#81c784; opacity:0.6; margin-top:3px;">
+            {{ $canWithdraw ? '✓ Retrait disponible' : '⏳ Dispo après 1er profit' }}
+        </div>
     </div>
 
+    {{-- Solde investissable = balance - profit_balance (capital déposé, non retirable) --}}
+    <div class="card" style="padding:1rem; margin-bottom:0; border-color:rgba(122,156,198,0.35);">
+        <div style="font-size:0.62rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:4px;">Solde investissable</div>
+        <div style="font-family:'Space Mono',monospace; font-size:1.2rem; font-weight:700; color:#7a9cc6; line-height:1.1;">
+            {{ fmtLocal($investableBalance, $userCurrency, $currencyRate) }}
+        </div>
+        @if($userCurrency !== 'USD')
+            <div style="font-size:0.68rem; color:#4a5568; margin-top:2px;">${{ number_format($investableBalance, 2) }} USD</div>
+        @endif
+        <div style="font-size:0.6rem; color:#7a9cc6; opacity:0.6; margin-top:3px;">Capital déposé · non retirable</div>
+    </div>
+
+    {{-- Gains / jour --}}
     <div class="card" style="padding:1rem; margin-bottom:0;">
-        <div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:4px;">Gains / jour</div>
+        <div style="font-size:0.62rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:4px;">Gains / jour</div>
         <div style="font-family:'Space Mono',monospace; font-size:1.2rem; font-weight:700; color:#c9a227; line-height:1.1;">
             +{{ fmtLocal($dailyGains, $userCurrency, $currencyRate) }}
         </div>
         @if($userCurrency !== 'USD')
-            <div style="font-size:0.7rem; color:#4a5568; margin-top:3px;">+${{ number_format($dailyGains, 2) }} USD/j</div>
+            <div style="font-size:0.68rem; color:#4a5568; margin-top:2px;">+${{ number_format($dailyGains, 2) }} USD/j</div>
         @endif
     </div>
 
+    {{-- Total investi --}}
     <div class="card" style="padding:1rem; margin-bottom:0;">
-        <div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:4px;">Solde total</div>
+        <div style="font-size:0.62rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:4px;">Total investi</div>
         <div style="font-family:'Space Mono',monospace; font-size:1.1rem; font-weight:700; color:#c9a227; line-height:1.1;">
-            {{ fmtLocal($user->balance, $userCurrency, $currencyRate) }}
-        </div>
-        @if($userCurrency !== 'USD')
-            <div style="font-size:0.7rem; color:#4a5568; margin-top:3px;">${{ number_format($user->balance, 2) }} USD</div>
-        @endif
-    </div>
-
-    <div class="card" style="padding:1rem; margin-bottom:0;">
-        <div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:0.08em; color:#6b7a9a; margin-bottom:4px;">Total investi</div>
-        <div style="font-family:'Space Mono',monospace; font-size:1.1rem; font-weight:700; color:#7a9cc6; line-height:1.1;">
             {{ fmtLocal($totalInvested, $userCurrency, $currencyRate) }}
         </div>
+        @if($userCurrency !== 'USD')
+            <div style="font-size:0.68rem; color:#4a5568; margin-top:2px;">${{ number_format($totalInvested, 2) }} USD</div>
+        @endif
     </div>
 
 </div>
+
+{{-- Bannière retrait bloqué si pas encore de profit journalier --}}
+@if(!$canWithdraw && $user->profit_balance > 0)
+<div style="background:rgba(251,192,45,0.08); border:1px solid rgba(251,192,45,0.3); border-radius:8px; padding:0.7rem 1rem; margin-bottom:1rem; font-size:0.8rem; color:#fbc02d;">
+    ⏳ <strong>Retrait temporairement indisponible</strong> — Votre premier profit journalier doit être crédité avant tout retrait (automatiquement sous 24h après votre investissement).
+</div>
+@endif
 
 <div class="card" style="margin-bottom: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
     <div class="card" style="background: linear-gradient(135deg, rgba(201,162,39,0.1), rgba(201,162,39,0.05)); border: 1px solid rgba(201,162,39,0.3);">
