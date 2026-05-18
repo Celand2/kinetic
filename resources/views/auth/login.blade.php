@@ -6,6 +6,12 @@
 <div class="card">
     <div class="card-header">Connexion</div>
 
+    @if(session('error'))
+        <div class="form-feedback-error" style="margin-bottom:1rem; padding:0.75rem; background:rgba(220,53,69,0.1); border-radius:6px;">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
