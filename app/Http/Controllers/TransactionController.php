@@ -41,7 +41,7 @@ class TransactionController extends Controller
                 'required',
                 Rule::exists('payment_methods', 'name')->where('is_active', true),
             ],
-            'screenshot' => 'required|image|max:4096',
+            'screenshot' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:8192',
             'description' => 'nullable|string|max:500',
         ]);
 
@@ -138,7 +138,7 @@ class TransactionController extends Controller
                 Rule::exists('payment_methods', 'name')->where('is_active', true),
             ],
             'wallet_details' => 'required|string|max:1000',
-            'screenshot' => 'nullable|image|max:4096',
+            'screenshot' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:8192',
             'description' => 'nullable|string|max:500',
         ]);
 
