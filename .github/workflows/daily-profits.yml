@@ -1,0 +1,22 @@
+name: Créditer les profits journaliers
+
+on:
+  schedule:
+    # Toutes les heures — la commande crédite uniquement si 24h se sont écoulées
+    - cron: '0 * * * *'
+  workflow_dispatch: # Permet de lancer manuellement depuis GitHub
+
+jobs:
+  credit-profits:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Se connecter au serveur et exécuter la commande
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/clients/f9034963984a19d989aa24c060236869/sites/kinetic
+            php artisan profits:credit
