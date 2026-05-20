@@ -21,6 +21,7 @@
 
 <div class="card">
     @if($users->count() > 0)
+        <div style="overflow-x:auto;">
         <table>
             <thead>
                 <tr >
@@ -52,6 +53,7 @@
                 @endforeach
             </tbody>
         </table>
+        </div>
 
         <div style="margin-top: 2rem;">
             {{ $users->links() }}

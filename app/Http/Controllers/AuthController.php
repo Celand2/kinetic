@@ -47,6 +47,8 @@ class AuthController extends Controller
         ]);
 
         Auth::login($user);
+        $request->session()->regenerate();
+        $request->session()->regenerateToken();
 
         return redirect()->route('dashboard')->with('success', 'Registration successful!');
     }
@@ -65,6 +67,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+            $request->session()->regenerateToken();
 
             if (Auth::user()->status !== 'active') {
                 Auth::logout();

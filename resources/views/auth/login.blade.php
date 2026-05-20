@@ -29,7 +29,11 @@
 
         <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.5rem;">Se connecter</button>
 
-        <p style="text-align:center; margin-top:1.5rem; color:#b0bfd9; font-size:0.88rem;">
+        <p style="text-align:center; margin-top:1rem; font-size:0.85rem;">
+            <a href="{{ route('password.request') }}" style="color:#6b7a9a;">Mot de passe oublié ?</a>
+        </p>
+
+        <p style="text-align:center; margin-top:0.75rem; color:#b0bfd9; font-size:0.88rem;">
             Pas encore de compte ?
             <a href="{{ route('register') }}" style="color:#c9a227; font-weight:600;">S'inscrire</a>
         </p>

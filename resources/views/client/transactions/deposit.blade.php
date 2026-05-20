@@ -53,9 +53,12 @@
             </div>
 
             <div id="paymentDetails" style="display:none; margin-top:-0.75rem; margin-bottom:1rem; background:rgba(107,122,154,0.07); border:1px solid rgba(107,122,154,0.2); border-radius:8px; padding:0.65rem 1rem;">
-                <div style="font-size:0.78rem; color:#b0bfd9;">Détails du paiement :</div>
-                <div id="paymentDetailsContent" style="font-family:'Space Mono',monospace; color:#e8e8e8; font-size:0.9rem; margin-top:2px; overflow-y:auto; max-height:100px;"></div>
-                <div style="margin-top:0.75rem; color:#c9a227; font-size:0.82rem;">Conservez votre capture, vous en aurez besoin à l'étape suivante.</div>
+                <div style="font-size:0.78rem; color:#b0bfd9; margin-bottom:0.4rem;">Détails du paiement :</div>
+                <textarea id="paymentDetailsContent" readonly rows="5"
+                    style="width:100%; font-family:'Space Mono',monospace; color:#e8e8e8; font-size:0.85rem;
+                           background:rgba(0,0,0,0.2); border:1px solid rgba(107,122,154,0.3); border-radius:6px;
+                           padding:0.5rem 0.75rem; resize:vertical; overflow-y:auto; box-sizing:border-box;"></textarea>
+                <div style="margin-top:0.5rem; color:#c9a227; font-size:0.82rem;">Conservez votre capture, vous en aurez besoin à l'étape suivante.</div>
             </div>
 
             <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1rem;">
@@ -142,7 +145,7 @@ function updateCurrency(methodName) {
     const detailsDiv = document.getElementById('paymentDetails');
     const detailsContent = document.getElementById('paymentDetailsContent');
     if (details) {
-        detailsContent.textContent = details;
+        detailsContent.value = details;
         detailsDiv.style.display = 'block';
     } else {
         detailsDiv.style.display = 'none';
