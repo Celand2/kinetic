@@ -47,14 +47,14 @@ class CreditDailyProfits extends Command
 
             $user->increment('balance', $profit);
             $user->increment('profit_balance', $profit);
-            $newBalance = (float) $user->balance + $profit;
+            $user->refresh();
 
             Transaction::create([
                 'user_id'       => $user->id,
                 'type'          => 'daily_profit',
                 'amount'        => $profit,
                 'direction'     => 'credit',
-                'balance_after' => $newBalance,
+                'balance_after' => (float) $user->balance,
                 'status'        => 'completed',
                 'reference'     => 'PRF-' . date('Ymd') . '-' . strtoupper(Str::random(6)),
                 'investment_id' => $investment->id,
