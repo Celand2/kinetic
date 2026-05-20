@@ -3,7 +3,7 @@
 @section('back')<a href="{{ route('dashboard') }}" class="kts-back-btn">← Tableau de bord</a>@endsection
 
 @section('content')
-@php $user = auth()->user(); $userCurr = $user->preferred_currency ?? 'USD'; $initialStep = old('payment_method') || $errors->any() ? 2 : 1; @endphp
+@php $user = auth()->user(); $userCurr = $user->preferred_currency ?? 'USD'; $initialStep = old('payment_method') || $errors->any() ? 2 : 1; $lockedMethod = $firstDepositMethod ?? null; @endphp
 
 <h1 style="color:#c9a227; font-size:1.2rem; margin-bottom:1.25rem;">Demande de Depot</h1>
 
@@ -35,20 +35,26 @@
         <div id="depositStep1" style="display:{{ $initialStep === 1 ? 'block' : 'none' }};">
             <div class="form-group">
                 <label class="form-label" for="payment_method">Choisissez un moyen de paiement</label>
-                <select id="payment_method" name="payment_method" class="form-control" required onchange="updateCurrency(this.value)">
-                    <option value="">-- Choisir --</option>
-                    @foreach($paymentMethods as $method)
-                        <option value="{{ $method->name }}" data-currency="{{ $method->currency }}" data-rate="{{ $exchangeRates[$method->currency]->rate_to_usd ?? 1 }}" data-details="{{ $method->details }}" {{ old('payment_method') === $method->name ? 'selected' : '' }}>
-                            {{ $method->name }} ({{ $method->currency }})
-                        </option>
-                    @endforeach
-                </select>
+                @if($lockedMethod)
+                    <input type="text" class="form-control" value="{{ $lockedMethod }}" readonly style="background:rgba(201,162,39,0.06); color:#c9a227; cursor:not-allowed;">
+                    <input type="hidden" id="payment_method" name="payment_method" value="{{ $lockedMethod }}">
+                    <span style="font-size:0.73rem; color:#6b7a9a; display:block; margin-top:4px;">Méthode liée à votre premier dépôt — non modifiable.</span>
+                @else
+                    <select id="payment_method" name="payment_method" class="form-control" required onchange="updateCurrency(this.value)">
+                        <option value="">-- Choisir --</option>
+                        @foreach($paymentMethods as $method)
+                            <option value="{{ $method->name }}" data-currency="{{ $method->currency }}" data-rate="{{ $exchangeRates[$method->currency]->rate_to_usd ?? 1 }}" data-details="{{ $method->details }}" {{ old('payment_method') === $method->name ? 'selected' : '' }}>
+                                {{ $method->name }} ({{ $method->currency }})
+                            </option>
+                        @endforeach
+                    </select>
+                @endif
                 @error('payment_method')<span class="form-feedback-error">{{ $message }}</span>@enderror
             </div>
 
             <div id="paymentDetails" style="display:none; margin-top:-0.75rem; margin-bottom:1rem; background:rgba(107,122,154,0.07); border:1px solid rgba(107,122,154,0.2); border-radius:8px; padding:0.65rem 1rem;">
                 <div style="font-size:0.78rem; color:#b0bfd9;">Détails du paiement :</div>
-                <div id="paymentDetailsContent" style="font-family:'Space Mono',monospace; color:#e8e8e8; font-size:0.9rem; margin-top:2px;"></div>
+                <div id="paymentDetailsContent" style="font-family:'Space Mono',monospace; color:#e8e8e8; font-size:0.9rem; margin-top:2px; overflow-y:auto; max-height:100px;"></div>
                 <div style="margin-top:0.75rem; color:#c9a227; font-size:0.82rem;">Conservez votre capture, vous en aurez besoin à l'étape suivante.</div>
             </div>
 
@@ -188,12 +194,15 @@ document.getElementById('screenshot').addEventListener('change', function(e) {
 
 window.addEventListener('DOMContentLoaded', () => {
     const sel = document.getElementById('payment_method');
-    if (sel.value) {
+    if (sel && sel.value) {
         updateCurrency(sel.value);
-        if (currentStep === 2) {
-            showStep(2);
-        }
+        if (currentStep === 2) showStep(2);
+    } else if (sel && sel.tagName === 'INPUT') {
+        updateCurrency(sel.value);
     }
+    @if($lockedMethod)
+    updateCurrency('{{ $lockedMethod }}');
+    @endif
 });
 </script>
 @endpush

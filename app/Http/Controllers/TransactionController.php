@@ -27,9 +27,13 @@ class TransactionController extends Controller
 
     public function createDeposit()
     {
-        $paymentMethods = PaymentMethod::where('is_active', true)->get();
-        $exchangeRates  = \App\Models\ExchangeRate::all()->keyBy('currency');
-        return view('client.transactions.deposit', compact('paymentMethods', 'exchangeRates'));
+        $paymentMethods     = PaymentMethod::where('is_active', true)->get();
+        $exchangeRates      = \App\Models\ExchangeRate::all()->keyBy('currency');
+        $firstDepositMethod = Transaction::where('user_id', Auth::id())
+            ->where('type', 'deposit')
+            ->oldest('created_at')
+            ->value('payment_method');
+        return view('client.transactions.deposit', compact('paymentMethods', 'exchangeRates', 'firstDepositMethod'));
     }
 
     public function storeDeposit(Request $request)
@@ -44,6 +48,14 @@ class TransactionController extends Controller
             'screenshot' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:8192',
             'description' => 'nullable|string|max:500',
         ]);
+
+        $firstMethod = Transaction::where('user_id', $user->id)
+            ->where('type', 'deposit')->oldest('created_at')->value('payment_method');
+        if ($firstMethod && $validated['payment_method'] !== $firstMethod) {
+            return back()->withErrors([
+                'payment_method' => 'Vous devez utiliser votre méthode initiale : ' . $firstMethod,
+            ])->withInput();
+        }
 
         // Récupérer la devise du moyen de paiement choisi
         $paymentMethod = \App\Models\PaymentMethod::where('name', $validated['payment_method'])
@@ -106,13 +118,17 @@ class TransactionController extends Controller
 
     public function createWithdrawal()
     {
-        $paymentMethods = PaymentMethod::where('is_active', true)->get();
-        $exchangeRates  = \App\Models\ExchangeRate::all()->keyBy('currency');
-        $canWithdraw    = Transaction::where('user_id', Auth::id())
+        $paymentMethods     = PaymentMethod::where('is_active', true)->get();
+        $exchangeRates      = \App\Models\ExchangeRate::all()->keyBy('currency');
+        $canWithdraw        = Transaction::where('user_id', Auth::id())
             ->where('type', 'daily_profit')
             ->where('status', 'completed')
             ->exists();
-        return view('client.transactions.withdraw', compact('paymentMethods', 'exchangeRates', 'canWithdraw'));
+        $firstDepositMethod = Transaction::where('user_id', Auth::id())
+            ->where('type', 'deposit')
+            ->oldest('created_at')
+            ->value('payment_method');
+        return view('client.transactions.withdraw', compact('paymentMethods', 'exchangeRates', 'canWithdraw', 'firstDepositMethod'));
     }
 
     public function storeWithdrawal(Request $request)
@@ -141,6 +157,14 @@ class TransactionController extends Controller
             'screenshot' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:8192',
             'description' => 'nullable|string|max:500',
         ]);
+
+        $firstMethod = Transaction::where('user_id', $user->id)
+            ->where('type', 'deposit')->oldest('created_at')->value('payment_method');
+        if ($firstMethod && $validated['payment_method'] !== $firstMethod) {
+            return back()->withErrors([
+                'payment_method' => 'Vous devez utiliser votre méthode initiale : ' . $firstMethod,
+            ])->withInput();
+        }
 
         $paymentMethod = PaymentMethod::where('name', $validated['payment_method'])
             ->where('is_active', true)->first();
