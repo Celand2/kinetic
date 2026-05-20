@@ -45,6 +45,7 @@ class UserController extends Controller
             'phone' => 'required|unique:users,phone,' . $user->id,
             'country' => 'required|string',
             'balance' => 'nullable|numeric|min:0',
+            'profit_balance' => 'nullable|numeric|min:0',
             'referral_balance' => 'nullable|numeric|min:0',
             'status' => 'required|in:active,frozen,blocked',
         ]);
