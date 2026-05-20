@@ -12,11 +12,16 @@ jobs:
 
     steps:
       - name: Se connecter au serveur et exécuter la commande
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /home/clients/f9034963984a19d989aa24c060236869/sites/kinetic
-            php artisan profits:credit
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          echo "$SSH_PRIVATE_KEY" > /tmp/deploy_key
+          chmod 600 /tmp/deploy_key
+          ssh -i /tmp/deploy_key \
+              -o StrictHostKeyChecking=no \
+              -o ConnectTimeout=30 \
+              "$SSH_USER@$SSH_HOST" \
+              "cd /home/clients/f9034963984a19d989aa24c060236869/sites/kinetic && php artisan profits:credit"
+          rm -f /tmp/deploy_key
