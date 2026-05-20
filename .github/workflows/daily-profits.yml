@@ -1,0 +1,26 @@
+name: Créditer les profits journaliers
+on:
+  schedule:
+    - cron: '0 0 * * *'  # ← Minuit chaque jour suffit (pas besoin d'hourly)
+  workflow_dispatch:
+
+jobs:
+  credit-profits:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Se connecter au serveur et exécuter la commande
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > /tmp/deploy_key
+          chmod 600 /tmp/deploy_key
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+          ssh -i /tmp/deploy_key \
+              -o StrictHostKeyChecking=no \
+              -o ConnectTimeout=30 \
+              "$SSH_USER@$SSH_HOST" \
+              "cd /home/clients/f9034963984a19d989aa24c060236869/sites/kinetic && php artisan profits:credit"
+          rm -f /tmp/deploy_key
