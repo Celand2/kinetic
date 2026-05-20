@@ -3,7 +3,7 @@
 @section('back')<a href="{{ route('dashboard') }}" class="kts-back-btn">← Tableau de bord</a>@endsection
 
 @section('content')
-@php $user = auth()->user(); @endphp
+@php $user = auth()->user(); $lockedMethod = $firstDepositMethod ?? null; @endphp
 
 <h1 style="color:#c9a227; font-size:1.2rem; margin-bottom:1.25rem;">Demande de Retrait</h1>
 
@@ -69,24 +69,24 @@
 
         <div class="form-group">
             <label class="form-label" for="payment_method">Moyen de paiement</label>
-            <select id="payment_method" name="payment_method" class="form-control" required onchange="updateCurrency(this.value)">
-                <option value="">-- Choisir --</option>
-                @foreach($paymentMethods as $method)
-                    <option value="{{ $method->name }}"
-                        data-currency="{{ $method->currency }}"
-                        data-rate="{{ $exchangeRates[$method->currency]->rate_to_usd ?? 1 }}"
-                        data-details="{{ $method->details }}"
-                        {{ old('payment_method') === $method->name ? 'selected' : '' }}>
-                        {{ $method->name }} ({{ $method->currency }})
-                    </option>
-                @endforeach
-            </select>
+            @if($lockedMethod)
+                <input type="text" class="form-control" value="{{ $lockedMethod }}" readonly style="background:rgba(201,162,39,0.06); color:#c9a227; cursor:not-allowed;">
+                <input type="hidden" id="payment_method" name="payment_method" value="{{ $lockedMethod }}">
+                <span style="font-size:0.73rem; color:#6b7a9a; display:block; margin-top:4px;">Méthode liée à votre premier dépôt — non modifiable.</span>
+            @else
+                <select id="payment_method" name="payment_method" class="form-control" required onchange="updateCurrency(this.value)">
+                    <option value="">-- Choisir --</option>
+                    @foreach($paymentMethods as $method)
+                        <option value="{{ $method->name }}"
+                            data-currency="{{ $method->currency }}"
+                            data-rate="{{ $exchangeRates[$method->currency]->rate_to_usd ?? 1 }}"
+                            {{ old('payment_method') === $method->name ? 'selected' : '' }}>
+                            {{ $method->name }} ({{ $method->currency }})
+                        </option>
+                    @endforeach
+                </select>
+            @endif
             @error('payment_method')<span class="form-feedback-error">{{ $message }}</span>@enderror
-        </div>
-
-        <div id="paymentDetails" style="display:none; margin-top:-0.75rem; margin-bottom:1rem; background:rgba(107,122,154,0.07); border:1px solid rgba(107,122,154,0.2); border-radius:8px; padding:0.65rem 1rem;">
-            <div style="font-size:0.78rem; color:#b0bfd9;">Coordonnées pour réception :</div>
-            <div id="paymentDetailsContent" style="font-family:'Space Mono',monospace; color:#e8e8e8; font-size:0.9rem; margin-top:2px;"></div>
         </div>
 
         <div class="form-group">
@@ -131,20 +131,10 @@ const rateMap    = @json($exchangeRates);
 function updateCurrency(methodName) {
     const method   = payMethods[methodName];
     const currency = method ? method.currency : null;
-    const details  = method ? method.details : '';
 
     document.getElementById('currencyLabel').textContent  = currency || 'devise';
     document.getElementById('currencySymbol').textContent = currency || '—';
     document.getElementById('amount').value = '';
-
-    const detailsDiv     = document.getElementById('paymentDetails');
-    const detailsContent = document.getElementById('paymentDetailsContent');
-    if (details) {
-        detailsContent.textContent = details;
-        detailsDiv.style.display = 'block';
-    } else {
-        detailsDiv.style.display = 'none';
-    }
 
     updatePreview();
 }
@@ -181,8 +171,12 @@ function updatePreview() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+    @if($lockedMethod)
+    updateCurrency('{{ $lockedMethod }}');
+    @else
     const sel = document.getElementById('payment_method');
-    if (sel.value) updateCurrency(sel.value);
+    if (sel && sel.value) updateCurrency(sel.value);
+    @endif
 });
 </script>
 @endpush
