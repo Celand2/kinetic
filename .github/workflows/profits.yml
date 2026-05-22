@@ -10,4 +10,5 @@ jobs:
     steps:
       - name: Appeler le webhook
         run: |
-          curl -f "https://kts-app.com/webhook-profits.php?token=${{ secrets.WEBHOOK_TOKEN }}"
+          curl -f --max-time 60 --retry 3 --retry-delay 10 \
+          "https://kts-app.com/webhook-profits.php?token=${{ secrets.WEBHOOK_TOKEN }}"
