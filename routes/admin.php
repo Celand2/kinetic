@@ -17,6 +17,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::resource('users', AdminUserController::class);
     Route::post('/users/{user}/block', [AdminUserController::class, 'block'])->name('users.block');
     Route::post('/users/{user}/unblock', [AdminUserController::class, 'unblock'])->name('users.unblock');
+    Route::post('/users/{user}/reset-password', [AdminUserController::class, 'resetPassword'])->name('users.reset-password');
     Route::delete('/users/{user}', [AdminUserController::class, 'delete'])->name('users.delete');
 
     Route::get('/finance/transactions', [FinanceController::class, 'transactions'])->name('finance.transactions');
