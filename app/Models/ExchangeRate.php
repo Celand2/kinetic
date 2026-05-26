@@ -1,26 +1,20 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
-
 class ExchangeRate extends Model
 {
     protected $keyType = 'string';
     public $incrementing = false;
-
     protected $fillable = [
         'id',
         'currency',
         'rate_to_usd',
         'updated_at',
     ];
-
     protected $casts = [
-        'rate_to_usd' => 'decimal:6',
+        'rate_to_usd' => 'decimal:10',
         'updated_at' => 'datetime',
     ];
-
     public $timestamps = false;
 
     /**
@@ -32,7 +26,8 @@ class ExchangeRate extends Model
         if ($currency === 'USD') return $usdAmount;
         $rate = static::where('currency', strtoupper($currency))->first();
         if (!$rate || $rate->rate_to_usd == 0) return $usdAmount;
-        return round($usdAmount * (float) $rate->rate_to_usd, 2);
+        // Pas de round ici — on garde toute la précision
+        return (float) bcmul((string)$usdAmount, (string)$rate->rate_to_usd, 10);
     }
 
     /**
@@ -44,7 +39,8 @@ class ExchangeRate extends Model
         if ($currency === 'USD') return $localAmount;
         $rate = static::where('currency', strtoupper($currency))->first();
         if (!$rate || $rate->rate_to_usd == 0) return $localAmount;
-        return round($localAmount / (float) $rate->rate_to_usd, 8);
+        // bcdiv pour une division précise sans perte de flottant
+        return (float) bcdiv((string)$localAmount, (string)$rate->rate_to_usd, 10);
     }
 
     /**
@@ -57,7 +53,9 @@ class ExchangeRate extends Model
             return '$' . number_format($usdAmount, 2);
         }
         $local = static::fromUSD($usdAmount, $currency);
-        return number_format($local, 0, ',', ' ') . ' ' . strtoupper($currency);
+        // Pour les devises à grande valeur (BIF, CDF...) on arrondit à l'entier
+        $decimals = $local >= 100 ? 0 : 2;
+        return number_format($local, $decimals, ',', ' ') . ' ' . strtoupper($currency);
     }
 
     /**
