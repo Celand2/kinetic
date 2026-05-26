@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -74,4 +76,16 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')
             ->with('success', 'User deleted permanently!');
     }
+    public function resetPassword(Request $request, User $user)
+{
+    $request->validate([
+        'new_password' => 'required|string|min:8|confirmed',
+    ]);
+
+    $user->update([
+        'password' => Hash::make($request->new_password),
+    ]);
+
+    return back()->with('success', 'Mot de passe réinitialisé avec succès !');
+}
 }

@@ -15,6 +15,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class TransactionController extends Controller
 {
     use AuthorizesRequests;
+
     public function index()
     {
         $user = Auth::user();
@@ -113,7 +114,7 @@ class TransactionController extends Controller
         }
 
         return redirect()->route("transactions.index")
-            ->with("success", "Demande de depot enregistree. L’admin va la valider sous peu.");
+            ->with("success", "Demande de depot enregistree. L'admin va la valider sous peu.");
     }
 
     public function createWithdrawal()
@@ -147,6 +148,18 @@ class TransactionController extends Controller
             ])->withInput();
         }
 
+        // Vérifier s'il y a déjà un retrait en attente
+        $hasPendingWithdrawal = Transaction::where('user_id', $user->id)
+            ->where('type', 'withdrawal')
+            ->where('status', 'pending')
+            ->exists();
+
+        if ($hasPendingWithdrawal) {
+            return back()->withErrors([
+                'amount' => 'Vous avez déjà un retrait en attente. Veuillez attendre son approbation avant d\'en soumettre un nouveau.',
+            ])->withInput();
+        }
+
         $validated = $request->validate([
             'amount' => 'required|numeric|min:1',
             'payment_method' => [
@@ -174,28 +187,29 @@ class TransactionController extends Controller
         // Convertir en USD pour la vérification du solde et le stockage
         $usdAmount = \App\Models\ExchangeRate::toUSD($localAmount, $localCurrency);
         $fee       = round($usdAmount * 0.10, 2);
-        $total     = $usdAmount + $fee;
+        $received  = round($usdAmount - $fee, 2);
 
         // Seuls les gains (profit_balance) sont retirables, pas le capital déposé
-        if ($total > $user->profit_balance) {
+        if ($usdAmount > $user->profit_balance) {
             $userCurrency = $user->preferred_currency ?? 'USD';
             $rate         = \App\Models\ExchangeRate::rate($userCurrency);
             $availableFmt = $userCurrency === 'USD'
                 ? '$' . number_format($user->profit_balance, 2)
                 : number_format(round((float)$user->profit_balance * $rate), 0, ',', ' ') . ' ' . $userCurrency;
             return back()->withErrors([
-                'amount' => 'Gains insuffisants. Seuls vos gains sont retirables. Gains disponibles : ' . $availableFmt . '.',
+                'amount' => 'Gains insuffisants. Gains disponibles : ' . $availableFmt . '. Vous recevrez le montant moins 10% de frais.',
             ])->withInput();
         }
 
         $metadata = [
-            'payment_method'  => $validated['payment_method'],
-            'local_amount'    => $localAmount,
-            'local_currency'  => $localCurrency,
-            'usd_amount'      => $usdAmount,
-            'rate_used'       => \App\Models\ExchangeRate::rate($localCurrency),
-            'wallet_details'  => $validated['wallet_details'],
-            'fee'             => $fee,
+            'payment_method' => $validated['payment_method'],
+            'local_amount'   => $localAmount,
+            'local_currency' => $localCurrency,
+            'usd_amount'     => $usdAmount,
+            'rate_used'      => \App\Models\ExchangeRate::rate($localCurrency),
+            'wallet_details' => $validated['wallet_details'],
+            'fee'            => $fee,
+            'received'       => $received,
         ];
 
         if ($request->hasFile('screenshot')) {
@@ -208,7 +222,6 @@ class TransactionController extends Controller
             'amount'         => $usdAmount,
             'direction'      => 'debit',
             'balance_after'  => $user->balance,
-            'fee_amount'     => $fee,
             'status'         => 'pending',
             'reference'      => 'TXN-' . date('Y') . '-' . Str::padLeft(Transaction::count() + 1, 6, '0'),
             'payment_method' => $validated['payment_method'],

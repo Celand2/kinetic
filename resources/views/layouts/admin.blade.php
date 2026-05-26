@@ -90,8 +90,7 @@
 
         /* ── CONTENU ADMIN (full-width) ───────────────────────────────── */
         .kts-main { position: relative; z-index: 1; min-height: calc(100vh - 54px); }
-        .kts-content { padding: 1.25rem 1rem 4rem; max-width: 1100px; margin: 0 auto; width: 100%; }
-
+        .kts-content { padding: 1.25rem 1rem 4rem; max-width: 1100px; margin: 0 auto; width: 100%; overflow-x: hidden; }
         /* ── Bouton retour ────────────────────────────────────────────── */
         .kts-back-row { margin-bottom: 1.25rem; }
         .kts-back-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: #8a9bb5; font-size: 0.82rem; text-decoration: none; transition: all 0.15s; }
@@ -111,6 +110,26 @@
         .kts-alert.success { background: rgba(129,199,132,0.08); border: 1px solid rgba(129,199,132,0.28); color: #81c784; }
         .kts-alert.error   { background: rgba(239,83,80,0.08);   border: 1px solid rgba(239,83,80,0.28);   color: #ef5350; }
         .kts-alert.info    { background: rgba(122,156,198,0.08); border: 1px solid rgba(122,156,198,0.28); color: #7a9cc6; }
+        /* ── SCROLL TABLES ─────────────────────────────────────────── */
+.card { overflow-x: auto; }
+
+table {
+    width: 100%;
+    min-width: 600px;
+    border-collapse: collapse;
+}
+
+/* Scroll vertical sur les grandes listes */
+.kts-main {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Scrollbar stylée */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+::-webkit-scrollbar-thumb { background: rgba(201,162,39,0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(201,162,39,0.55); }
     </style>
     @stack('styles')
 </head>

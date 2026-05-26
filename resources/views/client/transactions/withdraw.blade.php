@@ -59,7 +59,7 @@
         @endif
     </div>
     <div style="font-size:0.72rem; color:#4a5568; margin-top:3px;">
-        Frais 10% inclus · Seuls vos profits, commissions et bonus sont retirables
+        Frais 10% déduits du montant · Seuls vos profits, commissions et bonus sont retirables
     </div>
 </div>
 
@@ -98,10 +98,12 @@
             @error('amount')<span class="form-feedback-error">{{ $message }}</span>@enderror
         </div>
 
+        {{-- Preview frais --}}
         <div id="conversionPreview" style="display:none; margin-top:-0.75rem; margin-bottom:1rem; background:rgba(201,162,39,0.07); border:1px solid rgba(201,162,39,0.2); border-radius:8px; padding:0.65rem 1rem;">
             <div style="font-size:0.78rem; color:#b0bfd9;">Équivalent USD :</div>
             <div id="conversionValue" style="font-family:'Space Mono',monospace; color:#c9a227; font-size:1rem; font-weight:700; margin-top:2px;">$0.00</div>
-            <div id="feeInfo" style="font-size:0.72rem; color:#fbc02d; margin-top:4px;"></div>
+            <div id="feeInfo" style="font-size:0.78rem; color:#6b7a9a; margin-top:6px;"></div>
+            <div id="receivedInfo" style="font-size:0.92rem; font-weight:700; color:#81c784; margin-top:4px;"></div>
             <div id="rateInfo" style="font-size:0.7rem; color:#6b7a9a; margin-top:2px;"></div>
         </div>
 
@@ -147,15 +149,18 @@ function updatePreview() {
     const preview    = document.getElementById('conversionPreview');
 
     if (localAmt > 0 && currency) {
-        const rateObj = rateMap[currency];
-        const rate    = rateObj ? parseFloat(rateObj.rate_to_usd) : 1;
-        const usd     = (currency === 'USD') ? localAmt : (localAmt / rate);
-        const fee     = usd * 0.10;
-        const total   = usd + fee;
+        const rateObj  = rateMap[currency];
+        const rate     = rateObj ? parseFloat(rateObj.rate_to_usd) : 1;
+        const usd      = (currency === 'USD') ? localAmt : (localAmt / rate);
+        const fee      = usd * 0.10;
+        const received = usd - fee;
 
-        document.getElementById('conversionValue').textContent = '$' + usd.toFixed(2) + ' USD';
+        document.getElementById('conversionValue').textContent =
+            '$' + usd.toFixed(2) + ' USD demandés';
         document.getElementById('feeInfo').textContent =
-            'Frais (10%) : $' + fee.toFixed(2) + ' — Total débité : $' + total.toFixed(2);
+            'Frais de retrait (10%) : -$' + fee.toFixed(2);
+        document.getElementById('receivedInfo').textContent =
+            '✅ Vous recevrez : $' + received.toFixed(2) + ' USD';
 
         if (currency !== 'USD') {
             document.getElementById('rateInfo').textContent =
