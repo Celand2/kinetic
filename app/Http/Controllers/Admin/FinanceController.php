@@ -66,9 +66,10 @@ class FinanceController extends Controller
             ]);
 
             $user = $transaction->user;
-            $totalDeducted = $transaction->amount + $transaction->fee_amount;
-          $user->decrement('balance', $transaction->amount);
-$user->decrement('profit_balance', min($transaction->amount, (float) $user->profit_balance));
+
+            // Déduire uniquement amount ($100) — les frais sont juste des frais de transfert
+            $user->decrement('balance', $transaction->amount);
+            $user->decrement('profit_balance', min($transaction->amount, (float) $user->profit_balance));
 
             Notification::create([
                 'user_id'      => $user->id,
@@ -152,12 +153,11 @@ $user->decrement('profit_balance', min($transaction->amount, (float) $user->prof
 
     public function withdrawals(Request $request)
     {
-        $query = Transaction::with('user')
+        $withdrawals = Transaction::with('user')
             ->where('type', 'withdrawal')
             ->where('status', 'pending')
-            ->latest();
-
-        $withdrawals = $query->get();
+            ->latest()
+            ->get();
 
         return view('admin.finance.withdrawals', compact('withdrawals'));
     }
@@ -171,14 +171,15 @@ $user->decrement('profit_balance', min($transaction->amount, (float) $user->prof
             ->get();
 
         $lines   = [];
-        $lines[] = implode(';', ['Référence', 'Date', 'Nom', 'Téléphone', 'Méthode', 'Détails adresse', 'Montant local', 'Devise', 'Montant (USD)', 'Frais (USD)', 'Total (USD)']);
+        $lines[] = implode(';', ['Référence', 'Date', 'Nom', 'Téléphone', 'Méthode', 'Détails adresse', 'Montant retiré (USD)', 'Frais (USD)', 'Montant à envoyer (USD)', 'Devise locale', 'Montant local']);
 
         foreach ($withdrawals as $txn) {
-            $meta       = $txn->metadata ?? [];
-            $details    = $meta['wallet_details'] ?? '—';
-            $details    = str_replace(["\r\n", "\n", "\r", ';'], [' ', ' ', ' ', ' '], $details);
-            $localAmt   = isset($meta['local_amount']) ? number_format((float) $meta['local_amount'], 0, '.', '') : number_format($txn->amount, 2, '.', '');
-            $localCurr  = $meta['local_currency'] ?? 'USD';
+            $meta      = $txn->metadata ?? [];
+            $details   = $meta['wallet_details'] ?? '—';
+            $details   = str_replace(["\r\n", "\n", "\r", ';'], [' ', ' ', ' ', ' '], $details);
+            $received  = isset($meta['received']) ? number_format((float) $meta['received'], 2, '.', '') : number_format($txn->amount - $txn->fee_amount, 2, '.', '');
+            $localAmt  = isset($meta['local_amount']) ? number_format((float) $meta['local_amount'], 0, '.', '') : '—';
+            $localCurr = $meta['local_currency'] ?? 'USD';
 
             $lines[] = implode(';', [
                 $txn->reference,
@@ -187,11 +188,11 @@ $user->decrement('profit_balance', min($transaction->amount, (float) $user->prof
                 $txn->user->phone      ?? '—',
                 $txn->payment_method   ?? '—',
                 $details,
-                $localAmt,
-                $localCurr,
                 number_format($txn->amount, 2, '.', ''),
                 number_format($txn->fee_amount, 2, '.', ''),
-                number_format($txn->amount + $txn->fee_amount, 2, '.', ''),
+                $received,
+                $localCurr,
+                $localAmt,
             ]);
         }
 

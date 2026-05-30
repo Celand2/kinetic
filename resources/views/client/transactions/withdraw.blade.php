@@ -59,7 +59,7 @@
         @endif
     </div>
     <div style="font-size:0.72rem; color:#4a5568; margin-top:3px;">
-        Seuls vos profits, commissions et bonus sont retirables
+        Frais 3% déduits · Minimum $0.25 · Seuls vos profits, commissions et bonus sont retirables
     </div>
 </div>
 
@@ -93,20 +93,23 @@
             <label class="form-label" for="amount">Montant en <span id="currencyLabel" style="color:#c9a227;">—</span></label>
             <div style="position:relative;">
                 <input type="number" id="amount" name="amount" class="form-control" min="1" step="1"
-                    value="{{ old('amount') }}" required placeholder="0" style="padding-right:70px;">
+                    value="{{ old('amount') }}" required placeholder="0" style="padding-right:70px;"
+                    oninput="updatePreview()">
                 <span id="currencySymbol" style="position:absolute; right:14px; top:50%; transform:translateY(-50%);
                     color:#c9a227; font-weight:700; font-size:0.85rem; pointer-events:none;">—</span>
             </div>
             @error('amount')<span class="form-feedback-error">{{ $message }}</span>@enderror
         </div>
 
-        {{-- Preview taux de conversion uniquement (sans frais) --}}
+        {{-- Preview frais --}}
         <div id="conversionPreview" style="display:none; margin-top:-0.75rem; margin-bottom:1rem;
             background:rgba(201,162,39,0.07); border:1px solid rgba(201,162,39,0.2);
             border-radius:8px; padding:0.65rem 1rem;">
             <div style="font-size:0.78rem; color:#b0bfd9;">Équivalent USD :</div>
             <div id="conversionValue" style="font-family:'Space Mono',monospace; color:#c9a227;
                 font-size:1rem; font-weight:700; margin-top:2px;">$0.00</div>
+            <div id="feeInfo" style="font-size:0.78rem; color:#6b7a9a; margin-top:6px;"></div>
+            <div id="receivedInfo" style="font-size:0.92rem; font-weight:700; color:#81c784; margin-top:4px;"></div>
             <div id="rateInfo" style="font-size:0.7rem; color:#6b7a9a; margin-top:2px;"></div>
         </div>
 
@@ -149,14 +152,27 @@ function updatePreview() {
     const localAmt   = parseFloat(document.getElementById('amount').value) || 0;
     const preview    = document.getElementById('conversionPreview');
 
-    if (localAmt > 0 && currency && currency !== 'USD') {
-        const rateObj = rateMap[currency];
-        const rate    = rateObj ? parseFloat(rateObj.rate_to_usd) : 1;
-        const usd     = localAmt / rate;
+    if (localAmt > 0 && currency) {
+        const rateObj  = rateMap[currency];
+        const rate     = rateObj ? parseFloat(rateObj.rate_to_usd) : 1;
+        const usd      = currency === 'USD' ? localAmt : (localAmt / rate);
+        const fee      = usd * 0.03;
+        const received = usd - fee;
 
-        document.getElementById('conversionValue').textContent = '$' + usd.toFixed(2) + ' USD';
-        document.getElementById('rateInfo').textContent =
-            'Taux : 1 USD = ' + rate.toLocaleString('fr-FR', {maximumFractionDigits: 2}) + ' ' + currency;
+        document.getElementById('conversionValue').textContent =
+            '$' + usd.toFixed(2) + ' USD demandés';
+        document.getElementById('feeInfo').textContent =
+            'Frais (3%) : -$' + fee.toFixed(2);
+        document.getElementById('receivedInfo').textContent =
+            '✅ Vous recevrez : $' + received.toFixed(2) + ' USD';
+
+        if (currency !== 'USD') {
+            document.getElementById('rateInfo').textContent =
+                'Taux : 1 USD = ' + rate.toLocaleString('fr-FR', {maximumFractionDigits: 2}) + ' ' + currency;
+        } else {
+            document.getElementById('rateInfo').textContent = '';
+        }
+
         preview.style.display = 'block';
     } else {
         preview.style.display = 'none';

@@ -41,12 +41,12 @@ class TransactionController extends Controller
     {
         $user = Auth::user();
         $validated = $request->validate([
-            'amount' => 'required|numeric|min:1',
+            'amount'         => 'required|numeric|min:1',
             'payment_method' => [
                 'required',
                 Rule::exists('payment_methods', 'name')->where('is_active', true),
             ],
-            'screenshot' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:8192',
+            'screenshot'  => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:8192',
             'description' => 'nullable|string|max:500',
         ]);
 
@@ -58,23 +58,18 @@ class TransactionController extends Controller
             ])->withInput();
         }
 
-        // Récupérer la devise du moyen de paiement choisi
         $paymentMethod = \App\Models\PaymentMethod::where('name', $validated['payment_method'])
             ->where('is_active', true)->first();
         $localCurrency = $paymentMethod->currency ?? 'USD';
-
-        // Montant saisi par le user (dans sa devise locale)
-        $localAmount = (float) $validated['amount'];
-
-        // Convertir en USD pour le stockage interne
-        $usdAmount = \App\Models\ExchangeRate::toUSD($localAmount, $localCurrency);
+        $localAmount   = (float) $validated['amount'];
+        $usdAmount     = \App\Models\ExchangeRate::toUSD($localAmount, $localCurrency);
 
         $metadata = [
-            'payment_method'   => $validated['payment_method'],
-            'local_amount'     => $localAmount,
-            'local_currency'   => $localCurrency,
-            'usd_amount'       => $usdAmount,
-            'rate_used'        => \App\Models\ExchangeRate::rate($localCurrency),
+            'payment_method' => $validated['payment_method'],
+            'local_amount'   => $localAmount,
+            'local_currency' => $localCurrency,
+            'usd_amount'     => $usdAmount,
+            'rate_used'      => \App\Models\ExchangeRate::rate($localCurrency),
         ];
 
         if ($request->hasFile('screenshot')) {
@@ -94,27 +89,25 @@ class TransactionController extends Controller
             'metadata'       => $metadata,
         ]);
 
-        // Sauvegarder la devise préférée du user
         if ($localCurrency !== 'USD') {
             $user->update(['preferred_currency' => $localCurrency]);
         }
 
-        // Notifier tous les super_admins
         $super_admins = User::where('role', 'super_admin')->get();
         foreach ($super_admins as $super_admin) {
             Notification::create([
-                "user_id"      => $super_admin->id,
-                "type"         => "system",
-                "title"        => "Nouvelle preuve de depot",
-                "body"         => $user->full_name . " a soumis une preuve de depot de $" . number_format($validated["amount"], 2) . " via " . $validated["payment_method"] . ".",
-                "action_url"   => route("admin.finance.transactions"),
-                "action_label" => "Voir les transactions",
-                "created_by"   => $user->id,
+                'user_id'      => $super_admin->id,
+                'type'         => 'system',
+                'title'        => 'Nouvelle preuve de depot',
+                'body'         => $user->full_name . ' a soumis une preuve de depot de $' . number_format($validated['amount'], 2) . ' via ' . $validated['payment_method'] . '.',
+                'action_url'   => route('admin.finance.transactions'),
+                'action_label' => 'Voir les transactions',
+                'created_by'   => $user->id,
             ]);
         }
 
-        return redirect()->route("transactions.index")
-            ->with("success", "Demande de depot enregistree. L'admin va la valider sous peu.");
+        return redirect()->route('transactions.index')
+            ->with('success', "Demande de depot enregistree. L'admin va la valider sous peu.");
     }
 
     public function createWithdrawal()
@@ -136,7 +129,6 @@ class TransactionController extends Controller
     {
         $user = Auth::user();
 
-        // Condition délai : au moins un crédit de profit journalier doit exister
         $hasFirstProfit = Transaction::where('user_id', $user->id)
             ->where('type', 'daily_profit')
             ->where('status', 'completed')
@@ -148,7 +140,6 @@ class TransactionController extends Controller
             ])->withInput();
         }
 
-        // Vérifier s'il y a déjà un retrait en attente
         $hasPendingWithdrawal = Transaction::where('user_id', $user->id)
             ->where('type', 'withdrawal')
             ->where('status', 'pending')
@@ -156,19 +147,19 @@ class TransactionController extends Controller
 
         if ($hasPendingWithdrawal) {
             return back()->withErrors([
-                'amount' => 'Vous avez déjà un retrait en attente. Veuillez attendre son approbation avant d\'en soumettre un nouveau.',
+                'amount' => "Vous avez déjà un retrait en attente. Veuillez attendre son approbation avant d'en soumettre un nouveau.",
             ])->withInput();
         }
 
         $validated = $request->validate([
-            'amount' => 'required|numeric|min:1',
+            'amount'         => 'required|numeric|min:1',
             'payment_method' => [
                 'required',
                 Rule::exists('payment_methods', 'name')->where('is_active', true),
             ],
             'wallet_details' => 'required|string|max:1000',
-            'screenshot' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:8192',
-            'description' => 'nullable|string|max:500',
+            'screenshot'     => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:8192',
+            'description'    => 'nullable|string|max:500',
         ]);
 
         $firstMethod = Transaction::where('user_id', $user->id)
@@ -183,13 +174,20 @@ class TransactionController extends Controller
             ->where('is_active', true)->first();
         $localCurrency = $paymentMethod->currency ?? 'USD';
         $localAmount   = (float) $validated['amount'];
+        $usdAmount     = \App\Models\ExchangeRate::toUSD($localAmount, $localCurrency);
 
-        // Convertir en USD pour la vérification du solde et le stockage
-        $usdAmount = \App\Models\ExchangeRate::toUSD($localAmount, $localCurrency);
-        $fee       = round($usdAmount * 0.10, 2);
-        $received  = round($usdAmount - $fee, 2);
+        // Minimum de retrait : $0.25
+        if ($usdAmount < 0.25) {
+            return back()->withErrors([
+                'amount' => 'Le montant minimum de retrait est de $0.25.',
+            ])->withInput();
+        }
 
-        // Seuls les gains (profit_balance) sont retirables, pas le capital déposé
+        // Frais 3% — déduits du montant envoyé, pas du wallet
+        $fee      = round($usdAmount * 0.03, 2);
+        $received = round($usdAmount - $fee, 2);
+
+        // Vérification solde : on compare usdAmount (ce qui est retiré du wallet)
         if ($usdAmount > $user->profit_balance) {
             $userCurrency = $user->preferred_currency ?? 'USD';
             $rate         = \App\Models\ExchangeRate::rate($userCurrency);
@@ -197,36 +195,41 @@ class TransactionController extends Controller
                 ? '$' . number_format($user->profit_balance, 2)
                 : number_format(round((float)$user->profit_balance * $rate), 0, ',', ' ') . ' ' . $userCurrency;
             return back()->withErrors([
-                'amount' => 'Gains insuffisants. Gains disponibles : ' . $availableFmt . '. Vous recevrez le montant moins 10% de frais.',
+                'amount' => 'Gains insuffisants. Gains disponibles : ' . $availableFmt . '.',
             ])->withInput();
         }
 
-       $metadata = [
-    'payment_method' => $validated['payment_method'],
-    'local_amount'   => $localAmount,
-    'local_currency' => $localCurrency,
-    'usd_amount'     => $usdAmount,
-    'rate_used'      => \App\Models\ExchangeRate::rate($localCurrency),
-    'wallet_details' => $validated['wallet_details'],
-];
+        $rateUsed = \App\Models\ExchangeRate::rate($localCurrency);
 
-if ($request->hasFile('screenshot')) {
-    $metadata['screenshot'] = $request->file('screenshot')->store('client/withdrawals', 'public');
-}
+        $metadata = [
+            'payment_method'  => $validated['payment_method'],
+            'local_amount'    => $localAmount,    // montant saisi par le user
+            'local_currency'  => $localCurrency,
+            'usd_amount'      => $usdAmount,      // montant retiré du wallet
+            'rate_used'       => $rateUsed,
+            'wallet_details'  => $validated['wallet_details'],
+            'fee'             => $fee,            // frais 3%
+            'received'        => $received,       // montant envoyé au user
+        ];
 
-Transaction::create([
-    'user_id'        => $user->id,
-    'type'           => 'withdrawal',
-    'amount'         => $usdAmount,
-    'fee_amount'     => 0,
-    'direction'      => 'debit',
-    'balance_after'  => $user->balance,
-    'status'         => 'pending',
-    'reference'      => 'TXN-' . date('Y') . '-' . Str::padLeft(Transaction::count() + 1, 6, '0'),
-    'payment_method' => $validated['payment_method'],
-    'description'    => $validated['description'] ?? 'Demande de retrait soumise',
-    'metadata'       => $metadata,
-]);
+        if ($request->hasFile('screenshot')) {
+            $metadata['screenshot'] = $request->file('screenshot')->store('client/withdrawals', 'public');
+        }
+
+        Transaction::create([
+            'user_id'        => $user->id,
+            'type'           => 'withdrawal',
+            'amount'         => $usdAmount,   // $100 → débité du wallet
+            'fee_amount'     => $fee,         // $3  → frais de transfert
+            'direction'      => 'debit',
+            'balance_after'  => $user->balance,
+            'status'         => 'pending',
+            'reference'      => 'TXN-' . date('Y') . '-' . Str::padLeft(Transaction::count() + 1, 6, '0'),
+            'payment_method' => $validated['payment_method'],
+            'description'    => $validated['description'] ?? 'Demande de retrait soumise',
+            'metadata'       => $metadata,
+        ]);
+
         return redirect()->route('transactions.index')
             ->with('success', 'Demande de retrait enregistrée. Un admin va la valider rapidement.');
     }
@@ -234,7 +237,6 @@ Transaction::create([
     public function show(Transaction $transaction)
     {
         $this->authorize('view', $transaction);
-
         return view('client.transactions.show', compact('transaction'));
     }
 }

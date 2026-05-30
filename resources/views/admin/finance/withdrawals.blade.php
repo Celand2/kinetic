@@ -29,15 +29,13 @@
 
 @if($withdrawals->count() > 0)
 
-    {{-- VUE CARTES (mobile-first, lisible sur tous les écrans) --}}
     <div style="display:flex; flex-direction:column; gap:1rem;">
         @foreach($withdrawals as $txn)
         @php
             $meta      = $txn->metadata ?? [];
             $details   = $meta['wallet_details'] ?? '—';
             $method    = $txn->payment_method ?? '—';
-            $total     = $txn->amount + $txn->fee_amount;
-            $copyId    = 'copy-' . $txn->id;
+            $received  = isset($meta['received']) ? (float) $meta['received'] : round($txn->amount - $txn->fee_amount, 2);
             $isLocal   = $txn->display_currency !== 'USD';
         @endphp
         <div class="card" style="padding:1.25rem; position:relative;">
@@ -90,19 +88,43 @@
                     </div>
                 </div>
 
+                {{-- Bloc montants --}}
                 <div style="background:rgba(201,162,39,0.05); border:1px solid rgba(201,162,39,0.15); border-radius:8px; padding:0.75rem;">
-                    <div style="font-size:0.7rem; color:#6b7a9a; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px;">Montant à envoyer</div>
-                    <div style="color:#c9a227; font-weight:700; font-size:1.05rem;">{{ $txn->formatted_amount }}</div>
-                    @if($isLocal)
-                        <div style="color:#b0bfd9; font-size:0.78rem;">≈ ${{ number_format($txn->amount, 2) }} USD</div>
-                    @endif
-                    <div style="color:#b0bfd9; font-size:0.75rem; margin-top:4px;">Frais : ${{ number_format($txn->fee_amount, 2) }}</div>
-                    <div style="color:#ef5350; font-weight:700; font-size:0.85rem;">Total déduit wallet : ${{ number_format($total, 2) }}</div>
+                    <div style="font-size:0.7rem; color:#6b7a9a; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px;">Montants</div>
+
+                    {{-- Montant retiré --}}
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <span style="font-size:0.75rem; color:#6b7a9a;">Retiré du wallet</span>
+                        <span style="color:#e8eaf6; font-weight:600; font-size:0.9rem;">${{ number_format($txn->amount, 2) }}</span>
+                    </div>
+
+                    {{-- Frais --}}
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="font-size:0.75rem; color:#6b7a9a;">Frais transfert (3%)</span>
+                        <span style="color:#ef5350; font-size:0.85rem;">-${{ number_format($txn->fee_amount, 2) }}</span>
+                    </div>
+
+                    <div style="border-top:1px solid rgba(201,162,39,0.15); padding-top:6px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.78rem; color:#b0bfd9; font-weight:600;">À envoyer</span>
+                            <span style="color:#81c784; font-weight:700; font-size:1.05rem;">${{ number_format($received, 2) }}</span>
+                        </div>
+                        @if($isLocal)
+                            @php
+                                $rateUsed    = (float) ($meta['rate_used'] ?? 1);
+                                $receivedLocal = $rateUsed > 0 ? round($received * $rateUsed) : $received;
+                                $localCurr   = $meta['local_currency'] ?? 'USD';
+                            @endphp
+                            <div style="color:#b0bfd9; font-size:0.75rem; margin-top:2px; text-align:right;">
+                                ≈ {{ number_format($receivedLocal, 0, ',', ' ') }} {{ $localCurr }}
+                            </div>
+                        @endif
+                    </div>
                 </div>
 
             </div>
 
-            {{-- Adresse de paiement (champ libre) --}}
+            {{-- Adresse de paiement --}}
             <div style="background:rgba(201,162,39,0.05); border:1px solid rgba(201,162,39,0.25); border-radius:8px; padding:0.9rem; margin-bottom:1rem;">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem;">
                     <div style="font-size:0.7rem; color:#6b7a9a; text-transform:uppercase; letter-spacing:0.08em;">
@@ -124,15 +146,15 @@
                         style="width:100%; background:rgba(201,162,39,0.08); border:1px dashed rgba(201,162,39,0.4);
                                color:#c9a227; border-radius:8px; padding:0.6rem 1rem; font-size:0.82rem;
                                cursor:pointer; text-align:left;">
-                    📋 Copier toutes les infos (nom + téléphone + adresse + montant)
+                    📋 Copier toutes les infos (nom + téléphone + adresse + montant à envoyer)
                 </button>
-                <div id="block-{{ $txn->id }}" style="display:none;">{{ $txn->user->full_name ?? '' }} | {{ $txn->user->phone ?? '' }} | {{ $method }} | {{ $details }} | {{ $txn->formatted_amount }}@if($isLocal) (≈${{ number_format($txn->amount, 2) }})@endif</div>
+                <div id="block-{{ $txn->id }}" style="display:none;">{{ $txn->user->full_name ?? '' }} | {{ $txn->user->phone ?? '' }} | {{ $method }} | {{ $details }} | ${{ number_format($received, 2) }}@if($isLocal) (≈ {{ number_format($receivedLocal ?? 0, 0, ',', ' ') }} {{ $meta['local_currency'] ?? '' }})@endif</div>
             </div>
 
             {{-- Actions --}}
             <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
                 <form method="POST" action="{{ route('admin.finance.approve', $txn) }}"
-                      onsubmit="return confirm('Approuver ce retrait de {{ $txn->formatted_amount }}{{ $isLocal ? ' (≈$'.number_format($txn->amount,2).')' : '' }} ?')"
+                      onsubmit="return confirm('Approuver ce retrait ? Montant à envoyer : ${{ number_format($received, 2) }}')"
                       style="flex:1; min-width:120px;">
                     @csrf
                     <button type="submit" class="btn" style="width:100%; font-size:0.85rem;">
