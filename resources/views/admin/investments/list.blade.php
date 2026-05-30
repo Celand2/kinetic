@@ -7,32 +7,34 @@
 
 <div class="card">
     @if($investments->count() > 0)
-        <table>
-            <thead>
-                <tr>
-                    <th>Reference</th>
-                    <th>User</th>
-                    <th>Cycle</th>
-                    <th>Amount</th>
-                    <th>Profit Credited</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($investments as $investment)
+        <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+            <table style="min-width: 700px;">
+                <thead>
                     <tr>
-                        <td>{{ $investment->reference }}</td>
-                        <td>{{ $investment->user->full_name }}</td>
-                        <td>{{ $investment->tradingCycle->name }}</td>
-                        <td>${{ number_format($investment->amount, 2) }}</td>
-                        <td>${{ number_format($investment->total_profit_credited, 2) }}</td>
-                        <td>{{ ucfirst($investment->status) }}</td>
-                        <td><a href="{{ route('admin.investments.edit', $investment) }}" style="color: #c9a227;">Edit</a></td>
+                        <th>Reference</th>
+                        <th>User</th>
+                        <th>Cycle</th>
+                        <th>Amount</th>
+                        <th>Profit Credited</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach($investments as $investment)
+                        <tr>
+                            <td>{{ $investment->reference }}</td>
+                            <td>{{ $investment->user->full_name }}</td>
+                            <td>{{ $investment->tradingCycle->name }}</td>
+                            <td>${{ number_format($investment->amount, 2) }}</td>
+                            <td>${{ number_format($investment->total_profit_credited, 2) }}</td>
+                            <td>{{ ucfirst($investment->status) }}</td>
+                            <td><a href="{{ route('admin.investments.edit', $investment) }}" style="color: #c9a227;">Edit</a></td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
 
         <div style="margin-top: 2rem;">
             {{ $investments->links() }}

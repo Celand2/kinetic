@@ -201,34 +201,32 @@ class TransactionController extends Controller
             ])->withInput();
         }
 
-        $metadata = [
-            'payment_method' => $validated['payment_method'],
-            'local_amount'   => $localAmount,
-            'local_currency' => $localCurrency,
-            'usd_amount'     => $usdAmount,
-            'rate_used'      => \App\Models\ExchangeRate::rate($localCurrency),
-            'wallet_details' => $validated['wallet_details'],
-            'fee'            => $fee,
-            'received'       => $received,
-        ];
+       $metadata = [
+    'payment_method' => $validated['payment_method'],
+    'local_amount'   => $localAmount,
+    'local_currency' => $localCurrency,
+    'usd_amount'     => $usdAmount,
+    'rate_used'      => \App\Models\ExchangeRate::rate($localCurrency),
+    'wallet_details' => $validated['wallet_details'],
+];
 
-        if ($request->hasFile('screenshot')) {
-            $metadata['screenshot'] = $request->file('screenshot')->store('client/withdrawals', 'public');
-        }
+if ($request->hasFile('screenshot')) {
+    $metadata['screenshot'] = $request->file('screenshot')->store('client/withdrawals', 'public');
+}
 
-        Transaction::create([
-            'user_id'        => $user->id,
-            'type'           => 'withdrawal',
-            'amount'         => $usdAmount,
-            'direction'      => 'debit',
-            'balance_after'  => $user->balance,
-            'status'         => 'pending',
-            'reference'      => 'TXN-' . date('Y') . '-' . Str::padLeft(Transaction::count() + 1, 6, '0'),
-            'payment_method' => $validated['payment_method'],
-            'description'    => $validated['description'] ?? 'Demande de retrait soumise',
-            'metadata'       => $metadata,
-        ]);
-
+Transaction::create([
+    'user_id'        => $user->id,
+    'type'           => 'withdrawal',
+    'amount'         => $usdAmount,
+    'fee_amount'     => 0,
+    'direction'      => 'debit',
+    'balance_after'  => $user->balance,
+    'status'         => 'pending',
+    'reference'      => 'TXN-' . date('Y') . '-' . Str::padLeft(Transaction::count() + 1, 6, '0'),
+    'payment_method' => $validated['payment_method'],
+    'description'    => $validated['description'] ?? 'Demande de retrait soumise',
+    'metadata'       => $metadata,
+]);
         return redirect()->route('transactions.index')
             ->with('success', 'Demande de retrait enregistrée. Un admin va la valider rapidement.');
     }

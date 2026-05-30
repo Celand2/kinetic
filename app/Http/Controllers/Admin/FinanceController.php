@@ -67,9 +67,8 @@ class FinanceController extends Controller
 
             $user = $transaction->user;
             $totalDeducted = $transaction->amount + $transaction->fee_amount;
-            $user->decrement('balance', $totalDeducted);
-            // Déduire aussi des gains retirables (ne peut pas dépasser le solde actuel)
-            $user->decrement('profit_balance', min($totalDeducted, (float) $user->profit_balance));
+          $user->decrement('balance', $transaction->amount);
+$user->decrement('profit_balance', min($transaction->amount, (float) $user->profit_balance));
 
             Notification::create([
                 'user_id'      => $user->id,
