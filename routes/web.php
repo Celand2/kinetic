@@ -39,6 +39,7 @@ require __DIR__.'/client.php';
 require __DIR__.'/admin.php';
 
 
+
 Route::get('/run-profits-cron-secure-9x27', function () {
     // On donne 5 minutes au script pour s'exécuter au cas où, pour éviter les coupures
     set_time_limit(300); 

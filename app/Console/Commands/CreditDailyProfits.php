@@ -91,8 +91,8 @@ class CreditDailyProfits extends Command
                                 'action_url'   => route('transactions.index'),
                                 'action_label' => 'Voir mes transactions',
                             ]);
-                        ]);
-
+                        });
+                  
                         $count++;
                         $this->line("-> Investissement #{$investment->id} crédité (+{$profit}$) pour l'utilisateur UID: {$user->id}");
 
