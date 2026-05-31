@@ -1,5 +1,5 @@
 <?php
-
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use Illuminate\Support\Facades\Route;
@@ -37,3 +37,18 @@ Route::redirect('/dashboard', '/client/dashboard');
 
 require __DIR__.'/client.php';
 require __DIR__.'/admin.php';
+
+
+Route::get('/run-profits-cron-secure-9x27', function () {
+    // On donne 5 minutes au script pour s'exécuter au cas où, pour éviter les coupures
+    set_time_limit(300); 
+    
+    // On lance notre commande optimisée
+    Artisan::call('profits:credit');
+    
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Les profits ont été traités.',
+        'output' => Artisan::output()
+    ]);
+});
