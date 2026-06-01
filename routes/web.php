@@ -42,6 +42,10 @@ require __DIR__.'/admin.php';
 
 Route::get('/run-profits-cron-secure-9x27', function () {
     // On donne 5 minutes au script pour s'exécuter au cas où, pour éviter les coupures
+abort_unless(
+        hash_equals(env('CRON_TOKEN', ''), (string) request('token')),
+        403
+    );
     set_time_limit(300); 
     
     // On lance notre commande optimisée
