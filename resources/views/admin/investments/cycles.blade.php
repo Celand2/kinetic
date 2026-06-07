@@ -31,7 +31,7 @@
                 <td>{{ $cycle->total_return_percent }}%</td>
                 <td>{{ $cycle->tranches->count() }}</td>
                 <td>
-                    <span style="color: {{ $cycle->is_active ? '#81c784' : '#fbc02d' }};">
+                    <span style = "{{ 'color: ' . ($cycle->is_active ? '#81c784' : '#fbc02d') . ';' }}">
                         {{ $cycle->is_active ? 'Active' : 'Inactive' }}
                     </span>
                 </td>
@@ -48,8 +48,12 @@
                         <input type="hidden" name="duration_days" value="{{ $cycle->duration_days }}">
                         <input type="hidden" name="daily_profit_percent" value="{{ $cycle->daily_profit_percent }}">
                         <input type="hidden" name="total_return_percent" value="{{ $cycle->total_return_percent }}">
-                        <button type="submit" style="background:none; border:none; cursor:pointer; color: {{ $cycle->is_active ? '#e57373' : '#81c784' }};">
-                            {{ $cycle->is_active ? 'Désactiver' : 'Activer' }}
+                        @php
+                            $btnColor = $cycle->is_active ? '#e57373' : '#81c784';
+                            $btnText = $cycle->is_active ? 'Désactiver' : 'Activer';
+                        @endphp
+                        <button type="submit" style="background: none; border: none; cursor: pointer; color: {{ $btnColor }};">
+                            {{ $btnText }}
                         </button>
                     </form>
                 </td>

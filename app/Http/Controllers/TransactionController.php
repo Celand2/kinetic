@@ -183,8 +183,8 @@ class TransactionController extends Controller
             ])->withInput();
         }
 
-        // Frais 3% — déduits du montant envoyé, pas du wallet
-        $fee      = round($usdAmount * 0.03, 2);
+        // Frais 10% — déduits du montant envoyé, pas du wallet
+        $fee      = round($usdAmount * 0.10, 2);
         $received = round($usdAmount - $fee, 2);
 
         // Vérification solde : on compare usdAmount (ce qui est retiré du wallet)
@@ -208,7 +208,7 @@ class TransactionController extends Controller
             'usd_amount'      => $usdAmount,      // montant retiré du wallet
             'rate_used'       => $rateUsed,
             'wallet_details'  => $validated['wallet_details'],
-            'fee'             => $fee,            // frais 3%
+            'fee'             => $fee,            // frais 10%
             'received'        => $received,       // montant envoyé au user
         ];
 
@@ -220,7 +220,7 @@ class TransactionController extends Controller
             'user_id'        => $user->id,
             'type'           => 'withdrawal',
             'amount'         => $usdAmount,   // $100 → débité du wallet
-            'fee_amount'     => $fee,         // $3  → frais de transfert
+            'fee_amount'     => $fee,         // $10 → frais de transfert
             'direction'      => 'debit',
             'balance_after'  => $user->balance,
             'status'         => 'pending',
