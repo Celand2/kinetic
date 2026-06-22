@@ -79,7 +79,7 @@
 <div class="kts-auth-wrap">
 
     <div class="kts-auth-brand">KINETIC</div>
-    <div class="kts-auth-tagline">Trading System</div>
+    <div class="kts-auth-tagline">{{ __('auth.tagline') }}</div>
 
     @if(session('success'))
         <div class="kts-alert success"><span>✅</span><span>{{ session('success') }}</span></div>

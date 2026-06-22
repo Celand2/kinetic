@@ -1,6 +1,6 @@
  @extends('layouts.app')
 
-@section('title', 'Register - KINETIC')
+@section('title', __('auth.title.register'))
 
 @push('styles')
 <style>
@@ -73,7 +73,7 @@
           → ID = dQw4w9WgXcQ
 ════════════════════════════════════════════ --}}
 <div id="kts-intro-overlay">
-    <div class="kts-intro-header">⚡ Kinetic Trading System — Guide d'inscription</div>
+    <div class="kts-intro-header">{{ __('auth.intro_overlay_title') }}</div>
 
     <div class="kts-intro-player-wrap">
         <div id="kts-yt-player"></div>
@@ -81,64 +81,66 @@
 
     <div class="kts-intro-skip">
         <button id="kts-skip-btn" onclick="skipIntroVideo()">
-            sauter la vidéo &nbsp;▶
+            {{ __('auth.intro_skip') }}
         </button>
-        <span class="kts-intro-hint">La vidéo se ferme automatiquement à la fin</span>
+        <span class="kts-intro-hint">{{ __('auth.intro_hint') }}</span>
     </div>
 </div>
 <div class="card">
-    <div class="card-header">Créer un compte</div>
-
+    <div class="card-header">{{ __('auth.register') }}</div>
+    <div style="text-align:right; margin-bottom:0.75rem;">
+        <a href="{{ route('locale.switch', app()->getLocale() === 'fr' ? 'en' : 'fr') }}" style="color:#c9a227; font-size:0.9rem;">🌐 {{ __('auth.language') }}</a>
+    </div>
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
         <div class="form-group">
-            <label class="form-label" for="full_name">Nom complet</label>
+            <label class="form-label" for="full_name">{{ __('auth.full_name') }}</label>
             <input type="text" class="form-control" id="full_name" name="full_name" required value="{{ old('full_name') }}" placeholder="Jean Dupont">
             @error('full_name')<span class="form-feedback-error">{{ $message }}</span>@enderror
         </div>
 
         <div class="form-group">
-            <label class="form-label" for="email">Adresse email</label>
-            <input type="email" class="form-control" id="email" name="email" required value="{{ old('email') }}" placeholder="exemple@email.com">
+            <label class="form-label" for="email">{{ __('auth.email') }}</label>
+            <input type="email" class="form-control" id="email" name="email" required value="{{ old('email') }}" placeholder="example@email.com">
             @error('email')<span class="form-feedback-error">{{ $message }}</span>@enderror
         </div>
 
         <div class="form-group">
-            <label class="form-label" for="phone">Téléphone</label>
+            <label class="form-label" for="phone">{{ __('auth.phone') }}</label>
             <input type="tel" class="form-control" id="phone" name="phone" required value="{{ old('phone') }}" placeholder="+257 XX XXX XXX">
             @error('phone')<span class="form-feedback-error">{{ $message }}</span>@enderror
         </div>
 
         <div class="form-group">
-            <label class="form-label" for="referral_code">Code de parrainage (optionnel)</label>
+            <label class="form-label" for="referral_code">{{ __('auth.referral_code') }}</label>
             <input type="text" class="form-control" id="referral_code" name="referral_code" value="{{ old('referral_code', request('ref')) }}" placeholder="Ex : KTS-ABC12345">
-            <span class="form-hint">Saisissez un code si vous avez été parrainé.</span>
+            <span class="form-hint">{{ __('auth.referral_hint') }}</span>
             @error('referral_code')<span class="form-feedback-error">{{ $message }}</span>@enderror
         </div>
 
         <div class="form-group">
-            <label class="form-label" for="country">Pays</label>
+            <label class="form-label" for="country">{{ __('auth.country') }}</label>
             <input type="text" class="form-control" id="country" name="country" required value="{{ old('country') }}" placeholder="Burundi">
             @error('country')<span class="form-feedback-error">{{ $message }}</span>@enderror
         </div>
 
         <div class="form-group">
-            <label class="form-label" for="password">Mot de passe</label>
+            <label class="form-label" for="password">{{ __('auth.password') }}</label>
             <input type="password" class="form-control" id="password" name="password" required placeholder="Min. 8 caractères">
             @error('password')<span class="form-feedback-error">{{ $message }}</span>@enderror
         </div>
 
         <div class="form-group">
-            <label class="form-label" for="password_confirmation">Confirmer le mot de passe</label>
+            <label class="form-label" for="password_confirmation">{{ __('auth.password_confirmation') }}</label>
             <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required placeholder="••••••••">
         </div>
 
-        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.5rem;">Créer mon compte</button>
+        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.5rem;">{{ __('auth.register') }}</button>
 
         <p style="text-align:center; margin-top:1.5rem; color:#b0bfd9; font-size:0.88rem;">
-            Déjà un compte ?
-            <a href="{{ route('login') }}" style="color:#c9a227; font-weight:600;">Se connecter</a>
+            {{ __('auth.already_account') }}
+            <a href="{{ route('login') }}" style="color:#c9a227; font-weight:600;">{{ __('auth.signin') }}</a>
         </p>
     </form>
 </div>

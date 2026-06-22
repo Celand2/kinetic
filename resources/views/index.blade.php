@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KINETIC — Plateforme d'Investissement Elite</title>
+<title>{{ __('home.title') }}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -475,8 +475,20 @@ footer{
 .footer-copy{font-size:12px;color:var(--dim);letter-spacing:1px;}
 
 /* ── RESPONSIVE ───────────────────────────────────────────────────── */
+@media(min-width:901px){
+  .nav-cta .mobile-menu-btn{display:none;}
+}
 @media(max-width:900px){
   .nav-links{display:none;}
+  .nav-cta .text{display:none;}
+  .nav-cta .btn-outline,
+  .nav-cta .btn-gold{padding:8px 12px;min-width:42px;}
+  .nav-cta .icon{font-size:1rem;}
+  .mobile-menu-btn{display:flex;align-items:center;justify-content:center;width:42px;height:42px;border:1px solid var(--border);background:rgba(201,162,39,0.08);color:var(--gold);border-radius:8px;cursor:pointer;margin-left:8px;}
+  .mobile-menu{display:none;position:absolute;top:62px;left:0;right:0;background:rgba(6,11,20,0.96);border-bottom:1px solid var(--border);padding:14px 5%;z-index:400;}
+  .mobile-menu.active{display:block;}
+  .mobile-menu a{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;color:var(--muted);text-decoration:none;border:1px solid transparent;transition:all .2s;}
+  .mobile-menu a:hover{border-color:rgba(201,162,39,0.22);color:var(--gold);background:rgba(201,162,39,0.06);}
   .about-grid{grid-template-columns:1fr;gap:40px;}
   .hero-slide-count{display:none;}
 }
@@ -489,7 +501,7 @@ footer{
   .hero-arrows{bottom:55px;}
 }
 @media(max-width:400px){
-  .nav-cta .btn-outline{display:none;}
+  .nav-cta .btn-outline:not(.lang-btn){display:none;}
   .hero h1{font-size:clamp(28px,8vw,42px);}
   .hero-badge{font-size:9px;letter-spacing:3px;}
 }
@@ -505,24 +517,36 @@ footer{
 <nav class="kts-nav">
   <a href="{{ route('home') }}" class="nav-logo">
     <div class="nav-logo-icon">K</div>
-    <div class="nav-brand">KINETIC<span>TRADING SYSTEM</span></div>
+    <div class="nav-brand">{{ __('home.brand.name') }}<span>{{ __('home.brand.tagline') }}</span></div>
   </a>
   <div class="nav-links">
-    <a href="#cycles">Cycles</a>
-    <a href="#about">À Propos</a>
+    <a href="#cycles">{{ __('home.nav.cycles') }}</a>
+    <a href="#about">{{ __('home.nav.about') }}</a>
     @guest
-    <a href="{{ route('login') }}">Connexion</a>
+    <a href="{{ route('login') }}">{{ __('home.nav.login') }}</a>
     @endguest
   </div>
   <div class="nav-cta">
+    <a href="{{ route('locale.switch', app()->getLocale() === 'fr' ? 'en' : 'fr') }}" class="btn-outline lang-btn"><span class="icon">🌐</span><span class="text">{{ strtoupper(app()->getLocale()) }}</span></a>
     @guest
-      <a href="{{ route('login') }}" class="btn-outline">Connexion</a>
-      <a href="{{ route('register') }}" class="btn-gold">Commencer</a>
+      <a href="{{ route('login') }}" class="btn-outline login-link"><span class="icon">🔐</span><span class="text">{{ __('home.nav.login') }}</span></a>
+      <a href="{{ route('register') }}" class="btn-gold register-only"><span class="icon">🚀</span><span class="text">{{ __('home.nav.register') }}</span></a>
     @else
-      <a href="{{ route('dashboard') }}" class="btn-gold">Mon Dashboard</a>
-    @endauth
+      <a href="{{ route('dashboard') }}" class="btn-gold dashboard-btn"><span class="icon">📊</span><span class="text">{{ __('dashboard.title') }}</span></a>
+    @endguest
+    <button type="button" class="mobile-menu-btn" aria-label="{{ __('home.nav.menu') }}" onclick="toggleMobileMenu()">☰</button>
   </div>
 </nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#cycles">{{ __('home.nav.cycles') }}</a>
+  <a href="#about">{{ __('home.nav.about') }}</a>
+  @guest
+    <a href="{{ route('login') }}">🔐 {{ __('home.nav.login') }}</a>
+    <a href="{{ route('register') }}">🚀 {{ __('home.nav.register') }}</a>
+  @else
+    <a href="{{ route('dashboard') }}">📊 {{ __('dashboard.title') }}</a>
+  @endguest
+</div>
 
 <!-- ══ HERO SLIDESHOW ══════════════════════════════════════════════ -->
 <section class="hero" id="home">
@@ -539,38 +563,34 @@ footer{
 
   <!-- Contenu -->
   <div class="hero-content">
-    <div class="hero-badge">⚡ Plateforme Elite — Cycle Quotidien Actif</div>
+    <div class="hero-badge">{{ __('home.hero.badge') }}</div>
     <h1>
-      <span class="line1">Investissement</span>
-      <span class="line2">Intelligent &amp; Puissant</span>
+      <span class="line1">{{ __('home.hero.line1') }}</span>
+      <span class="line2">{{ __('home.hero.line2') }}</span>
     </h1>
-    <p class="hero-desc">
-      Rejoignez l'écosystème d'investissement le plus avancé.
-      Profits journaliers automatiques, cycles répétables et commissions
-      multi-niveaux pour bâtir votre liberté financière.
-    </p>
+    <p class="hero-desc">{{ __('home.hero.desc') }}</p>
     <div class="hero-actions">
       @auth
-        <a href="{{ route('dashboard') }}" class="btn-gold-xl">Accéder au Dashboard</a>
+        <a href="{{ route('dashboard') }}" class="btn-gold-xl">{{ __('home.hero.dashboard') }}</a>
       @else
-        <a href="{{ route('register') }}" class="btn-gold-xl">Ouvrir un Compte</a>
-        <a href="#cycles" class="btn-ghost-xl">Voir les Cycles</a>
+        <a href="{{ route('register') }}" class="btn-gold-xl">{{ __('home.hero.open_account') }}</a>
+        <a href="#cycles" class="btn-ghost-xl">{{ __('home.hero.view_cycles') }}</a>
       @endauth
     </div>
     <div class="hero-stats">
       <div class="hero-stat">
         <span class="val">{{ $cycles->count() ?: '—' }}</span>
-        <span class="lbl">Cycles actifs</span>
+        <span class="lbl">{{ __('home.hero.stats.cycles_active') }}</span>
       </div>
       @if($cycles->count())
         <div class="hero-stat">
           <span class="val">{{ number_format($cycles->max('daily_profit_percent'), 0) }}%/jr</span>
-          <span class="lbl">Profit maximum</span>
+          <span class="lbl">{{ __('home.hero.stats.max_profit') }}</span>
         </div>
       @endif
       <div class="hero-stat">
         <span class="val">3 Niv.</span>
-        <span class="lbl">Parrainage</span>
+        <span class="lbl">{{ __('home.hero.stats.referral_levels') }}</span>
       </div>
     </div>
   </div>
@@ -602,7 +622,7 @@ footer{
         <span>{{ $c->duration_days }}J</span>
       </div>
     @empty
-      <div class="ticker-item"><span class="t-name">KINETIC TRADING SYSTEM</span><span class="t-sep">|</span><span class="t-rate">Plateforme Active</span></div>
+      <div class="ticker-item"><span class="t-name">{{ __('home.brand.full') }}</span><span class="t-sep">|</span><span class="t-rate">{{ __('home.ticker.platform_active') }}</span></div>
     @endforelse
     {{-- Dupliquer pour boucle infinie --}}
     @forelse($tickItems as $c)
@@ -614,7 +634,7 @@ footer{
         <span>{{ $c->duration_days }}J</span>
       </div>
     @empty
-      <div class="ticker-item"><span class="t-name">KINETIC TRADING SYSTEM</span><span class="t-sep">|</span><span class="t-rate">Plateforme Active</span></div>
+      <div class="ticker-item"><span class="t-name">{{ __('home.brand.full') }}</span><span class="t-sep">|</span><span class="t-rate">{{ __('home.ticker.platform_active') }}</span></div>
     @endforelse
   </div>
 </div>
@@ -622,9 +642,9 @@ footer{
 <!-- ══ CYCLES DYNAMIQUES ══════════════════════════════════════════ -->
 <section class="section" id="cycles">
   <div class="s-header">
-    <div class="s-eyebrow">// Cycles de Trading</div>
-    <h2 class="s-title">Choisissez votre <span>stratégie de rendement</span></h2>
-    <p class="s-sub">Des cycles calculés pour maximiser votre retour sur investissement, chaque jour.</p>
+    <div class="s-eyebrow">// {{ __('home.cycles.eyebrow') }}</div>
+    <h2 class="s-title">{!! __('home.cycles.title') !!}</h2>
+    <p class="s-sub">{{ __('home.cycles.subtitle') }}</p>
   </div>
 
   <div class="cycles-grid">
@@ -632,21 +652,21 @@ footer{
       <div class="cycle-card fade-up">
         <div class="c-index">// Cycle #{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</div>
         <div class="c-name">{{ strtoupper($cycle->name) }}</div>
-        <div class="c-days">{{ $cycle->duration_days }} jours · {{ $cycle->description ?? 'Cycle de trading' }}</div>
+        <div class="c-days">{{ $cycle->duration_days }} {{ __('home.cycles.days') }} · {{ $cycle->description ?? __('home.cycles.default_description') }}</div>
         <div class="c-rate">{{ $cycle->daily_profit_percent }}%</div>
-        <div class="c-unit">profit journalier</div>
+        <div class="c-unit">{{ __('home.cycles.profit_unit') }}</div>
         <div class="c-return">
-          <span class="k">Retour total</span>
+          <span class="k">{{ __('home.cycles.total_return') }}</span>
           <span class="v">{{ $cycle->total_return_percent }}%</span>
         </div>
         @auth
-          <a href="{{ route('investments.cycle.tranches', $cycle) }}" class="c-btn">Investir →</a>
+          <a href="{{ route('investments.cycle.tranches', $cycle) }}" class="c-btn">{{ __('home.cycles.invest') }}</a>
         @else
-          <a href="{{ route('register') }}" class="c-btn">Commencer →</a>
+          <a href="{{ route('register') }}" class="c-btn">{{ __('home.cycles.start') }}</a>
         @endauth
       </div>
     @empty
-      <div class="c-empty">// Aucun cycle actif pour le moment</div>
+      <div class="c-empty">{{ __('home.cycles.none') }}</div>
     @endforelse
   </div>
 </section>
@@ -656,23 +676,18 @@ footer{
   <div class="about-grid">
     <!-- Gauche : texte -->
     <div class="about-left fade-up">
-      <div class="s-eyebrow" style="text-align:left;margin-bottom:14px;">// À Propos</div>
-      <h2>La plateforme qui <span>transforme vos épargnes</span> en revenus réels</h2>
-      <p>
-        Kinetic Trading System est un écosystème d'investissement de nouvelle génération.
-        Grâce à nos cycles de trading algorithmique, chaque membre perçoit des profits
-        automatiques chaque 24 heures — de manière transparente, sécurisée et vérifiable.
-        Rejoignez une communauté qui bâtit sa liberté financière, un cycle à la fois.
-      </p>
+      <div class="s-eyebrow" style="text-align:left;margin-bottom:14px;">// {{ __('home.about.eyebrow') }}</div>
+      <h2>{!! __('home.about.title') !!}</h2>
+      <p>{{ __('home.about.text') }}</p>
       <div class="about-tags">
-        <span class="about-tag">Profits Automatiques</span>
-        <span class="about-tag">100% Transparent</span>
-        <span class="about-tag">Sécurisé</span>
-        <span class="about-tag">Multi-niveaux</span>
-        <span class="about-tag">Retraits Rapides</span>
-        <span class="about-tag">Support Réactif</span>
-        <span class="about-tag">Cycles Répétables</span>
-        <span class="about-tag">Accessible 24/7</span>
+        <span class="about-tag">{{ __('home.about.tags.automatic_profits') }}</span>
+        <span class="about-tag">{{ __('home.about.tags.transparent') }}</span>
+        <span class="about-tag">{{ __('home.about.tags.secure') }}</span>
+        <span class="about-tag">{{ __('home.about.tags.multi_level') }}</span>
+        <span class="about-tag">{{ __('home.about.tags.fast_withdrawals') }}</span>
+        <span class="about-tag">{{ __('home.about.tags.responsive_support') }}</span>
+        <span class="about-tag">{{ __('home.about.tags.repeatable_cycles') }}</span>
+        <span class="about-tag">{{ __('home.about.tags.always_on') }}</span>
       </div>
     </div>
 
@@ -681,32 +696,32 @@ footer{
       <div class="stat-card">
         <div class="stat-icon">⚡</div>
         <div class="stat-val">{{ $cycles->count() ?: '—' }}</div>
-        <span class="stat-lbl">Cycles de trading</span>
+        <span class="stat-lbl">{{ __('home.stats.trading_cycles') }}</span>
       </div>
       <div class="stat-card">
         <div class="stat-icon">📈</div>
         <div class="stat-val">{{ $cycles->count() ? number_format($cycles->max('daily_profit_percent'), 0) . '%' : '—' }}</div>
-        <span class="stat-lbl">Profit max / jour</span>
+        <span class="stat-lbl">{{ __('home.stats.max_profit_day') }}</span>
       </div>
       <div class="stat-card">
         <div class="stat-icon">🤝</div>
         <div class="stat-val">3 Niv.</div>
-        <span class="stat-lbl">Commissions parrainage</span>
+        <span class="stat-lbl">{{ __('home.stats.referral_commissions') }}</span>
       </div>
       <div class="stat-card">
         <div class="stat-icon">🔒</div>
         <div class="stat-val">98%</div>
-        <span class="stat-lbl">Retraits traités</span>
+        <span class="stat-lbl">{{ __('home.stats.withdrawals_processed') }}</span>
       </div>
       <div class="stat-card">
         <div class="stat-icon">💳</div>
         <div class="stat-val">10%</div>
-        <span class="stat-lbl">Commission niveau 1</span>
+        <span class="stat-lbl">{{ __('home.stats.level_one_commission') }}</span>
       </div>
       <div class="stat-card">
         <div class="stat-icon">🌍</div>
         <div class="stat-val">24/7</div>
-        <span class="stat-lbl">Disponibilité</span>
+        <span class="stat-lbl">{{ __('home.stats.availability') }}</span>
       </div>
     </div>
   </div>
@@ -716,11 +731,11 @@ footer{
 @guest
 <section class="auth-section">
   <div class="auth-box fade-up">
-    <h2>Rejoignez <span>KTS</span> dès aujourd'hui</h2>
-    <p>Créez votre compte en moins de 2 minutes et commencez à générer des profits dès demain avec le système de trading le plus puissant du marché.</p>
+    <h2>{!! __('home.auth.heading') !!}</h2>
+    <p>{{ __('home.auth.desc') }}</p>
     <div class="auth-actions">
-      <a href="{{ route('register') }}" class="btn-gold-xl">Créer mon compte</a>
-      <a href="{{ route('login') }}" class="btn-ghost-xl">Se connecter</a>
+      <a href="{{ route('register') }}" class="btn-gold-xl">{{ __('home.auth.create_account') }}</a>
+      <a href="{{ route('login') }}" class="btn-ghost-xl">{{ __('home.auth.login') }}</a>
     </div>
   </div>
 </section>
@@ -728,8 +743,8 @@ footer{
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-brand">KINETIC TRADING SYSTEM</div>
-  <div class="footer-copy">© {{ date('Y') }} · Plateforme d'investissement premium</div>
+  <div class="footer-brand">{{ __('home.footer.brand') }}</div>
+  <div class="footer-copy">{{ __('home.footer.copy', ['year' => date('Y')]) }}</div>
 </footer>
 
 <script>
@@ -786,6 +801,8 @@ var obs=new IntersectionObserver(function(entries){
   entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');}});
 },{threshold:0.12});
 document.querySelectorAll('.fade-up').forEach(function(el){obs.observe(el);});
-</script>
+function toggleMobileMenu(){
+  document.getElementById('mobileMenu').classList.toggle('active');
+}</script>
 </body>
 </html>

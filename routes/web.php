@@ -2,10 +2,13 @@
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\LocaleController;
 use Illuminate\Support\Facades\Route;
 
 // Welcome page
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::get('/lang/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {

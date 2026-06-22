@@ -1,7 +1,7 @@
 ﻿@extends('layouts.client')
 
-@section('title', 'Notifications - KINETIC')
-@section('back')<a href="{{ route('dashboard') }}" class="kts-back-btn">← Tableau de bord</a>@endsection
+@section('title', __('notifications.title'))
+@section('back')<a href="{{ route('dashboard') }}" class="kts-back-btn">← {{ __('common.dashboard') }}</a>@endsection
 
 @section('content')
 
@@ -60,7 +60,7 @@ $icons = [
                         @if($notif->action_url)
                         <a href="{{ $notif->action_url }}"
                            style="font-size:0.8rem; color:{{ $meta['color'] }}; text-decoration:none; font-weight:600;">
-                            {{ $notif->action_label ?? 'Voir →' }}
+                            {{ $notif->action_label ?? __('common.view') . ' →' }}
                         </a>
                         @endif
                     </div>
@@ -76,7 +76,7 @@ $icons = [
     @else
         <div style="text-align:center; padding:4rem 1rem; color:#b0bfd9;">
             <div style="font-size:2.5rem; margin-bottom:1rem;">🔔</div>
-            <p>Aucune notification pour le moment.</p>
+            <p>{{ __('notifications.none') }}</p>
         </div>
     @endif
 </div>

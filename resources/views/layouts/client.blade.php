@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -228,10 +228,13 @@
     </div>
     <div class="topbar-right">
         <span class="topbar-clock" id="kts-clock">00:00:00</span>
-        <a href="{{ route('notifications.index') }}" class="topbar-icon-btn" title="Notifications">
+        <a href="{{ route('locale.switch', app()->getLocale() === 'fr' ? 'en' : 'fr') }}" class="topbar-icon-btn" title="{{ __('navigation.language') }}">
+            {{ strtoupper(app()->getLocale()) }}
+        </a>
+        <a href="{{ route('notifications.index') }}" class="topbar-icon-btn" title="{{ __('navigation.notifications') }}">
             🔔@if($unreadNotif > 0)<span class="notif-badge">{{ $unreadNotif > 9 ? '9+' : $unreadNotif }}</span>@endif
         </a>
-        <a href="{{ route('messages.index') }}" class="topbar-icon-btn" title="Messages">
+        <a href="{{ route('messages.index') }}" class="topbar-icon-btn" title="{{ __('navigation.messages') }}">
             💬@if($unreadMsg > 0)<span class="notif-badge">{{ $unreadMsg > 9 ? '9+' : $unreadMsg }}</span>@endif
         </a>
     </div>
@@ -247,7 +250,7 @@
         <div class="drawer-brand">KINETIC</div>
         <div class="drawer-user"><strong>{{ $user->full_name }}</strong>{{ $user->email }}</div>
         <div class="drawer-balance">
-            <div class="bal-label">Solde · {{ $drawerCurrency }}</div>
+            <div class="bal-label">{{ __('navigation.balance') }} · {{ $drawerCurrency }}</div>
             <div class="bal-val">{{ $drawerBalance }}</div>
             @if($drawerCurrency !== 'USD')
                 <div style="font-size:0.6rem; color:#2d3748; margin-top:2px;">${{ number_format($user->balance, 2) }} USD</div>
@@ -255,30 +258,33 @@
         </div>
     </div>
     <div class="drawer-nav">
-        <div class="drawer-section">Principal</div>
-        <a href="{{ route('dashboard') }}" class="drawer-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"><span class="dl-icon">📊</span>Tableau de bord</a>
-        <a href="{{ route('investments.index') }}" class="drawer-link {{ request()->routeIs('investments.*') ? 'active' : '' }}"><span class="dl-icon">⚡</span>Mes contrats</a>
+        <div class="drawer-section">{{ __('navigation.main') }}</div>
+        <a href="{{ route('dashboard') }}" class="drawer-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"><span class="dl-icon">📊</span>{{ __('navigation.dashboard') }}</a>
+        <a href="{{ route('investments.index') }}" class="drawer-link {{ request()->routeIs('investments.*') ? 'active' : '' }}"><span class="dl-icon">⚡</span>{{ __('navigation.my_contracts') }}</a>
 
-        <div class="drawer-section">Finance</div>
-        <a href="{{ route('transactions.deposit') }}" class="drawer-link {{ request()->routeIs('transactions.deposit*') ? 'active' : '' }}"><span class="dl-icon">💳</span>Dépôt</a>
-        <a href="{{ route('transactions.withdraw') }}" class="drawer-link {{ request()->routeIs('transactions.withdraw*') ? 'active' : '' }}"><span class="dl-icon">💸</span>Retrait</a>
-        <a href="{{ route('transactions.index') }}" class="drawer-link {{ request()->routeIs('transactions.index') ? 'active' : '' }}"><span class="dl-icon">📋</span>Historique</a>
+        <div class="drawer-section">{{ __('navigation.finance') }}</div>
+        <a href="{{ route('transactions.deposit') }}" class="drawer-link {{ request()->routeIs('transactions.deposit*') ? 'active' : '' }}"><span class="dl-icon">💳</span>{{ __('navigation.deposit') }}</a>
+        <a href="{{ route('transactions.withdraw') }}" class="drawer-link {{ request()->routeIs('transactions.withdraw*') ? 'active' : '' }}"><span class="dl-icon">💸</span>{{ __('navigation.withdrawal') }}</a>
+        <a href="{{ route('transactions.index') }}" class="drawer-link {{ request()->routeIs('transactions.index') ? 'active' : '' }}"><span class="dl-icon">📋</span>{{ __('navigation.history') }}</a>
 
-        <div class="drawer-section">Réseau</div>
-        <a href="{{ route('referral.dashboard') }}" class="drawer-link {{ request()->routeIs('referral.*') ? 'active' : '' }}"><span class="dl-icon">🌐</span>Parrainage</a>
+        <div class="drawer-section">{{ __('navigation.network') }}</div>
+        <a href="{{ route('referral.dashboard') }}" class="drawer-link {{ request()->routeIs('referral.*') ? 'active' : '' }}"><span class="dl-icon">🌐</span>{{ __('navigation.referral') }}</a>
 
-        <div class="drawer-section">Support</div>
+        <div class="drawer-section">{{ __('navigation.support') }}</div>
         <a href="{{ route('messages.index') }}" class="drawer-link {{ request()->routeIs('messages.*') ? 'active' : '' }}">
-            <span class="dl-icon">💬</span>Messages
+            <span class="dl-icon">💬</span>{{ __('navigation.messages') }}
             @if($unreadMsg > 0)<span class="dl-badge">{{ $unreadMsg }}</span>@endif
         </a>
         <a href="{{ route('notifications.index') }}" class="drawer-link {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
-            <span class="dl-icon">🔔</span>Notifications
+            <span class="dl-icon">🔔</span>{{ __('navigation.notifications') }}
             @if($unreadNotif > 0)<span class="dl-badge-gold">{{ $unreadNotif }}</span>@endif
         </a>
+        <div class="drawer-section">{{ __('navigation.language') }}</div>
+        <a href="{{ route('locale.switch', 'fr') }}" class="drawer-link {{ app()->getLocale() === 'fr' ? 'active' : '' }}"><span class="dl-icon">FR</span>Français</a>
+        <a href="{{ route('locale.switch', 'en') }}" class="drawer-link {{ app()->getLocale() === 'en' ? 'active' : '' }}"><span class="dl-icon">EN</span>English</a>
     </div>
     <div class="drawer-footer">
-        <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit">🚪 Déconnexion</button></form>
+        <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit">🚪 {{ __('navigation.logout') }}</button></form>
     </div>
     @endauth
 </nav>

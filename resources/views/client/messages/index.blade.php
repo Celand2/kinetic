@@ -1,11 +1,11 @@
 ﻿@extends('layouts.client')
-@section('title', 'Messages - KINETIC')
-@section('back')<a href="{{ route('dashboard') }}" class="kts-back-btn">← Tableau de bord</a>@endsection
+@section('title', __('messages.title'))
+@section('back')<a href="{{ route('dashboard') }}" class="kts-back-btn">← {{ __('common.dashboard') }}</a>@endsection
 
 @section('content')
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:0.75rem;">
-    <h1 style="color:#c9a227; font-size:1.2rem; margin:0;">Mes Messages</h1>
-    <a href="{{ route('messages.create') }}" class="kts-btn">✉️ Nouveau message</a>
+    <h1 style="color:#c9a227; font-size:1.2rem; margin:0;">{{ __('messages.my_messages') }}</h1>
+    <a href="{{ route('messages.create') }}" class="kts-btn">✉️ {{ __('messages.new_message') }}</a>
 </div>
 
 <div class="card">
@@ -22,12 +22,12 @@
                         </div>
                         <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
                             <span style="background:rgba(201,162,39,0.1); color:#c9a227; padding:2px 8px; border-radius:20px; font-size:0.72rem; text-transform:capitalize;">{{ $conv->category }}</span>
-                            @php $sc=['open'=>'#81c784','resolved'=>'#b0bfd9','closed'=>'#ef5350']; $sl=['open'=>'Ouvert','resolved'=>'Résolu','closed'=>'Fermé']; @endphp
+                            @php $sc=['open'=>'#81c784','resolved'=>'#b0bfd9','closed'=>'#ef5350']; $sl=['open'=>__('common.open'),'resolved'=>__('common.resolved'),'closed'=>__('common.closed')]; @endphp
                             <span style="color:{{ $sc[$conv->status] ?? '#b0bfd9' }}; font-size:0.75rem;">{{ $sl[$conv->status] ?? $conv->status }}</span>
                             <span style="color:#4a5568; font-size:0.72rem;">{{ $conv->last_message_at ? $conv->last_message_at->diffForHumans() : $conv->created_at->diffForHumans() }}</span>
                         </div>
                     </div>
-                    <a href="{{ route('messages.show', $conv) }}" class="kts-btn kts-btn-sm" style="flex-shrink:0;">Voir →</a>
+                    <a href="{{ route('messages.show', $conv) }}" class="kts-btn kts-btn-sm" style="flex-shrink:0;">{{ __('common.view') }} →</a>
                 </div>
             </div>
             @endforeach
@@ -36,8 +36,8 @@
     @else
         <div style="text-align:center; padding:3rem; color:#b0bfd9;">
             <div style="font-size:2rem; margin-bottom:0.75rem;">💬</div>
-            <p>Aucun message pour le moment.</p>
-            <a href="{{ route('messages.create') }}" class="kts-btn" style="margin-top:1rem;">Envoyer un message</a>
+            <p>{{ __('messages.none') }}</p>
+            <a href="{{ route('messages.create') }}" class="kts-btn" style="margin-top:1rem;">{{ __('messages.send_message') }}</a>
         </div>
     @endif
 </div>
