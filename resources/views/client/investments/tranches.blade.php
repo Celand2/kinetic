@@ -1,8 +1,8 @@
 ﻿@extends('layouts.client')
 
-@section('title', $cycle->name . ' - Tranches - KINETIC')
+@section('title', __('investments.tranches_title', ['name' => $cycle->name]))
 @section('page-title', strtoupper($cycle->name))
-@section('page-subtitle', '// Choisissez votre niveau d\'investissement')
+@section('page-subtitle', __('investments.tranches_subtitle'))
 
 @push('styles')
 <style>
@@ -140,31 +140,31 @@
         return number_format(round($usd * $rate), 0, ',', ' ') . ' ' . $currency;
     }
 @endphp
-<a href="{{ route('investments.create') }}" class="back-link">← Retour aux cycles</a>
+<a href="{{ route('investments.create') }}" class="back-link">{{ __('investments.back_to_cycles') }}</a>
 
 <div class="cycle-summary">
     <div class="cycle-summary-item">
-        <div class="label">Cycle</div>
+        <div class="label">{{ __('investments.cycle_label') }}</div>
         <div class="value" style="font-size:.9rem; color:#fff;">{{ $cycle->name }}</div>
     </div>
     <div class="cycle-summary-item">
-        <div class="label">Durée</div>
+        <div class="label">{{ __('investments.duration_label') }}</div>
         <div class="value">{{ $cycle->duration_days }} jours</div>
     </div>
     <div class="cycle-summary-item">
-        <div class="label">Profit / jour</div>
+        <div class="label">{{ __('investments.daily_profit_label') }}</div>
         <div class="value">{{ $cycle->daily_profit_percent }}%</div>
     </div>
     <div class="cycle-summary-item">
-        <div class="label">Retour total</div>
+        <div class="label">{{ __('investments.total_return_label') }}</div>
         <div class="value" style="color:#81c784;">{{ $cycle->total_return_percent }}%</div>
     </div>
 </div>
 
 @if($tranches->isEmpty())
     <div class="empty-state">
-        <p>Aucune tranche disponible pour ce cycle.</p>
-        <a href="{{ route('investments.create') }}">← Choisir un autre cycle</a>
+        <p>{{ __('investments.no_tranches') }}</p>
+        <a href="{{ route('investments.create') }}">{{ __('investments.choose_another_cycle') }}</a>
     </div>
 @else
     <div class="tranches-grid">
@@ -175,16 +175,16 @@
 
                 <div class="tranche-amounts">
                     <div class="amount-box">
-                        <div class="alabel">Min</div>
+                        <div class="alabel">{{ __('investments.min_label') }}</div>
                         <div class="aval">{{ fmtTranche($tranche->min_amount, $userCurrency, $currencyRate) }}</div>
                         @if($userCurrency !== 'USD')
                             <div style="font-size:0.65rem; color:#4a5568; margin-top:2px;">${{ number_format($tranche->min_amount, 0) }}</div>
                         @endif
                     </div>
                     <div class="amount-box">
-                        <div class="alabel">Max</div>
+                        <div class="alabel">{{ __('investments.max_label') }}</div>
                         <div class="aval {{ !$tranche->max_amount ? 'unlimited' : '' }}">
-                            {{ $tranche->max_amount ? fmtTranche($tranche->max_amount, $userCurrency, $currencyRate) : 'Illimité' }}
+                            {{ $tranche->max_amount ? fmtTranche($tranche->max_amount, $userCurrency, $currencyRate) : __('investments.unlimited') }}
                         </div>
                         @if($userCurrency !== 'USD' && $tranche->max_amount)
                             <div style="font-size:0.65rem; color:#4a5568; margin-top:2px;">${{ number_format($tranche->max_amount, 0) }}</div>
@@ -196,7 +196,7 @@
                     <div class="tranche-desc">{{ $tranche->description }}</div>
                 @endif
 
-                <span class="tranche-cta">Investir dans cette tranche →</span>
+                <span class="tranche-cta">{{ __('investments.invest_tranche') }}</span>
             </a>
         @endforeach
     </div>

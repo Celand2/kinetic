@@ -1,8 +1,8 @@
 ﻿@extends('layouts.client')
 
-@section('title', 'Investir - KINETIC')
-@section('page-title', 'INVESTIR')
-@section('page-subtitle', '// Choisissez votre cycle de trading')
+@section('title', __('investments.create_title'))
+@section('page-title', __('investments.create_heading'))
+@section('page-subtitle', __('investments.create_subtitle'))
 
 @push('styles')
 <style>
@@ -126,12 +126,12 @@
 @endpush
 
 @section('content')
-<div class="section-eyebrow">// Cycles de Trading</div>
-<h2 class="section-title">Choisissez votre <span>stratégie de rendement</span></h2>
+<div class="section-eyebrow">{{ __('investments.cycles_eyebrow') }}</div>
+<h2 class="section-title">{{ __('investments.choose_strategy') }}</h2>
 
 @if($cycles->isEmpty())
     <div style="text-align:center; padding: 4rem 2rem; color: #b0bfd9;">
-        Aucun cycle de trading disponible pour le moment.
+        {{ __('investments.no_cycles') }}
     </div>
 @else
     <div class="cycles-grid">
@@ -139,23 +139,23 @@
             <a href="{{ route('investments.cycle.tranches', $cycle) }}"
                class="cycle-card {{ !$cycle->is_active ? 'cycle-inactive' : '' }}">
 
-                <div class="cycle-badge">// Cycle #{{ $loop->iteration }}</div>
+                <div class="cycle-badge">{{ __('investments.cycle_badge', ['number' => $loop->iteration]) }}</div>
                 <div class="cycle-name">{{ $cycle->name }}</div>
-                <div class="cycle-duration">{{ $cycle->duration_days }} jours · {{ $cycle->description ?? 'Cycle de trading' }}</div>
+                <div class="cycle-duration">{{ $cycle->duration_days }} jours · {{ $cycle->description ?? __('investments.default_description') }}</div>
 
                 <div class="cycle-rate-big">{{ $cycle->daily_profit_percent }}%</div>
-                <div class="cycle-rate-label">profit journalier</div>
+                <div class="cycle-rate-label">{{ __('investments.profit_daily') }}</div>
 
                 <div class="cycle-return-row">
-                    <span class="key">Retour total</span>
+                    <span class="key">{{ __('investments.total_return') }}</span>
                     <span class="val">{{ $cycle->total_return_percent }}%</span>
                 </div>
 
                 <div class="cycle-tranches-count">
-                    {{ $cycle->tranches_count }} tranche{{ $cycle->tranches_count > 1 ? 's' : '' }} disponible{{ $cycle->tranches_count > 1 ? 's' : '' }}
+                    {{ trans_choice('investments.tranches_available', $cycle->tranches_count, ['count' => $cycle->tranches_count]) }}
                 </div>
 
-                <span class="cycle-cta">Choisir ce cycle →</span>
+                <span class="cycle-cta">{{ __('investments.choose_cycle') }}</span>
             </a>
         @endforeach
     </div>

@@ -1,23 +1,23 @@
 @extends('layouts.client')
-@section('title', 'Demande de Retrait - KINETIC')
-@section('back')<a href="{{ route('dashboard') }}" class="kts-back-btn">← Tableau de bord</a>@endsection
+@section('title', __('transactions.withdraw_title'))
+@section('back')<a href="{{ route('dashboard') }}" class="kts-back-btn">← {{ __('common.dashboard') }}</a>@endsection
 
 @section('content')
 @php $user = auth()->user(); $lockedMethod = $firstDepositMethod ?? null; @endphp
 
-<h1 style="color:#c9a227; font-size:1.2rem; margin-bottom:1.25rem;">Demande de Retrait</h1>
+<h1 style="color:#c9a227; font-size:1.2rem; margin-bottom:1.25rem;">{{ __('transactions.withdraw_request') }}</h1>
 
 {{-- Bannière bloquante si retrait non disponible --}}
 @if(!$canWithdraw)
 <div style="background:rgba(239,83,80,0.08); border:1px solid rgba(239,83,80,0.4); border-radius:10px; padding:1rem 1.25rem; margin-bottom:1.25rem;">
-    <div style="color:#ef5350; font-weight:700; font-size:0.95rem; margin-bottom:0.4rem;">🔒 Retrait non disponible</div>
+    <div style="color:#ef5350; font-weight:700; font-size:0.95rem; margin-bottom:0.4rem;">{{ __('transactions.withdraw_not_available') }}</div>
     <div style="color:#b0bfd9; font-size:0.85rem; line-height:1.6;">
-        Votre premier <strong style="color:#fbc02d;">crédit de profit journalier</strong> doit être reçu avant tout retrait.<br>
-        Cela se fait automatiquement <strong>24h après l'activation de votre premier investissement</strong>.<br>
-        <span style="font-size:0.78rem; color:#6b7a9a;">Ce délai garantit que vos gains sont bien consolidés avant tout retrait.</span>
+        {{ __('transactions.first_profit_notice') }}<br>
+        {{ __('transactions.first_profit_detail') }}<br>
+        <span style="font-size:0.78rem; color:#6b7a9a;">{{ __('transactions.withdrawal_delay_note') }}</span>
     </div>
     <a href="{{ route('investments.create') }}" class="btn" style="margin-top:0.75rem; display:inline-block; font-size:0.82rem; padding:6px 16px;">
-        Investir maintenant →
+        {{ __('transactions.withdraw_now') }}
     </a>
 </div>
 @endif
@@ -68,14 +68,14 @@
         @csrf
 
         <div class="form-group">
-            <label class="form-label" for="payment_method">Moyen de paiement</label>
+            <label class="form-label" for="payment_method">{{ __('transactions.payment_method') }}</label>
             @if($lockedMethod)
                 <input type="text" class="form-control" value="{{ $lockedMethod }}" readonly style="background:rgba(201,162,39,0.06); color:#c9a227; cursor:not-allowed;">
                 <input type="hidden" id="payment_method" name="payment_method" value="{{ $lockedMethod }}">
-                <span style="font-size:0.73rem; color:#6b7a9a; display:block; margin-top:4px;">Méthode liée à votre premier dépôt — non modifiable.</span>
+                <span style="font-size:0.73rem; color:#6b7a9a; display:block; margin-top:4px;">{{ __('transactions.first_deposit_locked') }}</span>
             @else
                 <select id="payment_method" name="payment_method" class="form-control" required onchange="updateCurrency(this.value)">
-                    <option value="">-- Choisir --</option>
+                    <option value="">{{ __('transactions.choose') }}</option>
                     @foreach($paymentMethods as $method)
                         <option value="{{ $method->name }}"
                             data-currency="{{ $method->currency }}"
@@ -90,7 +90,7 @@
         </div>
 
         <div class="form-group">
-            <label class="form-label" for="amount">Montant en <span id="currencyLabel" style="color:#c9a227;">—</span></label>
+            <label class="form-label" for="amount">{{ __('transactions.amount_in') }} <span id="currencyLabel" style="color:#c9a227;">—</span></label>
             <div style="position:relative;">
                 <input type="number" id="amount" name="amount" class="form-control" min="1" step="1"
                     value="{{ old('amount') }}" required placeholder="0" style="padding-right:70px;"
@@ -114,20 +114,20 @@
         </div>
 
         <div class="form-group">
-            <label class="form-label" for="wallet_details">Coordonnées de réception *</label>
+            <label class="form-label" for="wallet_details">{{ __('transactions.wallet_details') }} *</label>
             <textarea id="wallet_details" name="wallet_details" class="form-control" rows="3" required
-                placeholder="Numéro de compte, adresse, IBAN...">{{ old('wallet_details') }}</textarea>
+                placeholder="{{ __('transactions.wallet_details_placeholder') }}">{{ old('wallet_details') }}</textarea>
             @error('wallet_details')<span class="form-feedback-error">{{ $message }}</span>@enderror
         </div>
 
         <div class="form-group">
-            <label class="form-label" for="description">Notes (optionnel)</label>
+            <label class="form-label" for="description">{{ __('transactions.notes_optional') }}</label>
             <textarea id="description" name="description" class="form-control" rows="2"
-                placeholder="Remarques...">{{ old('description') }}</textarea>
+                placeholder="{{ __('transactions.notes_placeholder') }}">{{ old('description') }}</textarea>
         </div>
 
-        <button type="submit" class="btn btn-primary" style="width:100%;" id="submitBtn">Soumettre la demande</button>
-        <p style="text-align:center; margin-top:0.75rem; color:#6b7a9a; font-size:0.75rem;">L'admin validera votre retrait sous peu.</p>
+        <button type="submit" class="btn btn-primary" style="width:100%;" id="submitBtn">{{ __('transactions.submit_request') }}</button>
+        <p style="text-align:center; margin-top:0.75rem; color:#6b7a9a; font-size:0.75rem;">{{ __('transactions.admin_will_validate') }}</p>
     </form>
 </div>
 
@@ -160,11 +160,11 @@ function updatePreview() {
         const received = usd - fee;
 
         document.getElementById('conversionValue').textContent =
-            '$' + usd.toFixed(2) + ' USD demandés';
+            '$' + usd.toFixed(2) + ' ' + trans.usd_requested;
         document.getElementById('feeInfo').textContent =
-            'Frais (3%) : -$' + fee.toFixed(2);
+            trans.fee_prefix + ' -$' + fee.toFixed(2);
         document.getElementById('receivedInfo').textContent =
-            '✅ Vous recevrez : $' + received.toFixed(2) + ' USD';
+            trans.you_will_receive + ' $' + received.toFixed(2) + ' USD';
 
         if (currency !== 'USD') {
             document.getElementById('rateInfo').textContent =
